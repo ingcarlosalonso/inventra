@@ -13,7 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'tenant' => Spatie\Multitenancy\Http\Middleware\EnsureValidTenantSession::class,
+            'tenant'         => Spatie\Multitenancy\Http\Middleware\NeedsTenant::class,
+            'tenant.session' => Spatie\Multitenancy\Http\Middleware\EnsureValidTenantSession::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -1,13 +1,18 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
-// Rutas centrales (sin tenant)
-Route::middleware(['api'])->group(function () {
-    // login central, register tenant, etc.
+// Central routes (no tenant)
+Route::middleware('api')->group(function () {
+    //
 });
 
-// Rutas tenant
+// Tenant routes
 Route::middleware(['api', 'tenant'])->group(function () {
-    // todas las rutas del negocio van acá
+    Route::post('auth/login', [AuthController::class, 'login']);
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('auth/logout', [AuthController::class, 'logout']);
+    });
 });
