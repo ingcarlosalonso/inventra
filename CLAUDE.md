@@ -18,6 +18,63 @@
 | Frontend | Inertia.js + Vue 3 + Vite                       |
 | Tests | PHPUnit (latest) + Mockery                      |
 
+## Internationalisation (i18n)
+
+- The application is **fully multilingual**. Every user-facing string MUST use Laravel's translation helpers (`__()`, `trans()`, `@lang`).
+- **Never hardcode** Spanish or English text in PHP or Vue files.
+- Translation files live in `lang/{locale}/` (e.g. `lang/es/`, `lang/en/`).
+- Group keys by domain: `lang/es/products.php`, `lang/es/clients.php`, `lang/es/common.php`, etc.
+- Vue components use the `$t()` helper from the Inertia shared translations (passed via `HandleInertiaRequests`).
+- Default locale: `es` (Spanish). Fallback: `en`.
+
+## Application Navigation Structure
+
+```
+Sidebar:
+├── Dashboard
+├── Stock Entry (Ingreso de Stock)
+├── Products
+│   ├── [Config] Product Types
+│   ├── [Config] Extra Movement Types (product)
+│   ├── [Config] Presentations
+│   ├── Products
+│   ├── Composite Products
+│   ├── Bulk Price Update
+│   ├── Import XLSX
+│   └── Extra Movements
+├── Suppliers
+├── Daily Cash
+│   ├── Daily Cashes
+│   ├── Extra Movements
+│   └── [Config] Extra Movement Types (cash)
+├── Clients
+├── Orders
+│   ├── Orders
+│   ├── Order States
+│   └── Couriers
+├── Sales
+│   ├── Sales
+│   ├── [Config] Points of Sale
+│   ├── [Config] Sale States
+│   └── [Config] Payment Methods
+└── Settings
+    ├── General Parameters
+    └── Currencies
+
+Quick Actions (top bar): Nueva Venta · Nuevo Pedido · Ingresar Pago · Presupuestos · Reportes
+```
+
+## UI / Frontend Guidelines
+
+- Design must feel **modern, clean, and intuitive**. Avoid dated table-heavy layouts.
+- Use a **fixed sidebar** with grouped navigation and icons.
+- **Top bar** with tenant name, quick-action buttons, and user menu.
+- List pages: searchable, with status badges, row actions (edit/delete), and an "Add" button.
+- Forms: slide-over panels or dedicated pages — never modal dialogs for complex forms.
+- Use **consistent color tokens** via Tailwind CSS v4 variables.
+- Empty states, loading skeletons, and inline validation feedback are required.
+- All UI text goes through `$t()`.
+
 ## Multi-tenant Architecture (Spatie)
 
 - **Central database** (`inventra`): `tenants` and `domains` tables from spatie/laravel-multitenancy, plus company data.
