@@ -148,21 +148,19 @@ Quick Actions (top bar): Nueva Venta · Nuevo Pedido · Ingresar Pago · Presupu
 
 ```
 app/
-  Actions/                    # Single business operations (stateless)
+  Actions/                    # Complex business operations only (not simple CRUD)
   Adapters/                   # External API integrations
   Constants/                  # App-wide constants
-  DTOs/{Model}/               # Data Transfer Objects (readonly)
+  DTOs/{Model}/               # Data Transfer Objects (only when truly needed)
   Http/
-    Controllers/              # Thin controllers: validate → Action → Resource
+    Controllers/              # Controllers: FormRequest → Eloquent+Scopes → Resource
     Requests/                 # FormRequests for validation
     Resources/{Model}/        # API Resources (never raw models)
   Jobs/                       # Queued jobs (always ShouldQueue)
-  Mappers/                    # DTO ↔ Model / external ↔ internal transformations
   Models/                     # Eloquent models (relationships, scopes, helpers only)
     {Model}/
       Scopes/                 # Scope classes (never raw where() in models)
-  Repositories/               # All complex data access
-  Services/                   # Multi-step workflows (e.g. NewSaleService)
+  Services/                   # Multi-step workflows (e.g. ProcessSaleService)
   Imports/                    # Excel importers (Maatwebsite)
 database/
   migrations/                 # Central DB migrations
@@ -171,15 +169,17 @@ resources/
   js/                         # Vue 3 components (Inertia pages)
     Pages/                    # Inertia page components
     Components/               # Reusable Vue components
+    Layouts/                  # AppLayout and variants
+    composables/              # Vue composables (useApi, etc.)
 routes/
   api.php                     # All API routes (primary)
-  web.php                     # Minimal: login redirects, Inertia SPA entry
+  web.php                     # Minimal: Inertia SPA page renders
 tests/
   Unit/
+    Models/
+    Scopes/
     Actions/
     Services/
-    Repositories/
-    Models/
   Feature/
     Controllers/
     Jobs/
@@ -187,10 +187,37 @@ tests/
 
 ## Architecture Rules
 
-1. **Controllers** are thin: validate via FormRequest → call Action/Service → return Resource. No business logic, no direct model queries, no manual validation.
-2. **Actions** = single business operation. Stateless, no HTTP dependencies, constructor injection. Usable from Controllers, Commands, Jobs, Listeners.
-3. **Services** = multi-step workflows. Use when multiple Actions or external services must be coordinated.
-4. **Repositories** = all complex data access. Controllers and Actions never query models directly.
+### When to use each layer
+
+| Layer | Use when | Skip when |
+|---|---|---|
+| **Action** | Logic called from 2+ places (Controller + Job + Command), or complex with side effects (events, stock changes) | Simple CRUD with no reuse |
+| **Service** | Multi-step workflow coordinating multiple Actions or external calls | Single-step operations |
+| **Repository** | Complex queries: multiple joins, subqueries, aggregations, reused across features | Simple `where` + `orderBy` — use Eloquent + Scopes directly |
+| **DTO** | Data built from multiple sources (Request + CSV + API), or passed through multiple layers | Simple `$request->validated()` passed directly to `Model::create()` |
+
+### Simple CRUD (parametrization tables, basic entities)
+Controller queries Eloquent directly using Scopes. No Actions, no DTOs, no Repositories.
+
+```php
+public function index(Request $request): AnonymousResourceCollection
+{
+    $query = ProductType::query();
+    if ($request->filled('search')) {
+        $query->withScopes(new BySearch($request->string('search')));
+    }
+    return ProductTypeResource::collection($query->orderBy('name')->get());
+}
+
+public function store(StoreProductTypeRequest $request): ProductTypeResource
+{
+    return ProductTypeResource::make(ProductType::create($request->validated()));
+}
+```
+
+### Complex business operations (Sales, Orders, DailyCash)
+Controller → Action/Service → Eloquent + Scopes → Resource.
+
 5. **Adapters** = all external API calls (`app/Adapters/`). Never call external APIs directly. Errors → domain exceptions. Config → `config/services.php`.
 6. **Events** decouple side effects. Flow: `Action → Event::dispatch() → Listener → Job (optional)`.
 7. **Jobs** handle heavy/background processing. Always implement `ShouldQueue`.
@@ -211,25 +238,28 @@ tests/
 | **Mapper** | Transform between structures (DTO ↔ Model, external ↔ internal) | Internal |
 | **Resource** | Transform Model to JSON output | Back → Front |
 
-### Flow
-
+### Flow — Simple CRUD
 ```
-Request → FormRequest → Controller → DTO → Action/Service → [Mapper] → Repository → Model
-                                                                                        ↓
-Front ← Resource ←──────────────────────────────────────────────────────────────── Model
+Request → FormRequest → Controller → Model (via Scopes)
+                                          ↓
+Front  ← Resource ←─────────────────── Model
+```
+
+### Flow — Complex operations
+```
+Request → FormRequest → Controller → Action/Service → Model (via Scopes)
+                                                            ↓
+Front  ← Resource ←──────────────────────────────────── Model
 ```
 
 ### DTOs
 
-1. Use DTOs to decouple business logic from HTTP. Built in the Controller from a validated FormRequest.
-2. Always `readonly`. No logic, no queries, no side effects.
-3. One DTO per business intent: `CreateClientDTO` and `UpdateClientDTO` are separate even if they share fields. Optional fields use nullable defaults.
-4. Never exposed to the front. DTOs are internal only.
+Only create a DTO when:
+- The same data structure is built from multiple sources (HTTP request + CSV import + external API).
+- Data must travel through multiple layers (Controller → Service → Job).
+- A `readonly` typed structure meaningfully improves clarity over `$request->validated()`.
 
-### Mappers
-
-1. Add a Mapper when: transformation involves logic (formatting, conversions), the same DTO is built from multiple sources (Request, CSV, external API), or a Model needs to be converted to an internal DTO.
-2. Simple one-liner mappings stay in the DTO's `fromRequest()`. No Mapper needed.
+For simple CRUD, use `$request->validated()` directly. Do not create DTOs just to have them.
 
 ### Resources
 
@@ -288,13 +318,42 @@ Front ← Resource ←───────────────────�
 
 ## Testing
 
-- Unit tests: Actions, Services, Repositories, Rules.
-- Feature tests: Controllers, Jobs, Events, Webhooks.
-- Every new feature must include both.
+**Every piece of code gets tests. No exceptions.**
+
+### What to test and where
+
+| Subject | Type | Location |
+|---|---|---|
+| Model columns, casts, traits | Unit | `tests/Unit/Models/{Model}/ModelTest.php` |
+| Model relationships | Unit | `tests/Unit/Models/{Model}/RelationsTest.php` |
+| Scope classes | Unit | `tests/Unit/Scopes/{Model}/...Test.php` |
+| Actions / Services | Unit | `tests/Unit/Actions/...` / `tests/Unit/Services/...` |
+| FormRequests (validation rules) | Unit | `tests/Unit/Requests/...` |
+| API Resources (output shape) | Unit | `tests/Unit/Resources/...` |
+| API endpoints (full HTTP cycle) | Feature | `tests/Feature/Controllers/...` |
+| Jobs | Feature | `tests/Feature/Jobs/...` |
+| Event + Listener wiring | Feature | `tests/Feature/Events/...` |
+
+### Rules
+- Use `php artisan make:test --phpunit {name}` for feature tests, `--unit` for unit tests.
+- Feature tests cover: happy path, validation errors, auth errors (401/403), not-found (404).
+- Use model factories, never manual `DB::insert()`.
+- Tenant model tests extend `ModelTestCase` which migrates the tenant DB once per suite.
+- Run the affected test file after every change: `php artisan test --compact tests/Feature/Controllers/ProductTypeControllerTest.php`
+- After finishing a feature, run the full suite: `php artisan test --compact`
 
 ## Feature Development Workflow
 
-Order when building a new feature: Action → FormRequest → Controller → Resource → Events/Listeners (if needed) → Unit Tests → Feature Tests.
+Order when building a new feature:
+1. Migration (if needed)
+2. Model + Factory + Model Test
+3. Scopes + Scope Tests
+4. FormRequest + Request Test
+5. Resource + Resource Test
+6. Controller (simple CRUD: Eloquent direct; complex: Action/Service first)
+7. Routes
+8. Feature Test (Controller endpoints)
+9. Frontend (Vue page)
 
 ## Git & Branching
 
@@ -537,3 +596,56 @@ Vue components must have a single root element.
 - IMPORTANT: Activate `inertia-vue-development` when working with Inertia Vue client-side patterns.
 
 </laravel-boost-guidelines>
+
+## Workflow Orchestration
+
+### Plan Mode Default
+- Enter plan mode for ANY non-trivial task (3+ steps or architectural decisions)
+- If something goes sideways, STOP and re-plan immediately – don't keep pushing
+- Use plan mode for verification steps, not just building
+- Write detailed specs upfront to reduce ambiguity
+
+### Subagent Strategy
+- Use subagents liberally to keep main context window clean
+- Offload research, exploration, and parallel analysis to subagents
+- For complex problems, throw more compute at it via subagents
+- One task per subagent for focused execution
+
+### Self-Improvement Loop
+- After ANY correction from the user: update `tasks/lessons.md` with the pattern
+- Write rules for yourself that prevent the same mistake
+- Ruthlessly iterate on these lessons until mistake rate drops
+- Review lessons at session start for relevant project
+
+### Verification Before Done
+- Never mark a task complete without proving it works
+- Diff behavior between main and your changes when relevant
+- Ask yourself: "Would a staff engineer approve this?"
+- Run tests, check logs, demonstrate correctness
+
+### Demand Elegance (Balanced)
+- For non-trivial changes: pause and ask "is there a more elegant way?"
+- If a fix feels hacky: "Knowing everything I know now, implement the elegant solution"
+- Skip this for simple, obvious fixes – don't over-engineer
+- Challenge your own work before presenting it
+
+### Autonomous Bug Fixing
+- When given a bug report: just fix it. Don't ask for hand-holding
+- Point at logs, errors, failing tests – then resolve them
+- Zero context switching required from the user
+- Go fix failing CI tests without being told how
+
+Task Management
+
+1. **Plan First**: Write plan to `tasks/todo.md` with checkable items
+2. **Verify Plan**: Check in before starting implementation
+3. **Track Progress**: Mark items complete as you go
+4. **Explain Changes**: High-level summary at each step
+5. **Document Results**: Add review section to `tasks/todo.md`
+6. **Capture Lessons**: Update `tasks/lessons.md` after corrections
+
+## Core Principles
+
+- **Simplicity First**: Make every change as simple as possible. Impact minimal code.
+- **No Laziness**: Find root causes. No temporary fixes. Senior developer standards.
+- **Minimal Impact**: Changes should only touch what's necessary. Avoid introducing bugs.

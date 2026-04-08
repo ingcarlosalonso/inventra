@@ -4,11 +4,12 @@ namespace App\Models;
 
 use App\Models\Concerns\HasAuditFields;
 use App\Models\Concerns\HasUuid;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SaleState extends Model
 {
-    use HasUuid, HasAuditFields, SoftDeletes;
+    use HasAuditFields, HasFactory, HasUuid, SoftDeletes;
 
     protected $connection = 'tenant';
 
@@ -17,9 +18,9 @@ class SaleState extends Model
     protected function casts(): array
     {
         return [
-            'is_default'     => 'boolean',
+            'is_default' => 'boolean',
             'is_final_state' => 'boolean',
-            'is_active'      => 'boolean',
+            'is_active' => 'boolean',
         ];
     }
 }

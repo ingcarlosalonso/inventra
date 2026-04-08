@@ -2,55 +2,47 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\CashMovementType\CreateCashMovementTypeAction;
-use App\Actions\CashMovementType\DeleteCashMovementTypeAction;
-use App\Actions\CashMovementType\ListCashMovementTypesAction;
-use App\Actions\CashMovementType\UpdateCashMovementTypeAction;
-use App\DTOs\CashMovementType\CreateCashMovementTypeDTO;
-use App\DTOs\CashMovementType\UpdateCashMovementTypeDTO;
+use App\Http\Requests\CashMovementType\IndexCashMovementTypeRequest;
 use App\Http\Requests\CashMovementType\StoreCashMovementTypeRequest;
 use App\Http\Requests\CashMovementType\UpdateCashMovementTypeRequest;
 use App\Http\Resources\CashMovementType\CashMovementTypeResource;
 use App\Models\CashMovementType;
+use App\Models\CashMovementType\Scopes\BySearch;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class CashMovementTypeController extends Controller
 {
-    public function index(
-        Request $request,
-        ListCashMovementTypesAction $action,
-    ): AnonymousResourceCollection {
-        $paginator = $action->execute($request->input('search'));
+    public function index(IndexCashMovementTypeRequest $request): AnonymousResourceCollection
+    {
+        $query = CashMovementType::query();
 
-        return CashMovementTypeResource::collection($paginator);
+        if ($request->filled('search')) {
+            $query->withScopes(new BySearch($request->string('search')));
+        }
+
+        return CashMovementTypeResource::collection(
+            $query->orderBy('name')->paginate(20)
+        );
     }
 
-    public function store(
-        StoreCashMovementTypeRequest $request,
-        CreateCashMovementTypeAction $action,
-    ): CashMovementTypeResource {
-        $type = $action->execute(CreateCashMovementTypeDTO::fromRequest($request));
-
-        return CashMovementTypeResource::make($type);
+    public function store(StoreCashMovementTypeRequest $request): CashMovementTypeResource
+    {
+        return CashMovementTypeResource::make(
+            CashMovementType::create($request->validated())
+        );
     }
 
-    public function update(
-        UpdateCashMovementTypeRequest $request,
-        CashMovementType $cashMovementType,
-        UpdateCashMovementTypeAction $action,
-    ): CashMovementTypeResource {
-        $type = $action->execute($cashMovementType, UpdateCashMovementTypeDTO::fromRequest($request));
+    public function update(UpdateCashMovementTypeRequest $request, CashMovementType $cashMovementType): CashMovementTypeResource
+    {
+        $cashMovementType->update($request->validated());
 
-        return CashMovementTypeResource::make($type);
+        return CashMovementTypeResource::make($cashMovementType->fresh());
     }
 
-    public function destroy(
-        CashMovementType $cashMovementType,
-        DeleteCashMovementTypeAction $action,
-    ): JsonResponse {
-        $action->execute($cashMovementType);
+    public function destroy(CashMovementType $cashMovementType): JsonResponse
+    {
+        $cashMovementType->delete();
 
         return response()->json([], 204);
     }

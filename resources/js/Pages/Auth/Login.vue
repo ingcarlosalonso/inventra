@@ -55,6 +55,7 @@
 </template>
 
 <script setup>
+import axios from 'axios'
 import { ref } from 'vue'
 import { router } from '@inertiajs/vue3'
 import InputField from '@/Components/InputField.vue'

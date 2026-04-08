@@ -4,12 +4,13 @@ namespace App\Models;
 
 use App\Models\Concerns\HasAuditFields;
 use App\Models\Concerns\HasUuid;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Presentation extends Model
 {
-    use HasUuid, HasAuditFields, SoftDeletes;
+    use HasAuditFields, HasFactory, HasUuid, SoftDeletes;
 
     protected $connection = 'tenant';
 

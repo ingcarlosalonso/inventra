@@ -3,19 +3,31 @@
 namespace Tests\Unit\Models\ProductType;
 
 use App\Models\ProductType;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Tests\Unit\Models\ModelTestCase;
 
 class RelationsTest extends ModelTestCase
 {
-    public function test_it_belongs_to_parent(): void
+    public function test_belongs_to_parent(): void
     {
-        $this->assertInstanceOf(BelongsTo::class, (new ProductType())->parent());
+        $parent = ProductType::factory()->create();
+        $child = ProductType::factory()->childOf($parent)->create();
+
+        $this->assertInstanceOf(ProductType::class, $child->parent);
+        $this->assertTrue($child->parent->is($parent));
     }
 
-    public function test_it_has_many_children(): void
+    public function test_has_many_children(): void
     {
-        $this->assertInstanceOf(HasMany::class, (new ProductType())->children());
+        $parent = ProductType::factory()->create();
+        ProductType::factory()->count(3)->childOf($parent)->create();
+
+        $this->assertCount(3, $parent->children);
+    }
+
+    public function test_children_is_empty_when_root(): void
+    {
+        $type = ProductType::factory()->create();
+
+        $this->assertCount(0, $type->children);
     }
 }

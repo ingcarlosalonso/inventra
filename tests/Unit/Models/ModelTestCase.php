@@ -2,12 +2,17 @@
 
 namespace Tests\Unit\Models;
 
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 abstract class ModelTestCase extends TestCase
 {
+    use DatabaseTransactions;
+
+    protected $connectionsToTransact = ['tenant'];
+
     private static bool $tenantMigrationsRun = false;
 
     protected function setUp(): void

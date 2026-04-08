@@ -55,4 +55,5 @@ return [
     'dashboard' => 'Dashboard',
     'products' => 'Products',
     'settings' => 'Settings',
+    'logout' => 'Sign out',
 ];

@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { ref } from 'vue'
+import { router } from '@inertiajs/vue3'
 
 export function useApi() {
     const errors = ref({})
@@ -20,9 +21,17 @@ export function useApi() {
             const response = await axios(config)
             return { data: response.data, error: null }
         } catch (err) {
+            if (err.response?.status === 401) {
+                localStorage.removeItem('token')
+                delete axios.defaults.headers.common['Authorization']
+                router.visit('/login')
+                return { data: null, error: null }
+            }
+
             if (err.response?.status === 422) {
                 errors.value = err.response.data.errors ?? {}
             }
+
             const message = err.response?.data?.message ?? err.message
             return { data: null, error: message }
         } finally {
@@ -31,7 +40,11 @@ export function useApi() {
     }
 
     const get = (url, params = {}) => {
-        const query = new URLSearchParams(params).toString()
+        const query = new URLSearchParams(
+            Object.fromEntries(
+                Object.entries(params).filter(([, v]) => v !== null && v !== undefined && v !== ''),
+            ),
+        ).toString()
         return request('get', query ? `${url}?${query}` : url)
     }
 

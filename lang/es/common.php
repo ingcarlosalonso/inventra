@@ -55,4 +55,5 @@ return [
     'dashboard' => 'Dashboard',
     'products' => 'Productos',
     'settings' => 'Configuración',
+    'logout' => 'Cerrar sesión',
 ];

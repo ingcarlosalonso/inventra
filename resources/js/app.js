@@ -3,6 +3,7 @@ import '../css/app.css'
 import { createApp, h } from 'vue'
 import { createInertiaApp, usePage } from '@inertiajs/vue3'
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
+import { ZiggyVue } from '../../vendor/tightenco/ziggy'
 
 const i18nPlugin = {
     install(app) {
@@ -39,6 +40,7 @@ createInertiaApp({
         createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(i18nPlugin)
+            .use(ZiggyVue)
             .mount(el)
     },
 
