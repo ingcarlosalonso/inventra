@@ -24,20 +24,25 @@ class ProductTypeController extends Controller
         return ProductTypeResource::collection($query->orderBy('name')->get());
     }
 
-    public function store(StoreProductTypeRequest $request): ProductTypeResource
+    public function store(StoreProductTypeRequest $request): JsonResponse
     {
-        $type = ProductType::create($request->validated());
+        $data = $request->validated();
+        $data['parent_id'] = $this->resolveParentId($data['parent_id'] ?? null);
 
-        return ProductTypeResource::make($type);
+        return ProductTypeResource::make(ProductType::create($data))
+            ->response()->setStatusCode(201);
     }
 
     public function update(UpdateProductTypeRequest $request, ProductType $productType): ProductTypeResource|JsonResponse
     {
-        if ($request->filled('parent_id') && $request->integer('parent_id') === $productType->id) {
+        $data = $request->validated();
+
+        if (($data['parent_id'] ?? null) === $productType->uuid) {
             return response()->json(['message' => __('product_types.self_parent_error')], 422);
         }
 
-        $productType->update($request->validated());
+        $data['parent_id'] = $this->resolveParentId($data['parent_id'] ?? null);
+        $productType->update($data);
 
         return ProductTypeResource::make($productType->fresh());
     }
@@ -58,5 +63,14 @@ class ProductTypeController extends Controller
         $productType->update(['is_active' => ! $productType->is_active]);
 
         return ProductTypeResource::make($productType->fresh());
+    }
+
+    private function resolveParentId(?string $uuid): ?int
+    {
+        if (! $uuid) {
+            return null;
+        }
+
+        return ProductType::where('uuid', $uuid)->value('id');
     }
 }

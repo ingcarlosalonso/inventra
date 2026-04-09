@@ -113,8 +113,6 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
-
-defineOptions({ layout: AppLayout })
 import SlideOver from '@/Components/SlideOver.vue'
 import ConfirmModal from '@/Components/ConfirmModal.vue'
 import SearchInput from '@/Components/SearchInput.vue'
@@ -125,6 +123,8 @@ import InputField from '@/Components/InputField.vue'
 import TextareaField from '@/Components/TextareaField.vue'
 import ToggleSwitch from '@/Components/ToggleSwitch.vue'
 import { useApi } from '@/composables/useApi'
+
+defineOptions({ layout: AppLayout })
 
 const { loading: loadingList, get } = useApi()
 const { loading: saving, errors: formErrors, post: postForm, put: putForm } = useApi()

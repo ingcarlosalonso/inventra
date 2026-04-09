@@ -4,8 +4,11 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CashMovementTypeController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CurrencyController;
+use App\Http\Controllers\PaymentMethodController;
+use App\Http\Controllers\PointOfSaleController;
 use App\Http\Controllers\ProductMovementTypeController;
 use App\Http\Controllers\ProductTypeController;
+use App\Http\Controllers\SaleStateController;
 use App\Http\Controllers\SupplierController;
 use Illuminate\Support\Facades\Route;
 
@@ -40,5 +43,19 @@ Route::middleware(['api', 'tenant'])->group(function () {
         // Currencies
         Route::apiResource('currencies', CurrencyController::class)->except(['show']);
         Route::patch('currencies/{currency}/toggle', [CurrencyController::class, 'toggle']);
+
+        // Points of Sale
+        Route::apiResource('points-of-sale', PointOfSaleController::class)
+            ->except(['show'])
+            ->parameters(['points-of-sale' => 'pointOfSale']);
+        Route::patch('points-of-sale/{pointOfSale}/toggle', [PointOfSaleController::class, 'toggle']);
+
+        // Sale States
+        Route::apiResource('sale-states', SaleStateController::class)->except(['show']);
+        Route::patch('sale-states/{saleState}/toggle', [SaleStateController::class, 'toggle']);
+
+        // Payment Methods
+        Route::apiResource('payment-methods', PaymentMethodController::class)->except(['show']);
+        Route::patch('payment-methods/{paymentMethod}/toggle', [PaymentMethodController::class, 'toggle']);
     });
 });

@@ -18,7 +18,7 @@ class UpdateProductTypeRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255', "unique:tenant.product_types,name,{$id}"],
             'is_active' => ['boolean'],
-            'parent_id' => ['nullable', 'integer', 'exists:tenant.product_types,id'],
+            'parent_id' => ['nullable', 'string', 'exists:tenant.product_types,uuid'],
         ];
     }
 }

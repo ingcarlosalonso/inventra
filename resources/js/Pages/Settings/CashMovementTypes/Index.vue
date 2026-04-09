@@ -103,10 +103,8 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, getCurrentInstance } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
-
-defineOptions({ layout: AppLayout })
 import SlideOver from '@/Components/SlideOver.vue'
 import ConfirmModal from '@/Components/ConfirmModal.vue'
 import SearchInput from '@/Components/SearchInput.vue'
@@ -117,9 +115,11 @@ import InputField from '@/Components/InputField.vue'
 import SelectField from '@/Components/SelectField.vue'
 import ToggleSwitch from '@/Components/ToggleSwitch.vue'
 import { useApi } from '@/composables/useApi'
+import { useTranslation } from '@/composables/useTranslation'
 
-const { $t } = getCurrentInstance().appContext.config.globalProperties
+defineOptions({ layout: AppLayout })
 
+const { t } = useTranslation()
 const { loading: loadingList, get } = useApi()
 const { loading: saving, errors: formErrors, post: postForm, put: putForm } = useApi()
 const { del } = useApi()
@@ -135,8 +135,8 @@ const formError = ref(null)
 const form = ref({ name: '', is_income: true, is_active: true })
 
 const directionOptions = computed(() => [
-    { value: true, label: $t('cash_movement_types.direction_in') },
-    { value: false, label: $t('cash_movement_types.direction_out') },
+    { value: true, label: t('cash_movement_types.direction_in') },
+    { value: false, label: t('cash_movement_types.direction_out') },
 ])
 
 async function fetchItems(url = null) {

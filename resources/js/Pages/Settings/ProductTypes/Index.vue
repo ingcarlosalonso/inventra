@@ -112,7 +112,7 @@
         <InputField
           v-model="form.name"
           :label="$t('common.name')"
-          :error="errors.name?.[0]"
+          :error="formErrors.name?.[0]"
           required
         />
 
@@ -169,8 +169,6 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
-
-defineOptions({ layout: AppLayout })
 import SlideOver from '@/Components/SlideOver.vue'
 import ConfirmModal from '@/Components/ConfirmModal.vue'
 import SearchInput from '@/Components/SearchInput.vue'
@@ -181,7 +179,9 @@ import SelectField from '@/Components/SelectField.vue'
 import ToggleSwitch from '@/Components/ToggleSwitch.vue'
 import { useApi } from '@/composables/useApi'
 
-const { errors, loading: loadingList, get, post, put, del } = useApi()
+defineOptions({ layout: AppLayout })
+
+const { loading: loadingList, get, del } = useApi()
 const { loading: saving, errors: formErrors, post: postForm, put: putForm } = useApi()
 
 const items = ref([])

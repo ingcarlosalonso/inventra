@@ -26,11 +26,11 @@ class ProductMovementTypeController extends Controller
         );
     }
 
-    public function store(StoreProductMovementTypeRequest $request): ProductMovementTypeResource
+    public function store(StoreProductMovementTypeRequest $request): JsonResponse
     {
         return ProductMovementTypeResource::make(
             ProductMovementType::create($request->validated())
-        );
+        )->response()->setStatusCode(201);
     }
 
     public function update(UpdateProductMovementTypeRequest $request, ProductMovementType $productMovementType): ProductMovementTypeResource

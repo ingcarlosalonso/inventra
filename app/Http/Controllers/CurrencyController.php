@@ -24,13 +24,14 @@ class CurrencyController extends Controller
         return CurrencyResource::collection($query->orderBy('name')->get());
     }
 
-    public function store(StoreCurrencyRequest $request): CurrencyResource
+    public function store(StoreCurrencyRequest $request): JsonResponse
     {
         if ($request->boolean('is_default')) {
             Currency::where('is_default', true)->update(['is_default' => false]);
         }
 
-        return CurrencyResource::make(Currency::create($request->validated()));
+        return CurrencyResource::make(Currency::create($request->validated()))
+            ->response()->setStatusCode(201);
     }
 
     public function update(UpdateCurrencyRequest $request, Currency $currency): CurrencyResource

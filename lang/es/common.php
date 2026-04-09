@@ -57,4 +57,5 @@ return [
     'products' => 'Productos',
     'settings' => 'Configuración',
     'logout' => 'Cerrar sesión',
+    'unsupported_locale' => 'Idioma no soportado.',
 ];

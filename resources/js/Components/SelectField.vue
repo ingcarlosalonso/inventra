@@ -15,7 +15,7 @@
           : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500',
         disabled ? 'bg-gray-50 cursor-not-allowed' : 'bg-white',
       ]"
-      @change="$emit('update:modelValue', $event.target.value || null)"
+      @change="$emit('update:modelValue', options.find(o => String(o.value) === $event.target.value)?.value ?? ($event.target.value || null))"
     >
       <option v-if="placeholder" value="">{{ placeholder }}</option>
       <option
@@ -34,7 +34,7 @@
 import { useId } from 'vue'
 
 defineProps({
-  modelValue: { type: [String, Number], default: null },
+  modelValue: { type: [String, Number, Boolean], default: null },
   label: { type: String, default: null },
   options: { type: Array, default: () => [] },
   placeholder: { type: String, default: null },

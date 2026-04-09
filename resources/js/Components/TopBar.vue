@@ -89,7 +89,7 @@ async function switchLocale(code) {
 
 async function logout() {
   userOpen.value = false
-  try { await axios.post('/api/auth/logout') } finally {
+  try { await axios.post('/logout') } finally {
     localStorage.removeItem('token')
     delete axios.defaults.headers.common['Authorization']
     router.visit('/login')

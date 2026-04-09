@@ -26,11 +26,11 @@ class CashMovementTypeController extends Controller
         );
     }
 
-    public function store(StoreCashMovementTypeRequest $request): CashMovementTypeResource
+    public function store(StoreCashMovementTypeRequest $request): JsonResponse
     {
         return CashMovementTypeResource::make(
             CashMovementType::create($request->validated())
-        );
+        )->response()->setStatusCode(201);
     }
 
     public function update(UpdateCashMovementTypeRequest $request, CashMovementType $cashMovementType): CashMovementTypeResource

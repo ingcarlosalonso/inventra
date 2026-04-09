@@ -26,11 +26,11 @@ class ClientController extends Controller
         );
     }
 
-    public function store(StoreClientRequest $request): ClientResource
+    public function store(StoreClientRequest $request): JsonResponse
     {
         return ClientResource::make(
             Client::create($request->validated())
-        );
+        )->response()->setStatusCode(201);
     }
 
     public function update(UpdateClientRequest $request, Client $client): ClientResource

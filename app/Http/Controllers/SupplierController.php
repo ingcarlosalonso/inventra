@@ -26,11 +26,11 @@ class SupplierController extends Controller
         );
     }
 
-    public function store(StoreSupplierRequest $request): SupplierResource
+    public function store(StoreSupplierRequest $request): JsonResponse
     {
         return SupplierResource::make(
             Supplier::create($request->validated())
-        );
+        )->response()->setStatusCode(201);
     }
 
     public function update(UpdateSupplierRequest $request, Supplier $supplier): SupplierResource

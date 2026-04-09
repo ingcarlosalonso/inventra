@@ -68,15 +68,18 @@ const form = ref({ email: '', password: '' })
 
 async function submit() {
     serverError.value = null
-    const { data, error } = await post('/api/auth/login', form.value)
+    const { data, error } = await post('/login', form.value)
 
     if (error) {
         serverError.value = error
         return
     }
 
-    axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`
-    localStorage.setItem('token', data.token)
+    if (data?.token) {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`
+        localStorage.setItem('token', data.token)
+    }
+
     router.visit('/dashboard')
 }
 </script>

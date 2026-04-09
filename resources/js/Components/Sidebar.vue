@@ -42,11 +42,14 @@
       <NavGroup
         :label="$t('common.settings')"
         :icon="icons.settings"
-        :matches="['/settings/product-movement-types', '/settings/cash-movement-types', '/settings/currencies']"
+        :matches="['/settings/product-movement-types', '/settings/cash-movement-types', '/settings/currencies', '/settings/points-of-sale', '/settings/sale-states', '/settings/payment-methods']"
       >
         <NavItem href="/settings/product-movement-types" :label="$t('product_movement_types.title')" sub />
         <NavItem href="/settings/cash-movement-types" :label="$t('cash_movement_types.title')" sub />
         <NavItem href="/settings/currencies" :label="$t('currencies.title')" sub />
+        <NavItem href="/settings/points-of-sale" :label="$t('points_of_sale.title')" sub />
+        <NavItem href="/settings/sale-states" :label="$t('sale_states.title')" sub />
+        <NavItem href="/settings/payment-methods" :label="$t('payment_methods.title')" sub />
       </NavGroup>
     </nav>
 

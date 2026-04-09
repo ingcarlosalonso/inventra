@@ -12,7 +12,7 @@ class LocaleController extends Controller
         $locale = $request->string('locale')->toString();
 
         if (! in_array($locale, ['es', 'en'])) {
-            return response()->json(['message' => 'Unsupported locale.'], 422);
+            return response()->json(['message' => __('common.unsupported_locale')], 422);
         }
 
         session(['locale' => $locale]);

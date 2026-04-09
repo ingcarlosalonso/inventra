@@ -156,12 +156,11 @@ import InputField from '@/Components/InputField.vue'
 import SelectField from '@/Components/SelectField.vue'
 import ToggleSwitch from '@/Components/ToggleSwitch.vue'
 import { useApi } from '@/composables/useApi'
-import { getCurrentInstance } from 'vue'
+import { useTranslation } from '@/composables/useTranslation'
 
 defineOptions({ layout: AppLayout })
 
-const { $t } = getCurrentInstance().appContext.config.globalProperties
-
+const { t } = useTranslation()
 const { loading: loadingList, get } = useApi()
 const { loading: saving, errors: formErrors, post: postForm, put: putForm } = useApi()
 const { del } = useApi()
@@ -178,8 +177,8 @@ const formError = ref(null)
 const form = ref({ name: '', is_income: true, is_active: true })
 
 const directionOptions = computed(() => [
-    { value: true, label: $t('product_movement_types.direction_in') },
-    { value: false, label: $t('product_movement_types.direction_out') },
+    { value: true, label: t('product_movement_types.direction_in') },
+    { value: false, label: t('product_movement_types.direction_out') },
 ])
 
 async function fetchItems(url = null) {

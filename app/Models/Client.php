@@ -19,7 +19,6 @@ class Client extends Model
     {
         return [
             'is_active' => 'boolean',
-            'credit_limit' => 'decimal:2',
         ];
     }
 }

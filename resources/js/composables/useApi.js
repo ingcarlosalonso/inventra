@@ -22,10 +22,14 @@ export function useApi() {
             return { data: response.data, error: null }
         } catch (err) {
             if (err.response?.status === 401) {
-                localStorage.removeItem('token')
-                delete axios.defaults.headers.common['Authorization']
-                router.visit('/login')
-                return { data: null, error: null }
+                if (window.location.pathname !== '/login') {
+                    localStorage.removeItem('token')
+                    delete axios.defaults.headers.common['Authorization']
+                    router.visit('/login')
+                    return { data: null, error: null }
+                }
+                const message = err.response?.data?.message ?? err.message
+                return { data: null, error: message }
             }
 
             if (err.response?.status === 422) {

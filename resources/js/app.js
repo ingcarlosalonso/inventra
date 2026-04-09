@@ -3,7 +3,6 @@ import '../css/app.css'
 import { createApp, h } from 'vue'
 import { createInertiaApp, usePage } from '@inertiajs/vue3'
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
-import { ZiggyVue } from '../../vendor/tightenco/ziggy'
 
 const i18nPlugin = {
     install(app) {
@@ -20,7 +19,7 @@ const i18nPlugin = {
             if (typeof value !== 'string') return key
 
             return Object.entries(replacements).reduce(
-                (str, [k, v]) => str.replace(`:${k}`, v),
+                (str, [k, v]) => str.replaceAll(`:${k}`, v),
                 value,
             )
         }
@@ -40,7 +39,6 @@ createInertiaApp({
         createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(i18nPlugin)
-            .use(ZiggyVue)
             .mount(el)
     },
 
