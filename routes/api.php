@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CashMovementTypeController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\ProductMovementTypeController;
 use App\Http\Controllers\ProductTypeController;
 use App\Http\Controllers\SupplierController;
@@ -35,5 +36,9 @@ Route::middleware(['api', 'tenant'])->group(function () {
 
         // Clients
         Route::apiResource('clients', ClientController::class)->except(['show']);
+
+        // Currencies
+        Route::apiResource('currencies', CurrencyController::class)->except(['show']);
+        Route::patch('currencies/{currency}/toggle', [CurrencyController::class, 'toggle']);
     });
 });

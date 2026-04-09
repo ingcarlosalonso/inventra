@@ -24,12 +24,24 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, watch } from 'vue'
+import { usePage } from '@inertiajs/vue3'
 
-defineProps({
+const props = defineProps({
   label: { type: String, required: true },
   icon: { type: String, required: true },
+  matches: { type: Array, default: () => [] },
 })
 
-const open = ref(false)
+const page = usePage()
+
+const hasActiveChild = computed(() =>
+  props.matches.length > 0 && props.matches.some(path => page.url.startsWith(path)),
+)
+
+const open = ref(hasActiveChild.value)
+
+watch(hasActiveChild, (active) => {
+  if (active) open.value = true
+})
 </script>

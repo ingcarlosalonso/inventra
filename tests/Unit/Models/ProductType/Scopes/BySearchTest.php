@@ -1,12 +1,12 @@
 <?php
 
-namespace Tests\Unit\Scopes;
+namespace Tests\Unit\Models\ProductType\Scopes;
 
 use App\Models\ProductType;
 use App\Models\ProductType\Scopes\BySearch;
 use Tests\Unit\Models\ModelTestCase;
 
-class ProductTypeBySearchTest extends ModelTestCase
+class BySearchTest extends ModelTestCase
 {
     public function test_filters_by_name(): void
     {
@@ -19,7 +19,7 @@ class ProductTypeBySearchTest extends ModelTestCase
         $this->assertEquals('Electrónica', $results->first()->name);
     }
 
-    public function test_returns_all_when_no_match(): void
+    public function test_returns_empty_when_no_match(): void
     {
         ProductType::factory()->create(['name' => 'Alimentos']);
 

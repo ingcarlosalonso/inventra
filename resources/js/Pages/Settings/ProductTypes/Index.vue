@@ -1,6 +1,5 @@
 <template>
-  <AppLayout>
-    <div class="space-y-6">
+  <div class="space-y-6">
       <!-- Page header -->
       <div class="flex items-center justify-between">
         <div>
@@ -165,12 +164,13 @@
       :title="$t('product_types.delete_confirm', { name: deleteTarget?.name })"
       @confirm="doDelete"
     />
-  </AppLayout>
 </template>
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
+
+defineOptions({ layout: AppLayout })
 import SlideOver from '@/Components/SlideOver.vue'
 import ConfirmModal from '@/Components/ConfirmModal.vue'
 import SearchInput from '@/Components/SearchInput.vue'

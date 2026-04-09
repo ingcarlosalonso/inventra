@@ -1,6 +1,5 @@
 <template>
-  <AppLayout>
-    <div class="space-y-6">
+  <div class="space-y-6">
       <div class="flex items-center justify-between">
         <div>
           <h1 class="text-xl font-semibold text-gray-900">{{ $t('clients.title') }}</h1>
@@ -106,12 +105,13 @@
     </SlideOver>
 
     <ConfirmModal v-model="confirmOpen" :title="$t('clients.delete_confirm', { name: deleteTarget?.name })" @confirm="doDelete" />
-  </AppLayout>
 </template>
 
 <script setup>
 import { ref, watch, onMounted } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
+
+defineOptions({ layout: AppLayout })
 import SlideOver from '@/Components/SlideOver.vue'
 import ConfirmModal from '@/Components/ConfirmModal.vue'
 import SearchInput from '@/Components/SearchInput.vue'

@@ -1,12 +1,12 @@
 <?php
 
-namespace Tests\Unit\Scopes;
+namespace Tests\Unit\Models\Supplier\Scopes;
 
 use App\Models\Supplier;
 use App\Models\Supplier\Scopes\BySearch;
 use Tests\Unit\Models\ModelTestCase;
 
-class SupplierBySearchTest extends ModelTestCase
+class BySearchTest extends ModelTestCase
 {
     public function test_filters_by_name(): void
     {

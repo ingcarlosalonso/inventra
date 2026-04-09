@@ -53,6 +53,7 @@ return [
     'login_subtitle' => 'Sign in to your account',
     'manage_subtitle' => 'Manage records for this module.',
     'dashboard' => 'Dashboard',
+    'dashboard_subtitle' => 'Welcome to Inventra',
     'products' => 'Products',
     'settings' => 'Settings',
     'logout' => 'Sign out',

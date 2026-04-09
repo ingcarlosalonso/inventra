@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasUuid;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Currency extends Model
 {
-    use HasUuid, SoftDeletes;
+    use HasFactory, HasUuid, SoftDeletes;
 
     protected $connection = 'tenant';
 
@@ -17,7 +18,7 @@ class Currency extends Model
     {
         return [
             'is_default' => 'boolean',
-            'is_active'  => 'boolean',
+            'is_active' => 'boolean',
         ];
     }
 }

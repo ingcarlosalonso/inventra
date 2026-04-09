@@ -30,18 +30,23 @@
 
     <!-- Navigation -->
     <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
-      <NavItem :href="route('dashboard')" :label="$t('common.dashboard')" :icon="icons.dashboard" />
+      <NavItem href="/dashboard" :label="$t('common.dashboard')" :icon="icons.dashboard" />
 
-      <NavItem :href="route('suppliers')" :label="$t('suppliers.title')" :icon="icons.suppliers" />
-      <NavItem :href="route('clients')" :label="$t('clients.title')" :icon="icons.clients" />
+      <NavItem href="/suppliers" :label="$t('suppliers.title')" :icon="icons.suppliers" />
+      <NavItem href="/clients" :label="$t('clients.title')" :icon="icons.clients" />
 
-      <NavGroup :label="$t('common.products')" :icon="icons.products">
-        <NavItem :href="route('settings.product-types')" :label="$t('product_types.title')" sub />
+      <NavGroup :label="$t('common.products')" :icon="icons.products" :matches="['/settings/product-types']">
+        <NavItem href="/settings/product-types" :label="$t('product_types.title')" sub />
       </NavGroup>
 
-      <NavGroup :label="$t('common.settings')" :icon="icons.settings">
-        <NavItem :href="route('settings.product-movement-types')" :label="$t('product_movement_types.title')" sub />
-        <NavItem :href="route('settings.cash-movement-types')" :label="$t('cash_movement_types.title')" sub />
+      <NavGroup
+        :label="$t('common.settings')"
+        :icon="icons.settings"
+        :matches="['/settings/product-movement-types', '/settings/cash-movement-types', '/settings/currencies']"
+      >
+        <NavItem href="/settings/product-movement-types" :label="$t('product_movement_types.title')" sub />
+        <NavItem href="/settings/cash-movement-types" :label="$t('cash_movement_types.title')" sub />
+        <NavItem href="/settings/currencies" :label="$t('currencies.title')" sub />
       </NavGroup>
     </nav>
 
