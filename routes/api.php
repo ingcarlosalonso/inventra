@@ -11,6 +11,7 @@ use App\Http\Controllers\PresentationTypeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductMovementTypeController;
 use App\Http\Controllers\ProductTypeController;
+use App\Http\Controllers\ReceptionController;
 use App\Http\Controllers\SaleStateController;
 use App\Http\Controllers\SupplierController;
 use Illuminate\Support\Facades\Route;
@@ -72,5 +73,8 @@ Route::middleware(['api', 'tenant'])->group(function () {
         // Products
         Route::apiResource('products', ProductController::class)->except(['show']);
         Route::patch('products/{product}/toggle', [ProductController::class, 'toggle']);
+
+        // Receptions
+        Route::apiResource('receptions', ReceptionController::class)->only(['index', 'store', 'show', 'destroy']);
     });
 });

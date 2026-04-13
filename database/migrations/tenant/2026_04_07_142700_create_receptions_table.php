@@ -14,9 +14,10 @@ return new class extends Migration
             $table->foreignId('supplier_id')->nullable()->constrained('suppliers')->nullOnDelete();
             $table->foreignId('daily_cash_id')->nullable()->constrained('daily_cashes')->nullOnDelete();
             $table->foreignId('user_id')->constrained('users')->restrictOnDelete();
+            $table->string('supplier_invoice')->nullable();
             $table->decimal('total', 12, 2)->default(0);
             $table->text('notes')->nullable();
-            $table->timestamp('received_at');
+            $table->date('received_at');
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
