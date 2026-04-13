@@ -11,13 +11,13 @@ class ProductTypeControllerTest extends TenantFeatureTestCase
 
     public function test_index_returns_list(): void
     {
+        $before = ProductType::count();
         ProductType::factory()->count(3)->create();
 
-        $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/product-types');
-
-        $response->assertOk()
-            ->assertJsonCount(3, 'data');
+        $this->actingAs($this->user, 'sanctum')
+            ->getJson('/api/product-types')
+            ->assertOk()
+            ->assertJsonCount($before + 3, 'data');
     }
 
     public function test_index_filters_by_search(): void

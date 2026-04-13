@@ -6,6 +6,9 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\PointOfSaleController;
+use App\Http\Controllers\PresentationController;
+use App\Http\Controllers\PresentationTypeController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductMovementTypeController;
 use App\Http\Controllers\ProductTypeController;
 use App\Http\Controllers\SaleStateController;
@@ -57,5 +60,17 @@ Route::middleware(['api', 'tenant'])->group(function () {
         // Payment Methods
         Route::apiResource('payment-methods', PaymentMethodController::class)->except(['show']);
         Route::patch('payment-methods/{paymentMethod}/toggle', [PaymentMethodController::class, 'toggle']);
+
+        // Presentation Types
+        Route::apiResource('presentation-types', PresentationTypeController::class)->except(['show']);
+        Route::patch('presentation-types/{presentationType}/toggle', [PresentationTypeController::class, 'toggle']);
+
+        // Presentations
+        Route::apiResource('presentations', PresentationController::class)->except(['show']);
+        Route::patch('presentations/{presentation}/toggle', [PresentationController::class, 'toggle']);
+
+        // Products
+        Route::apiResource('products', ProductController::class)->except(['show']);
+        Route::patch('products/{product}/toggle', [ProductController::class, 'toggle']);
     });
 });

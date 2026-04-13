@@ -15,6 +15,7 @@ return [
     'search' => 'Buscar...',
     'create' => 'Crear',
     'name' => 'Nombre',
+    'select' => 'Seleccioná...',
     'none' => 'Ninguno',
     'created_at' => 'Creado',
     'updated_at' => 'Actualizado',

@@ -15,9 +15,8 @@ class PresentationFactory extends Factory
     {
         return [
             'presentation_type_id' => PresentationType::factory(),
-            'name'                 => fake()->unique()->word(),
-            'abbreviation'         => fake()->lexify('???'),
-            'is_active'            => true,
+            'quantity' => fake()->randomElement([1, 100, 250, 500, 1000]),
+            'is_active' => true,
         ];
     }
 }

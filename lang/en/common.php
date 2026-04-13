@@ -15,6 +15,7 @@ return [
     'search' => 'Search...',
     'create' => 'Create',
     'name' => 'Name',
+    'select' => 'Select...',
     'none' => 'None',
     'created_at' => 'Created',
     'updated_at' => 'Updated',

@@ -8,8 +8,19 @@ use App\Models\ProductType;
 use App\Models\Supplier;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Spatie\Multitenancy\Contracts\IsTenant;
 
 Route::post('/locale', [LocaleController::class, 'update'])->name('locale.update');
+
+// TEMP DEBUG - remove after diagnosis
+Route::get('/debug-tenant', function () {
+    $tenant = app(IsTenant::class)::current();
+
+    return response()->json([
+        'host' => request()->getHost(),
+        'tenant' => $tenant ? $tenant->toArray() : null,
+    ]);
+});
 
 Route::middleware('tenant')->group(function () {
     Route::get('/login', fn () => Inertia::render('Auth/Login'))->name('login');
@@ -31,6 +42,8 @@ Route::middleware('tenant')->group(function () {
 
         // Settings / parametrization
         Route::get('/settings/product-types', fn () => Inertia::render('Settings/ProductTypes/Index'))->name('settings.product-types');
+        Route::get('/settings/presentation-types', fn () => Inertia::render('Settings/PresentationTypes/Index'))->name('settings.presentation-types');
+        Route::get('/settings/presentations', fn () => Inertia::render('Settings/Presentations/Index'))->name('settings.presentations');
         Route::get('/settings/product-movement-types', fn () => Inertia::render('Settings/ProductMovementTypes/Index'))->name('settings.product-movement-types');
         Route::get('/settings/cash-movement-types', fn () => Inertia::render('Settings/CashMovementTypes/Index'))->name('settings.cash-movement-types');
 
@@ -45,5 +58,6 @@ Route::middleware('tenant')->group(function () {
         // Main modules
         Route::get('/suppliers', fn () => Inertia::render('Suppliers/Index'))->name('suppliers');
         Route::get('/clients', fn () => Inertia::render('Clients/Index'))->name('clients');
+        Route::get('/products', fn () => Inertia::render('Products/Index'))->name('products');
     }); // end auth:sanctum
 });

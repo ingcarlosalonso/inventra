@@ -35,8 +35,11 @@
       <NavItem href="/suppliers" :label="$t('suppliers.title')" :icon="icons.suppliers" />
       <NavItem href="/clients" :label="$t('clients.title')" :icon="icons.clients" />
 
-      <NavGroup :label="$t('common.products')" :icon="icons.products" :matches="['/settings/product-types']">
+      <NavGroup :label="$t('common.products')" :icon="icons.products" :matches="['/products', '/settings/product-types', '/settings/presentation-types', '/settings/presentations']">
+        <NavItem href="/products" :label="$t('products.title')" sub />
         <NavItem href="/settings/product-types" :label="$t('product_types.title')" sub />
+        <NavItem href="/settings/presentation-types" :label="$t('presentation_types.title')" sub />
+        <NavItem href="/settings/presentations" :label="$t('presentations.title')" sub />
       </NavGroup>
 
       <NavGroup

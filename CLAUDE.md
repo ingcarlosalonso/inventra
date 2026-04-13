@@ -387,7 +387,7 @@ TENANCY_DATABASE=inventra
 
 ```bash
 php artisan migrate                           # Central DB migrations
-php artisan tenants:artisan "migrate"         # Run migrations on all tenant DBs
+php artisan tenants:artisan "migrate --path=database/migrations/tenant --database=tenant --force"  # Run migrations on all tenant DBs
 php artisan serve
 npm run dev
 npm run build

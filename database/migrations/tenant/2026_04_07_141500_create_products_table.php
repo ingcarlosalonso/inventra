@@ -12,14 +12,10 @@ return new class extends Migration
             $table->id();
             $table->uuid('uuid')->unique();
             $table->foreignId('product_type_id')->constrained('product_types')->restrictOnDelete();
-            $table->foreignId('presentation_id')->nullable()->constrained('presentations')->nullOnDelete();
             $table->foreignId('currency_id')->nullable()->constrained('currencies')->nullOnDelete();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->decimal('price', 12, 2)->default(0);
             $table->decimal('cost', 12, 2)->nullable();
-            $table->decimal('stock', 10, 3)->default(0);
-            $table->decimal('min_stock', 10, 3)->default(0);
             $table->boolean('is_active')->default(true);
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
