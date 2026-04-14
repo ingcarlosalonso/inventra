@@ -11,6 +11,7 @@ use App\Http\Controllers\PresentationTypeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductMovementTypeController;
 use App\Http\Controllers\ProductTypeController;
+use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\ReceptionController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SaleStateController;
@@ -80,5 +81,9 @@ Route::middleware(['api', 'tenant'])->group(function () {
 
         // Sales
         Route::apiResource('sales', SaleController::class)->only(['index', 'store', 'show', 'destroy']);
+
+        // Quotes
+        Route::post('quotes/{quote}/convert', [QuoteController::class, 'convert']);
+        Route::apiResource('quotes', QuoteController::class)->only(['index', 'store', 'show', 'destroy']);
     });
 });
