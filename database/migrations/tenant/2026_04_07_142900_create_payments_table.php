@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->string('payable_type');
             $table->unsignedBigInteger('payable_id');
             $table->foreignId('payment_method_id')->constrained('payment_methods')->restrictOnDelete();
@@ -18,6 +19,8 @@ return new class extends Migration
             $table->decimal('amount', 12, 2);
             $table->decimal('exchange_rate', 10, 6)->nullable();
             $table->text('notes')->nullable();
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
             $table->softDeletes();
         });

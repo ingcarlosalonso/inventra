@@ -17,6 +17,7 @@ return [
     'name' => 'Name',
     'select' => 'Select...',
     'none' => 'None',
+    'default' => 'Default',
     'created_at' => 'Created',
     'updated_at' => 'Updated',
     'empty' => 'No records yet.',
