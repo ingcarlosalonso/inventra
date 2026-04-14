@@ -72,5 +72,14 @@ Route::middleware('tenant')->group(function () {
         Route::get('/quotes', fn () => Inertia::render('Quotes/Index'))->name('quotes');
         Route::get('/quotes/create', fn () => Inertia::render('Quotes/Create'))->name('quotes.create');
         Route::get('/quotes/{uuid}', fn () => Inertia::render('Quotes/Show', ['uuid' => request()->route('uuid')]))->name('quotes.show');
+
+        // Orders
+        Route::get('/orders', fn () => Inertia::render('Orders/Index'))->name('orders');
+        Route::get('/orders/create', fn () => Inertia::render('Orders/Create'))->name('orders.create');
+        Route::get('/orders/{uuid}', fn () => Inertia::render('Orders/Show', ['uuid' => request()->route('uuid')]))->name('orders.show');
+
+        // Settings / orders config
+        Route::get('/settings/order-states', fn () => Inertia::render('Settings/OrderStates/Index'))->name('settings.order-states');
+        Route::get('/settings/couriers', fn () => Inertia::render('Settings/Couriers/Index'))->name('settings.couriers');
     }); // end auth:sanctum
 });

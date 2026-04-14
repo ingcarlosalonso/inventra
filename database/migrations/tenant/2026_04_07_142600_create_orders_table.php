@@ -17,9 +17,17 @@ return new class extends Migration
             $table->foreignId('order_state_id')->constrained('order_states')->restrictOnDelete();
             $table->foreignId('user_id')->constrained('users')->restrictOnDelete();
             $table->foreignId('point_of_sale_id')->nullable()->constrained('points_of_sale')->nullOnDelete();
+            $table->foreignId('currency_id')->nullable()->constrained('currencies')->nullOnDelete();
             $table->string('address')->nullable();
             $table->text('notes')->nullable();
+            $table->boolean('requires_delivery')->default(false);
+            $table->date('delivery_date')->nullable();
             $table->timestamp('scheduled_at')->nullable();
+            $table->decimal('subtotal', 12, 2)->default(0);
+            $table->string('discount_type', 20)->nullable();
+            $table->decimal('discount_value', 12, 2)->default(0);
+            $table->decimal('discount_amount', 12, 2)->default(0);
+            $table->decimal('total', 12, 2)->default(0);
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();

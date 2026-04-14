@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Order;
 use App\Models\Payment;
 use App\Models\PersonalAccessToken;
 use App\Models\Sale;
@@ -25,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
 
         Relation::morphMap([
             'sale' => Sale::class,
+            'order' => Order::class,
             'payment' => Payment::class,
         ]);
 

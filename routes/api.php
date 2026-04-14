@@ -3,7 +3,10 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CashMovementTypeController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\CourierController;
 use App\Http\Controllers\CurrencyController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderStateController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\PointOfSaleController;
 use App\Http\Controllers\PresentationController;
@@ -85,5 +88,17 @@ Route::middleware(['api', 'tenant'])->group(function () {
         // Quotes
         Route::post('quotes/{quote}/convert', [QuoteController::class, 'convert']);
         Route::apiResource('quotes', QuoteController::class)->only(['index', 'store', 'show', 'destroy']);
+
+        // Orders
+        Route::patch('orders/{order}/state', [OrderController::class, 'updateState']);
+        Route::apiResource('orders', OrderController::class)->only(['index', 'store', 'show', 'destroy']);
+
+        // Order States
+        Route::apiResource('order-states', OrderStateController::class)->except(['show']);
+        Route::patch('order-states/{orderState}/toggle', [OrderStateController::class, 'toggle']);
+
+        // Couriers
+        Route::apiResource('couriers', CourierController::class)->except(['show']);
+        Route::patch('couriers/{courier}/toggle', [CourierController::class, 'toggle']);
     });
 });
