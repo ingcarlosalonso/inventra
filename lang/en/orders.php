@@ -47,6 +47,7 @@ return [
     'save_order' => 'Register order',
     'stock' => 'Stock',
     'header_info' => 'General info',
+    'shipping_and_payments' => 'Shipping & payments',
     'items_section' => 'Products',
     'payments_section' => 'Payments',
     'delivery_section' => 'Delivery details',
