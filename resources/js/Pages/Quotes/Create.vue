@@ -265,7 +265,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { Link, router } from '@inertiajs/vue3'
-import { useI18n } from 'vue-i18n'
+import { useTranslation } from '@/composables/useTranslation'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import InputField from '@/Components/InputField.vue'
 import TextareaField from '@/Components/TextareaField.vue'
@@ -275,7 +275,7 @@ import { useApi } from '@/composables/useApi'
 
 defineOptions({ layout: AppLayout })
 
-const { t } = useI18n()
+const { t } = useTranslation()
 const { loading: saving, errors: formErrors, post: postForm } = useApi()
 const { get } = useApi()
 

@@ -52,4 +52,8 @@ return [
     'payments_section' => 'Payments',
     'delivery_section' => 'Delivery details',
     'from_quote' => 'From quote',
+    'payment_paid' => 'Paid',
+    'payment_remaining' => 'Remaining',
+    'payment_exact' => 'Exact payment',
+    'payment_change' => 'Change',
 ];

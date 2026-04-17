@@ -52,4 +52,8 @@ return [
     'payments_section' => 'Pagos',
     'delivery_section' => 'Datos de envío',
     'from_quote' => 'Desde presupuesto',
+    'payment_paid' => 'Pagado',
+    'payment_remaining' => 'Falta pagar',
+    'payment_exact' => 'Pago exacto',
+    'payment_change' => 'Vuelto',
 ];

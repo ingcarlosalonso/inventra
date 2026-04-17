@@ -42,4 +42,8 @@ return [
     'items_section' => 'Productos',
     'payments_section' => 'Pagos',
     'insufficient_stock' => 'Stock insuficiente para ":product": solicitado :requested, disponible :available.',
+    'payment_paid' => 'Pagado',
+    'payment_remaining' => 'Falta pagar',
+    'payment_exact' => 'Pago exacto',
+    'payment_change' => 'Vuelto',
 ];

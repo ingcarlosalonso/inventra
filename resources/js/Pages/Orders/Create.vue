@@ -300,6 +300,45 @@
                 {{ $t('orders.add_payment') }}
               </button>
             </div>
+
+            <div v-if="form.payments.length > 0 && paymentsTotal > 0" class="border-t border-gray-200 px-5 py-4 bg-gray-50 rounded-b-xl">
+              <div class="flex items-center justify-end gap-6">
+                <div class="text-right">
+                  <p class="text-xs text-gray-400 mb-0.5">{{ $t('orders.total') }}</p>
+                  <p class="text-base font-semibold text-gray-700 tabular-nums">${{ formatNumber(formTotal) }}</p>
+                </div>
+                <div class="text-right">
+                  <p class="text-xs text-gray-400 mb-0.5">{{ $t('orders.payment_paid') }}</p>
+                  <p class="text-base font-semibold tabular-nums" :class="paymentDiff === 0 ? 'text-emerald-600' : paymentDiff > 0 ? 'text-blue-600' : 'text-gray-900'">
+                    ${{ formatNumber(paymentsTotal) }}
+                  </p>
+                </div>
+                <div v-if="paymentDiff < 0" class="flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-2 ring-1 ring-amber-200">
+                  <svg class="h-4 w-4 text-amber-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                  </svg>
+                  <div>
+                    <p class="text-xs text-amber-600">{{ $t('orders.payment_remaining') }}</p>
+                    <p class="text-sm font-bold text-amber-700 tabular-nums">${{ formatNumber(-paymentDiff) }}</p>
+                  </div>
+                </div>
+                <div v-else-if="paymentDiff === 0" class="flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-2 ring-1 ring-emerald-200">
+                  <svg class="h-4 w-4 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <p class="text-sm font-bold text-emerald-700">{{ $t('orders.payment_exact') }}</p>
+                </div>
+                <div v-else class="flex items-center gap-2 rounded-lg bg-blue-50 px-3 py-2 ring-1 ring-blue-200">
+                  <svg class="h-4 w-4 text-blue-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
+                  </svg>
+                  <div>
+                    <p class="text-xs text-blue-600">{{ $t('orders.payment_change') }}</p>
+                    <p class="text-sm font-bold text-blue-700 tabular-nums">${{ formatNumber(paymentDiff) }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
         </div>
@@ -367,7 +406,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { Link, router } from '@inertiajs/vue3'
-import { useI18n } from 'vue-i18n'
+import { useTranslation } from '@/composables/useTranslation'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import InputField from '@/Components/InputField.vue'
 import TextareaField from '@/Components/TextareaField.vue'
@@ -378,7 +417,7 @@ import { useApi } from '@/composables/useApi'
 
 defineOptions({ layout: AppLayout })
 
-const { t } = useI18n()
+const { t } = useTranslation()
 const { loading: saving, errors: formErrors, post: postForm } = useApi()
 const { get } = useApi()
 
@@ -496,6 +535,8 @@ const orderDiscountAmount = computed(() => {
   return 0
 })
 const formTotal = computed(() => Math.max(subtotal.value - orderDiscountAmount.value, 0))
+const paymentsTotal = computed(() => form.value.payments.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0))
+const paymentDiff = computed(() => Math.round((paymentsTotal.value - formTotal.value) * 100) / 100)
 
 // ── Save ───────────────────────────────────────────────────────────────────
 async function save() {
