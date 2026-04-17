@@ -108,6 +108,20 @@
         :error="formErrors.address?.[0]"
       />
       <ToggleSwitch v-model="form.is_active" :label="$t('common.active')" />
+      <div class="grid grid-cols-2 gap-4">
+        <InputField
+          v-model="form.auto_open_time"
+          type="time"
+          :label="$t('points_of_sale.auto_open_time')"
+          :error="formErrors.auto_open_time?.[0]"
+        />
+        <InputField
+          v-model="form.auto_close_time"
+          type="time"
+          :label="$t('points_of_sale.auto_close_time')"
+          :error="formErrors.auto_close_time?.[0]"
+        />
+      </div>
       <div v-if="formError" class="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 ring-1 ring-red-200">
         {{ formError }}
       </div>
@@ -161,7 +175,7 @@ const editing = ref(null)
 const deleteTarget = ref(null)
 const formError = ref(null)
 
-const emptyForm = () => ({ number: '', name: '', address: '', is_active: true })
+const emptyForm = () => ({ number: '', name: '', address: '', is_active: true, auto_open_time: '', auto_close_time: '' })
 const form = ref(emptyForm())
 
 async function fetchItems() {
@@ -180,7 +194,7 @@ function openCreate() {
 
 function openEdit(item) {
     editing.value = item
-    form.value = { number: item.number, name: item.name, address: item.address ?? '', is_active: item.is_active }
+    form.value = { number: item.number, name: item.name, address: item.address ?? '', is_active: item.is_active, auto_open_time: item.auto_open_time ?? '', auto_close_time: item.auto_close_time ?? '' }
     formError.value = null
     slideOverOpen.value = true
 }

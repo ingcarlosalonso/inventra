@@ -20,6 +20,8 @@ class PointOfSale extends Model
     {
         return [
             'is_active' => 'boolean',
+            'auto_open_time' => 'string',
+            'auto_close_time' => 'string',
         ];
     }
 }

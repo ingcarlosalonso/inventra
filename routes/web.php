@@ -78,6 +78,10 @@ Route::middleware('tenant')->group(function () {
         Route::get('/orders/create', fn () => Inertia::render('Orders/Create'))->name('orders.create');
         Route::get('/orders/{uuid}', fn () => Inertia::render('Orders/Show', ['uuid' => request()->route('uuid')]))->name('orders.show');
 
+        // Daily Cashes
+        Route::get('/daily-cashes', fn () => Inertia::render('DailyCashes/Index'))->name('daily-cashes');
+        Route::get('/daily-cashes/{uuid}', fn () => Inertia::render('DailyCashes/Show', ['uuid' => request()->route('uuid')]))->name('daily-cashes.show');
+
         // Settings / orders config
         Route::get('/settings/order-states', fn () => Inertia::render('Settings/OrderStates/Index'))->name('settings.order-states');
         Route::get('/settings/couriers', fn () => Inertia::render('Settings/Couriers/Index'))->name('settings.couriers');

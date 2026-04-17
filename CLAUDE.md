@@ -1,5 +1,12 @@
 # Inventra — Claude Guide
 
+## Modo de trabajo
+
+- **Nunca** uses Plan Mode ni Explore agents salvo que el usuario diga explícitamente "explorá" o "planificá primero".
+- Para módulos nuevos: leer máximo 5 archivos de referencia y codear directamente.
+- Limitar outputs de bash a las últimas líneas (`| tail -10`).
+- El `CLAUDE.md` ya documenta toda la arquitectura y patrones — confiar en él sin re-explorar el codebase.
+
 ## Project Description
 
 **Inventra** is a multi-tenant SaaS system for inventory, sales, and order management aimed at small and medium businesses. Each client company operates on its own subdomain with an isolated database.

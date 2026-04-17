@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CashMovementController;
 use App\Http\Controllers\CashMovementTypeController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CourierController;
 use App\Http\Controllers\CurrencyController;
+use App\Http\Controllers\DailyCashController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderStateController;
 use App\Http\Controllers\PaymentMethodController;
@@ -42,6 +44,12 @@ Route::middleware(['api', 'tenant'])->group(function () {
 
         // Cash Movement Types
         Route::apiResource('cash-movement-types', CashMovementTypeController::class)->except(['show']);
+
+        // Daily Cashes
+        Route::post('daily-cashes/{dailyCash}/close', [DailyCashController::class, 'close']);
+        Route::post('daily-cashes/{dailyCash}/movements', [CashMovementController::class, 'store']);
+        Route::delete('daily-cashes/{dailyCash}/movements/{cashMovement}', [CashMovementController::class, 'destroy']);
+        Route::apiResource('daily-cashes', DailyCashController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
 
         // Suppliers
         Route::apiResource('suppliers', SupplierController::class)->except(['show']);

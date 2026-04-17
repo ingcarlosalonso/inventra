@@ -8,4 +8,6 @@ return [
     'number' => 'Número',
     'name' => 'Nombre',
     'address' => 'Dirección',
+    'auto_open_time' => 'Hora de apertura automática',
+    'auto_close_time' => 'Hora de cierre automático',
 ];

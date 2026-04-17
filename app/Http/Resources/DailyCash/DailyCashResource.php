@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\DailyCash;
 
+use App\Http\Resources\CashMovement\CashMovementResource;
 use App\Http\Resources\PointOfSale\PointOfSaleResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -21,6 +22,8 @@ class DailyCashResource extends JsonResource
             'closed_at' => $this->closed_at?->toISOString(),
             'is_closed' => $this->is_closed,
             'notes' => $this->notes,
+            'user' => $this->whenLoaded('user', fn () => ['id' => $this->user->id, 'name' => $this->user->name]),
+            'cash_movements' => CashMovementResource::collection($this->whenLoaded('cashMovements')),
             'created_at' => $this->created_at->toISOString(),
             'updated_at' => $this->updated_at->toISOString(),
         ];

@@ -18,6 +18,8 @@ class StorePointOfSaleRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'address' => ['nullable', 'string', 'max:500'],
             'is_active' => ['boolean'],
+            'auto_open_time' => ['nullable', 'date_format:H:i'],
+            'auto_close_time' => ['nullable', 'date_format:H:i'],
         ];
     }
 }
