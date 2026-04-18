@@ -72,7 +72,7 @@ class StoreOrderAction
                 : null;
 
             $dailyCashId = $pointOfSaleId
-                ? DailyCash::where('point_of_sale_id', $pointOfSaleId)->where('is_closed', false)->value('id')
+                ? DailyCash::where('point_of_sale_id', $pointOfSaleId)->where('is_closed', false)->orderByDesc('id')->value('id')
                 : null;
 
             $currencyId = isset($data['currency_id'])

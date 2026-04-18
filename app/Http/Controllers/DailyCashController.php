@@ -54,7 +54,10 @@ class DailyCashController extends Controller
             'is_closed' => false,
         ]);
 
-        return DailyCashResource::make($dailyCash->load('pointOfSale'))
+        $dailyCash->load('pointOfSale');
+        $dailyCash->current_balance = $this->calculateBalance->execute($dailyCash);
+
+        return DailyCashResource::make($dailyCash)
             ->response()
             ->setStatusCode(201);
     }
@@ -82,8 +85,10 @@ class DailyCashController extends Controller
 
         $dailyCash->update($request->validated());
 
-        return DailyCashResource::make($dailyCash->fresh('pointOfSale'))
-            ->response();
+        $dailyCash = $dailyCash->fresh('pointOfSale');
+        $dailyCash->current_balance = $this->calculateBalance->execute($dailyCash);
+
+        return DailyCashResource::make($dailyCash)->response();
     }
 
     public function close(CloseDailyCashRequest $request, DailyCash $dailyCash): JsonResponse
@@ -99,8 +104,10 @@ class DailyCashController extends Controller
             'notes' => $request->notes ?? $dailyCash->notes,
         ]);
 
-        return DailyCashResource::make($dailyCash->fresh('pointOfSale'))
-            ->response();
+        $dailyCash = $dailyCash->fresh('pointOfSale');
+        $dailyCash->current_balance = $this->calculateBalance->execute($dailyCash);
+
+        return DailyCashResource::make($dailyCash)->response();
     }
 
     public function destroy(DailyCash $dailyCash): JsonResponse

@@ -2,9 +2,11 @@
 
 namespace Tests\Feature\Controllers;
 
+use App\Models\DailyCash;
 use App\Models\Order;
 use App\Models\OrderState;
 use App\Models\PaymentMethod;
+use App\Models\PointOfSale;
 use App\Models\ProductPresentation;
 use Tests\Feature\TenantFeatureTestCase;
 
@@ -256,5 +258,76 @@ class OrderControllerTest extends TenantFeatureTestCase
         $order = Order::factory()->create();
 
         $this->deleteJson("/api/orders/{$order->uuid}")->assertUnauthorized();
+    }
+
+    // ─── PAID AMOUNT ─────────────────────────────────────────────────────────
+
+    public function test_it_returns_paid_amount_in_index(): void
+    {
+        $pp = ProductPresentation::factory()->create(['stock' => 10, 'price' => 100]);
+        $state = OrderState::factory()->create(['is_default' => true]);
+        $pm = PaymentMethod::factory()->create();
+
+        $this->actingAs($this->user, 'sanctum')
+            ->postJson('/api/orders', [
+                'order_state_id' => $state->uuid,
+                'items' => [[
+                    'product_presentation_id' => $pp->uuid,
+                    'description' => 'Widget',
+                    'quantity' => 1,
+                    'unit_price' => 100,
+                ]],
+                'payments' => [[
+                    'payment_method_id' => $pm->uuid,
+                    'amount' => 60.00,
+                ]],
+            ])
+            ->assertCreated();
+
+        $order = Order::latest('id')->first();
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->getJson('/api/orders')
+            ->assertOk();
+
+        $item = collect($response->json('data'))->firstWhere('id', $order->uuid);
+        $this->assertNotNull($item);
+        $this->assertEquals(60.00, (float) $item['paid_amount']);
+    }
+
+    public function test_it_auto_links_payment_to_open_daily_cash(): void
+    {
+        $pos = PointOfSale::factory()->create();
+        $dailyCash = DailyCash::factory()->create([
+            'point_of_sale_id' => $pos->id,
+            'opening_balance' => 0.00,
+            'is_closed' => false,
+        ]);
+
+        $pp = ProductPresentation::factory()->create(['stock' => 10, 'price' => 100]);
+        $state = OrderState::factory()->create(['is_default' => true]);
+        $pm = PaymentMethod::factory()->create();
+
+        $this->actingAs($this->user, 'sanctum')
+            ->postJson('/api/orders', [
+                'order_state_id' => $state->uuid,
+                'point_of_sale_id' => $pos->uuid,
+                'items' => [[
+                    'product_presentation_id' => $pp->uuid,
+                    'description' => 'Widget',
+                    'quantity' => 1,
+                    'unit_price' => 100,
+                ]],
+                'payments' => [[
+                    'payment_method_id' => $pm->uuid,
+                    'amount' => 100.00,
+                ]],
+            ])
+            ->assertCreated();
+
+        $this->assertDatabaseHas('payments', [
+            'daily_cash_id' => $dailyCash->id,
+            'amount' => 100.00,
+        ], 'tenant');
     }
 }

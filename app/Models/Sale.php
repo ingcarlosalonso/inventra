@@ -67,4 +67,9 @@ class Sale extends Model
     {
         return $this->morphMany(Payment::class, 'payable');
     }
+
+    protected static function booted(): void
+    {
+        static::deleting(fn (Sale $sale) => $sale->payments()->delete());
+    }
 }

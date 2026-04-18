@@ -77,4 +77,9 @@ class Order extends Model
     {
         return $this->morphMany(Payment::class, 'payable');
     }
+
+    protected static function booted(): void
+    {
+        static::deleting(fn (Order $order) => $order->payments()->delete());
+    }
 }

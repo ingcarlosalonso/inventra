@@ -33,6 +33,7 @@ return [
     'movement_notes' => 'Notas',
     'movement_delete_confirm' => '¿Eliminar este movimiento?',
 
+    'already_open_for_pos' => 'Ya existe una caja abierta para este punto de venta.',
     'already_closed' => 'La caja ya está cerrada.',
     'cannot_delete_closed' => 'No se puede eliminar una caja cerrada.',
 

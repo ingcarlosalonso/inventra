@@ -33,6 +33,7 @@ return [
     'movement_notes' => 'Notes',
     'movement_delete_confirm' => 'Delete this movement?',
 
+    'already_open_for_pos' => 'There is already an open cash register for this point of sale.',
     'already_closed' => 'The cash register is already closed.',
     'cannot_delete_closed' => 'Cannot delete a closed cash register.',
 

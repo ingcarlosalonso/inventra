@@ -12,9 +12,9 @@ class DailyCashResource extends JsonResource
 {
     private function computeCurrentBalance(): float
     {
-        // show() sets this via CalculateDailyCashBalanceAction
-        if (isset($this->current_balance)) {
-            return (float) $this->current_balance;
+        // show/store/update/close set this via CalculateDailyCashBalanceAction
+        if (array_key_exists('current_balance', $this->resource->getAttributes())) {
+            return (float) $this->resource->getAttributes()['current_balance'];
         }
 
         // index() sets these via withSum()
@@ -33,7 +33,7 @@ class DailyCashResource extends JsonResource
             'id' => $this->uuid,
             'point_of_sale' => PointOfSaleResource::make($this->whenLoaded('pointOfSale')),
             'point_of_sale_id' => $this->pointOfSale?->uuid,
-            'user_id' => $this->user_id,
+            'user_id' => $this->whenLoaded('user', fn () => $this->user->uuid, $this->user_id),
             'opening_balance' => $this->opening_balance,
             'closing_balance' => $this->closing_balance,
             'current_balance' => $this->computeCurrentBalance(),
