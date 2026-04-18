@@ -19,6 +19,7 @@ use App\Http\Controllers\ProductMovementTypeController;
 use App\Http\Controllers\ProductTypeController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\ReceptionController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SaleStateController;
 use App\Http\Controllers\SupplierController;
@@ -112,5 +113,25 @@ Route::middleware(['api', 'tenant'])->group(function () {
         // Couriers
         Route::apiResource('couriers', CourierController::class)->except(['show']);
         Route::patch('couriers/{courier}/toggle', [CourierController::class, 'toggle']);
+
+        // Reports
+        Route::prefix('reports')->group(function () {
+            Route::get('sales', [ReportController::class, 'sales']);
+            Route::get('sales/export', [ReportController::class, 'salesExport']);
+            Route::get('products', [ReportController::class, 'products']);
+            Route::get('products/export', [ReportController::class, 'productsExport']);
+            Route::get('payments', [ReportController::class, 'payments']);
+            Route::get('payments/export', [ReportController::class, 'paymentsExport']);
+            Route::get('inventory', [ReportController::class, 'inventory']);
+            Route::get('inventory/export', [ReportController::class, 'inventoryExport']);
+            Route::get('daily-cashes', [ReportController::class, 'dailyCashes']);
+            Route::get('daily-cashes/export', [ReportController::class, 'dailyCashesExport']);
+            Route::get('orders', [ReportController::class, 'orders']);
+            Route::get('orders/export', [ReportController::class, 'ordersExport']);
+            Route::get('clients', [ReportController::class, 'clients']);
+            Route::get('clients/export', [ReportController::class, 'clientsExport']);
+            Route::get('purchases', [ReportController::class, 'purchases']);
+            Route::get('purchases/export', [ReportController::class, 'purchasesExport']);
+        });
     });
 });
