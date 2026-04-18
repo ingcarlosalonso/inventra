@@ -7,6 +7,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CourierController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\DailyCashController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderStateController;
 use App\Http\Controllers\PaymentMethodController;
@@ -34,6 +35,9 @@ Route::middleware(['api', 'tenant'])->group(function () {
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('auth/logout', [AuthController::class, 'logout']);
+
+        // Dashboard
+        Route::get('dashboard', DashboardController::class);
 
         // Product Types
         Route::apiResource('product-types', ProductTypeController::class)->except(['show']);

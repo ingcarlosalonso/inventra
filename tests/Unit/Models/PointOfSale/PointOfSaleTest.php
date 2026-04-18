@@ -12,12 +12,13 @@ class PointOfSaleTest extends ModelTestCase
     {
         $this->assertHasExpectedColumns(PointOfSale::tableName(), [
             'id', 'uuid', 'number', 'name', 'address', 'is_active',
+            'auto_open_time', 'auto_close_time',
             'created_at', 'updated_at', 'deleted_at',
         ]);
     }
 
     public function test_it_extends_from_custom_model(): void
     {
-        $this->assertInstanceOf(Model::class, new PointOfSale());
+        $this->assertInstanceOf(Model::class, new PointOfSale);
     }
 }
