@@ -18,6 +18,7 @@ class SaleResource extends JsonResource
             'discount_value' => (float) $this->discount_value,
             'discount_amount' => (float) $this->discount_amount,
             'total' => (float) $this->total,
+            'paid_amount' => (float) ($this->payments_sum_amount ?? ($this->relationLoaded('payments') ? $this->payments->sum('amount') : 0)),
             'notes' => $this->notes,
             'client' => $this->whenLoaded('client', fn () => $this->client ? [
                 'id' => $this->client->uuid,

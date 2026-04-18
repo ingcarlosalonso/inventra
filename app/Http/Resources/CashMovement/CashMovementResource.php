@@ -16,7 +16,7 @@ class CashMovementResource extends JsonResource
             'cash_movement_type' => $this->whenLoaded('cashMovementType', fn () => [
                 'id' => $this->cashMovementType->uuid,
                 'name' => $this->cashMovementType->name,
-                'direction' => $this->cashMovementType->direction,
+                'is_income' => $this->cashMovementType->is_income,
             ]),
             'user' => $this->whenLoaded('user', fn () => ['id' => $this->user->id, 'name' => $this->user->name]),
             'amount' => $this->amount,

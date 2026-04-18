@@ -42,4 +42,9 @@ class DailyCash extends Model
     {
         return $this->hasMany(CashMovement::class);
     }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
 }

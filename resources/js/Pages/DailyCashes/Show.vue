@@ -90,15 +90,18 @@
             {{ dailyCash.is_closed ? $t('daily_cashes.closing_balance') : $t('daily_cashes.status_open') }}
           </p>
           <p class="mt-1 text-2xl font-bold tabular-nums text-white">
-            ${{ formatNumber(dailyCash.is_closed ? dailyCash.closing_balance : dailyCash.opening_balance) }}
+            ${{ formatNumber(dailyCash.is_closed ? dailyCash.closing_balance : dailyCash.current_balance) }}
           </p>
         </div>
       </div>
 
-      <!-- Movements card -->
+      <!-- Unified movements card -->
       <div class="rounded-xl bg-white shadow-sm ring-1 ring-gray-200 overflow-hidden">
         <div class="flex items-center justify-between px-5 py-4 border-b border-gray-200">
-          <h2 class="text-sm font-semibold text-gray-700">{{ $t('daily_cashes.movements_section') }}</h2>
+          <div>
+            <h2 class="text-sm font-semibold text-gray-700">{{ $t('daily_cashes.movements_section') }}</h2>
+            <p class="text-xs text-gray-400 mt-0.5">{{ allMovements.length }} {{ $t('daily_cashes.movements_count') }}</p>
+          </div>
           <button
             v-if="!dailyCash.is_closed"
             type="button"
@@ -113,7 +116,7 @@
         </div>
 
         <EmptyState
-          v-if="dailyCash.cash_movements.length === 0"
+          v-if="allMovements.length === 0"
           :title="$t('daily_cashes.no_movements')"
           :subtitle="dailyCash.is_closed ? null : $t('daily_cashes.no_movements_subtitle')"
         />
@@ -123,35 +126,35 @@
             <tr class="bg-gray-50 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
               <th class="px-5 py-3">{{ $t('daily_cashes.movement_type') }}</th>
               <th class="px-3 py-3">{{ $t('daily_cashes.movement_notes') }}</th>
-              <th class="px-3 py-3">{{ $t('daily_cashes.user') }}</th>
               <th class="px-3 py-3">{{ $t('common.date') }}</th>
               <th class="px-3 py-3 text-right">{{ $t('daily_cashes.movement_amount') }}</th>
               <th v-if="!dailyCash.is_closed" class="px-3 py-3 w-10" />
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100">
-            <tr v-for="mv in dailyCash.cash_movements" :key="mv.id" class="hover:bg-gray-50 transition">
+            <tr v-for="entry in allMovements" :key="entry._key" class="hover:bg-gray-50 transition">
               <td class="px-5 py-3">
                 <span
                   class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset"
-                  :class="mv.cash_movement_type?.is_income
+                  :class="entry.is_income
                     ? 'bg-emerald-50 text-emerald-700 ring-emerald-200'
                     : 'bg-rose-50 text-rose-700 ring-rose-200'"
                 >
-                  {{ mv.cash_movement_type?.name }}
+                  {{ entry.label }}
                 </span>
+                <span v-if="entry.sub_label" class="ml-2 text-xs text-gray-400">{{ entry.sub_label }}</span>
               </td>
-              <td class="px-3 py-3 text-gray-500 text-xs max-w-xs truncate">{{ mv.notes ?? '—' }}</td>
-              <td class="px-3 py-3 text-xs text-gray-500">{{ mv.user?.name ?? '—' }}</td>
-              <td class="px-3 py-3 text-xs text-gray-400">{{ formatDateTime(mv.created_at) }}</td>
-              <td class="px-3 py-3 text-right tabular-nums font-semibold" :class="mv.cash_movement_type?.is_income ? 'text-emerald-700' : 'text-rose-700'">
-                {{ mv.cash_movement_type?.is_income ? '+' : '-' }}${{ formatNumber(mv.amount) }}
+              <td class="px-3 py-3 text-gray-500 text-xs max-w-xs truncate">{{ entry.notes ?? '—' }}</td>
+              <td class="px-3 py-3 text-xs text-gray-400">{{ formatDateTime(entry.created_at) }}</td>
+              <td class="px-3 py-3 text-right tabular-nums font-semibold" :class="entry.is_income ? 'text-emerald-700' : 'text-rose-700'">
+                {{ entry.is_income ? '+' : '-' }}${{ formatNumber(entry.amount) }}
               </td>
               <td v-if="!dailyCash.is_closed" class="px-3 py-3">
                 <button
+                  v-if="entry.deletable"
                   type="button"
                   class="rounded-md p-1 text-gray-300 hover:bg-gray-100 hover:text-red-600 transition"
-                  @click="confirmDeleteMovement(mv)"
+                  @click="confirmDeleteMovement(entry.raw)"
                 >
                   <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
                 </button>
@@ -279,6 +282,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useTranslation } from '@/composables/useTranslation'
 import { Link } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import SlideOver from '@/Components/SlideOver.vue'
@@ -290,6 +294,8 @@ import { useApi } from '@/composables/useApi'
 defineOptions({ layout: AppLayout })
 
 const props = defineProps({ uuid: String })
+
+const { t } = useTranslation()
 
 const { loading, get } = useApi()
 const { loading: savingMovement, errors: movementErrors, post: postMovement } = useApi()
@@ -309,6 +315,37 @@ const closeError = ref(null)
 const emptyMovementForm = () => ({ cash_movement_type_id: '', amount: null, notes: '' })
 const movementForm = ref(emptyMovementForm())
 const closeForm = ref({ closing_balance: null, notes: '' })
+
+// Unified ledger: merges sale payments (always income) + extra movements, sorted by date
+const allMovements = computed(() => {
+  if (!dailyCash.value) return []
+
+  const payments = (dailyCash.value.payments ?? []).map(p => ({
+    _key: `payment-${p.id}`,
+    is_income: true,
+    label: p.payable_type === 'order' ? t('daily_cashes.order_payment') : t('daily_cashes.sale_payment'),
+    sub_label: p.payment_method?.name ?? null,
+    notes: p.notes,
+    amount: p.amount,
+    created_at: p.created_at,
+    deletable: false,
+    raw: null,
+  }))
+
+  const movements = (dailyCash.value.cash_movements ?? []).map(m => ({
+    _key: `movement-${m.id}`,
+    is_income: m.cash_movement_type?.is_income ?? true,
+    label: m.cash_movement_type?.name ?? '—',
+    sub_label: null,
+    notes: m.notes,
+    amount: m.amount,
+    created_at: m.created_at,
+    deletable: true,
+    raw: m,
+  }))
+
+  return [...payments, ...movements].sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+})
 
 const incomeTypes = computed(() => movementTypes.value.filter(t => t.is_income && t.is_active))
 const outcomeTypes = computed(() => movementTypes.value.filter(t => !t.is_income && t.is_active))

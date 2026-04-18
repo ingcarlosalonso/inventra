@@ -38,4 +38,7 @@ return [
 
     'no_movements' => 'Sin movimientos',
     'no_movements_subtitle' => 'Agregá el primer movimiento a esta caja.',
+    'movements_count' => 'entradas',
+    'sale_payment' => 'Cobro de venta',
+    'order_payment' => 'Cobro de pedido',
 ];

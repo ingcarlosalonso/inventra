@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\CalculateDailyCashBalanceAction;
 use App\Http\Requests\DailyCash\CloseDailyCashRequest;
 use App\Http\Requests\DailyCash\IndexDailyCashRequest;
 use App\Http\Requests\DailyCash\StoreDailyCashRequest;
@@ -16,9 +17,16 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class DailyCashController extends Controller
 {
+    public function __construct(
+        private readonly CalculateDailyCashBalanceAction $calculateBalance
+    ) {}
+
     public function index(IndexDailyCashRequest $request): AnonymousResourceCollection
     {
-        $query = DailyCash::with('pointOfSale');
+        $query = DailyCash::with('pointOfSale')
+            ->withSum('payments', 'amount')
+            ->withSum(['cashMovements as income_movements_sum' => fn ($q) => $q->whereRelation('cashMovementType', 'is_income', true)], 'amount')
+            ->withSum(['cashMovements as expense_movements_sum' => fn ($q) => $q->whereRelation('cashMovementType', 'is_income', false)], 'amount');
 
         if ($request->filled('search')) {
             $query->withScopes(new BySearch($request->string('search')));
@@ -57,7 +65,11 @@ class DailyCashController extends Controller
             'pointOfSale',
             'cashMovements.cashMovementType',
             'cashMovements.user',
+            'payments.paymentMethod',
+            'payments.currency',
         ]);
+
+        $dailyCash->current_balance = $this->calculateBalance->execute($dailyCash);
 
         return DailyCashResource::make($dailyCash);
     }

@@ -62,7 +62,7 @@ class StoreSaleAction
 
             $dailyCashId = isset($data['daily_cash_id'])
                 ? DailyCash::where('uuid', $data['daily_cash_id'])->value('id')
-                : null;
+                : DailyCash::where('point_of_sale_id', $pointOfSaleId)->where('is_closed', false)->value('id');
 
             $currencyId = isset($data['currency_id'])
                 ? Currency::where('uuid', $data['currency_id'])->value('id')

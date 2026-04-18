@@ -18,7 +18,8 @@ class OrderController extends Controller
 {
     public function index(IndexOrderRequest $request): AnonymousResourceCollection
     {
-        $query = Order::with(['client', 'courier', 'orderState', 'user']);
+        $query = Order::with(['client', 'courier', 'orderState', 'user'])
+            ->withSum('payments', 'amount');
 
         if ($request->filled('search')) {
             $query->withScopes(new BySearch($request->string('search')));

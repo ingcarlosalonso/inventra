@@ -17,7 +17,8 @@ class SaleController extends Controller
 {
     public function index(IndexSaleRequest $request): AnonymousResourceCollection
     {
-        $query = Sale::with(['client', 'pointOfSale', 'saleState', 'user']);
+        $query = Sale::with(['client', 'pointOfSale', 'saleState', 'user'])
+            ->withSum('payments', 'amount');
 
         if ($request->filled('search')) {
             $query->withScopes(new BySearch($request->string('search')));

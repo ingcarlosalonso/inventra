@@ -6,6 +6,7 @@ use App\Exceptions\InsufficientStockException;
 use App\Models\Client;
 use App\Models\Courier;
 use App\Models\Currency;
+use App\Models\DailyCash;
 use App\Models\Order;
 use App\Models\OrderState;
 use App\Models\Payment;
@@ -68,6 +69,10 @@ class StoreOrderAction
 
             $pointOfSaleId = isset($data['point_of_sale_id'])
                 ? PointOfSale::where('uuid', $data['point_of_sale_id'])->value('id')
+                : null;
+
+            $dailyCashId = $pointOfSaleId
+                ? DailyCash::where('point_of_sale_id', $pointOfSaleId)->where('is_closed', false)->value('id')
                 : null;
 
             $currencyId = isset($data['currency_id'])
@@ -138,7 +143,7 @@ class StoreOrderAction
                     'payable_id' => $order->id,
                     'payment_method_id' => $paymentMethodId,
                     'currency_id' => $paymentCurrencyId,
-                    'daily_cash_id' => null,
+                    'daily_cash_id' => $dailyCashId,
                     'amount' => (float) $paymentData['amount'],
                     'exchange_rate' => isset($paymentData['exchange_rate']) ? (float) $paymentData['exchange_rate'] : null,
                     'notes' => $paymentData['notes'] ?? null,

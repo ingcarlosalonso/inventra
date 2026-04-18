@@ -11,6 +11,7 @@ class PaymentResource extends JsonResource
     {
         return [
             'id' => $this->uuid,
+            'payable_type' => $this->payable_type,
             'amount' => (float) $this->amount,
             'exchange_rate' => $this->exchange_rate ? (float) $this->exchange_rate : null,
             'notes' => $this->notes,

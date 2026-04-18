@@ -46,4 +46,7 @@ return [
     'payment_remaining' => 'Falta pagar',
     'payment_exact' => 'Pago exacto',
     'payment_change' => 'Vuelto',
+    'paid' => 'Pagado',
+    'partial' => 'Parcial',
+    'unpaid' => 'Sin pagar',
 ];

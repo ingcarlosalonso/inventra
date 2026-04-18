@@ -80,8 +80,24 @@
             </div>
           </div>
 
-          <!-- Total -->
-          <span class="text-sm font-semibold text-gray-900 tabular-nums">${{ formatNumber(item.total) }}</span>
+          <!-- Total + payment status -->
+          <div class="text-right shrink-0">
+            <span class="text-sm font-semibold text-gray-900 tabular-nums">${{ formatNumber(item.total) }}</span>
+            <div class="mt-0.5">
+              <span
+                v-if="item.paid_amount >= item.total"
+                class="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200"
+              >{{ $t('sales.paid') }}</span>
+              <span
+                v-else-if="item.paid_amount > 0"
+                class="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-200"
+              >{{ $t('sales.partial') }} -${{ formatNumber(item.total - item.paid_amount) }}</span>
+              <span
+                v-else
+                class="inline-flex items-center rounded-full bg-gray-50 px-2 py-0.5 text-xs font-medium text-gray-500 ring-1 ring-inset ring-gray-200"
+              >{{ $t('sales.unpaid') }}</span>
+            </div>
+          </div>
 
           <!-- Actions -->
           <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition" @click.stop>

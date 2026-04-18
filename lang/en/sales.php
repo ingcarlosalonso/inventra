@@ -46,4 +46,7 @@ return [
     'payment_remaining' => 'Remaining',
     'payment_exact' => 'Exact payment',
     'payment_change' => 'Change',
+    'paid' => 'Paid',
+    'partial' => 'Partial',
+    'unpaid' => 'Unpaid',
 ];

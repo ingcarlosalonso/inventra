@@ -38,4 +38,7 @@ return [
 
     'no_movements' => 'No movements',
     'no_movements_subtitle' => 'Add the first movement to this cash register.',
+    'movements_count' => 'entries',
+    'sale_payment' => 'Sale payment',
+    'order_payment' => 'Order payment',
 ];
