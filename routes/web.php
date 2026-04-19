@@ -59,6 +59,8 @@ Route::middleware('tenant')->group(function () {
         Route::get('/suppliers', fn () => Inertia::render('Suppliers/Index'))->name('suppliers');
         Route::get('/clients', fn () => Inertia::render('Clients/Index'))->name('clients');
         Route::get('/products', fn () => Inertia::render('Products/Index'))->name('products');
+        Route::get('/products/composite', fn () => Inertia::render('Products/CompositeProducts/Index'))->name('composite-products');
+        Route::get('/products/promotions', fn () => Inertia::render('Products/Promotions/Index'))->name('promotions');
         Route::get('/receptions', fn () => Inertia::render('Receptions/Index'))->name('receptions');
         Route::get('/receptions/create', fn () => Inertia::render('Receptions/Create'))->name('receptions.create');
         Route::get('/receptions/{uuid}', fn () => Inertia::render('Receptions/Show', ['uuid' => request()->route('uuid')]))->name('receptions.show');

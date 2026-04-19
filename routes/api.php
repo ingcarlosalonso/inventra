@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CashMovementController;
 use App\Http\Controllers\CashMovementTypeController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\CompositeProductController;
 use App\Http\Controllers\CourierController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\DailyCashController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\PresentationTypeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductMovementTypeController;
 use App\Http\Controllers\ProductTypeController;
+use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\ReceptionController;
 use App\Http\Controllers\ReportController;
@@ -91,6 +93,14 @@ Route::middleware(['api', 'tenant'])->group(function () {
         // Products
         Route::apiResource('products', ProductController::class)->except(['show']);
         Route::patch('products/{product}/toggle', [ProductController::class, 'toggle']);
+
+        // Composite Products
+        Route::apiResource('composite-products', CompositeProductController::class)->except(['show']);
+        Route::patch('composite-products/{compositeProduct}/toggle', [CompositeProductController::class, 'toggle']);
+
+        // Promotions
+        Route::apiResource('promotions', PromotionController::class)->except(['show']);
+        Route::patch('promotions/{promotion}/toggle', [PromotionController::class, 'toggle']);
 
         // Receptions
         Route::apiResource('receptions', ReceptionController::class)->only(['index', 'store', 'show', 'destroy']);
