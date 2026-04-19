@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BulkPriceController;
 use App\Http\Controllers\CashMovementController;
 use App\Http\Controllers\CashMovementTypeController;
 use App\Http\Controllers\ClientController;
@@ -12,19 +13,24 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderStateController;
 use App\Http\Controllers\PaymentMethodController;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PointOfSaleController;
 use App\Http\Controllers\PresentationController;
 use App\Http\Controllers\PresentationTypeController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductImportController;
+use App\Http\Controllers\ProductMovementController;
 use App\Http\Controllers\ProductMovementTypeController;
 use App\Http\Controllers\ProductTypeController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\ReceptionController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SaleStateController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 // Central routes (no tenant)
@@ -123,6 +129,26 @@ Route::middleware(['api', 'tenant'])->group(function () {
         // Couriers
         Route::apiResource('couriers', CourierController::class)->except(['show']);
         Route::patch('couriers/{courier}/toggle', [CourierController::class, 'toggle']);
+
+        // Product Movements
+        Route::apiResource('product-movements', ProductMovementController::class)->only(['index', 'store', 'destroy']);
+
+        // Product Import
+        Route::post('products/import', [ProductImportController::class, 'store']);
+
+        // Bulk Price
+        Route::get('bulk-price/preview', [BulkPriceController::class, 'preview']);
+        Route::post('bulk-price', [BulkPriceController::class, 'update']);
+
+        // Users
+        Route::apiResource('users', UserController::class)->except(['show']);
+        Route::patch('users/{user}/toggle', [UserController::class, 'toggle']);
+
+        // Roles
+        Route::apiResource('roles', RoleController::class);
+
+        // Permissions
+        Route::get('permissions', [PermissionController::class, 'index']);
 
         // Reports
         Route::prefix('reports')->group(function () {

@@ -58,6 +58,9 @@
         <NavItem href="/products" :label="$t('products.title')" sub />
         <NavItem href="/products/composite" :label="$t('composite_products.title')" sub />
         <NavItem href="/products/promotions" :label="$t('promotions.title')" sub />
+        <NavItem href="/products/movements" :label="$t('product_movements.title')" sub />
+        <NavItem href="/products/bulk-price" :label="$t('bulk_price.title')" sub />
+        <NavItem href="/products/import" :label="$t('products.import_title')" sub />
         <NavItem href="/settings/product-types" :label="$t('product_types.title')" sub />
         <NavItem href="/settings/presentation-types" :label="$t('presentation_types.title')" sub />
         <NavItem href="/settings/presentations" :label="$t('presentations.title')" sub />
@@ -66,14 +69,18 @@
       <NavGroup
         :label="$t('common.settings')"
         :icon="icons.settings"
-        :matches="['/settings/product-movement-types', '/settings/cash-movement-types', '/settings/currencies']"
+        :matches="['/settings/product-movement-types', '/settings/cash-movement-types', '/settings/currencies', '/settings/users', '/settings/roles']"
       >
+        <NavItem href="/settings/users" :label="$t('users.title')" sub />
+        <NavItem href="/settings/roles" :label="$t('roles.title')" sub />
         <NavItem href="/settings/product-movement-types" :label="$t('product_movement_types.title')" sub />
         <NavItem href="/settings/cash-movement-types" :label="$t('cash_movement_types.title')" sub />
         <NavItem href="/settings/currencies" :label="$t('currencies.title')" sub />
       </NavGroup>
 
       <NavItem href="/reports" :label="$t('reports.title')" :icon="icons.reports" />
+
+      <NavItem href="/help" :label="$t('help.title')" :icon="icons.help" />
     </nav>
 
     <!-- User -->
@@ -118,5 +125,6 @@ const icons = {
   dailyCashes: 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z',
   settings: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z',
   reports: 'M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z',
+  help: 'M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z',
 }
 </script>

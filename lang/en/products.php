@@ -19,4 +19,21 @@ return [
     'barcodes' => 'Barcodes',
     'add_barcode' => 'Add barcode',
     'barcode' => 'Barcode',
+
+    // Import
+    'import_title' => 'Import Products from XLSX',
+    'import_subtitle' => 'Upload an Excel file to create or update products in bulk.',
+    'import_file' => 'File to import',
+    'import_choose' => 'Choose a file',
+    'import_or_drag' => 'or drag it here',
+    'import_start' => 'Import',
+    'import_processing' => 'Importing...',
+    'import_done' => 'Import complete.',
+    'import_created' => ':count products created.',
+    'import_updated' => ':count products updated.',
+    'import_errors' => 'Errors:',
+    'import_format' => 'File format',
+    'import_format_hint' => 'The first row must be the header with column names.',
+    'import_col_name' => 'Column',
+    'import_col_req' => 'Required',
 ];

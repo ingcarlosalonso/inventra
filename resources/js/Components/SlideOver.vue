@@ -23,7 +23,7 @@
     >
       <div
         v-if="modelValue"
-        class="fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col bg-white shadow-xl"
+        :class="['fixed inset-y-0 right-0 z-50 flex w-full flex-col bg-white shadow-xl', wide ? 'max-w-xl' : 'max-w-md']"
       >
         <!-- Header -->
         <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
@@ -57,6 +57,7 @@
 defineProps({
   modelValue: { type: Boolean, required: true },
   title: { type: String, required: true },
+  wide: { type: Boolean, default: false },
 })
 defineEmits(['update:modelValue'])
 </script>

@@ -19,4 +19,21 @@ return [
     'barcodes' => 'Códigos de Barras',
     'add_barcode' => 'Agregar código',
     'barcode' => 'Código de barras',
+
+    // Import
+    'import_title' => 'Importar Productos desde XLSX',
+    'import_subtitle' => 'Cargá un archivo Excel para crear o actualizar productos masivamente.',
+    'import_file' => 'Archivo a importar',
+    'import_choose' => 'Seleccioná un archivo',
+    'import_or_drag' => 'o arrastralo aquí',
+    'import_start' => 'Importar',
+    'import_processing' => 'Importando...',
+    'import_done' => 'Importación completada.',
+    'import_created' => ':count productos creados.',
+    'import_updated' => ':count productos actualizados.',
+    'import_errors' => 'Errores:',
+    'import_format' => 'Formato del archivo',
+    'import_format_hint' => 'La primera fila debe ser el encabezado con los nombres de columna.',
+    'import_col_name' => 'Columna',
+    'import_col_req' => 'Requerida',
 ];

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\HelpController;
 use App\Http\Controllers\LocaleController;
 use App\Models\Client;
 use App\Models\Currency;
@@ -87,6 +88,23 @@ Route::middleware('tenant')->group(function () {
         // Settings / orders config
         Route::get('/settings/order-states', fn () => Inertia::render('Settings/OrderStates/Index'))->name('settings.order-states');
         Route::get('/settings/couriers', fn () => Inertia::render('Settings/Couriers/Index'))->name('settings.couriers');
+
+        // Users & Roles
+        Route::get('/settings/users', fn () => Inertia::render('Settings/Users/Index'))->name('settings.users');
+        Route::get('/settings/roles', fn () => Inertia::render('Settings/Roles/Index'))->name('settings.roles');
+
+        // Product Movements
+        Route::get('/products/movements', fn () => Inertia::render('Products/Movements/Index'))->name('product-movements');
+
+        // Product Import
+        Route::get('/products/import', fn () => Inertia::render('Products/Import/Index'))->name('products.import');
+
+        // Bulk Price
+        Route::get('/products/bulk-price', fn () => Inertia::render('Products/BulkPrice/Index'))->name('products.bulk-price');
+
+        // Help
+        Route::get('/help', fn () => app(HelpController::class)->show('dashboard'))->name('help');
+        Route::get('/help/{topic}', [HelpController::class, 'show'])->name('help.topic');
 
         // Reports
         Route::get('/reports', fn () => Inertia::render('Reports/Index'))->name('reports');
