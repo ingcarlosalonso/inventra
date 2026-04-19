@@ -10,6 +10,7 @@ use App\Http\Controllers\CourierController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\DailyCashController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderStateController;
 use App\Http\Controllers\PaymentMethodController;
@@ -129,6 +130,13 @@ Route::middleware(['api', 'tenant'])->group(function () {
         // Couriers
         Route::apiResource('couriers', CourierController::class)->except(['show']);
         Route::patch('couriers/{courier}/toggle', [CourierController::class, 'toggle']);
+
+        // Notifications
+        Route::get('notifications', [NotificationController::class, 'index']);
+        Route::get('notifications/unread-count', [NotificationController::class, 'unreadCount']);
+        Route::post('notifications/read-all', [NotificationController::class, 'markAllAsRead']);
+        Route::post('notifications/{notification}/read', [NotificationController::class, 'markAsRead']);
+        Route::delete('notifications/{notification}', [NotificationController::class, 'destroy']);
 
         // Product Movements
         Route::apiResource('product-movements', ProductMovementController::class)->only(['index', 'store', 'destroy']);

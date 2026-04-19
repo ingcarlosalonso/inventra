@@ -26,6 +26,7 @@
         </svg>
       </div>
       <span class="text-lg font-bold text-white">Inventra</span>
+      <span class="text-xs font-medium text-indigo-400">v2.0</span>
     </div>
 
     <!-- Navigation -->

@@ -10,13 +10,16 @@
       </svg>
     </button>
 
-    <div class="flex flex-1 items-center justify-end gap-3">
+    <div class="flex flex-1 items-center justify-end gap-2">
       <transition enter-active-class="transition ease-out duration-200" enter-from-class="opacity-0 translate-y-1" enter-to-class="opacity-100 translate-y-0" leave-active-class="transition ease-in duration-150" leave-from-class="opacity-100" leave-to-class="opacity-0">
         <div v-if="flash.success" class="flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-700 ring-1 ring-emerald-200">
           <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
           {{ flash.success }}
         </div>
       </transition>
+
+      <!-- Notification bell -->
+      <NotificationBell />
 
       <!-- Language picker -->
       <div class="relative" ref="langRef">
@@ -59,6 +62,7 @@ import axios from 'axios'
 import { ref, computed } from 'vue'
 import { usePage, router } from '@inertiajs/vue3'
 import { onClickOutside } from '@vueuse/core'
+import NotificationBell from '@/Components/NotificationBell.vue'
 
 defineEmits(['toggle-sidebar'])
 

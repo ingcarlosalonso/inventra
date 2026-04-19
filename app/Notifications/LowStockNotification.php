@@ -18,7 +18,23 @@ class LowStockNotification extends Notification implements ShouldQueue
 
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['database', 'mail'];
+    }
+
+    public function toDatabase(object $notifiable): array
+    {
+        $product = $this->productPresentation->product;
+        $presentation = $this->productPresentation->presentation;
+
+        return [
+            'type' => 'low_stock',
+            'product_id' => $product->uuid,
+            'product_name' => $product->name,
+            'presentation_name' => $presentation?->name ?? '—',
+            'stock' => (float) $this->productPresentation->stock,
+            'min_stock' => (float) $this->productPresentation->min_stock,
+            'url' => '/products',
+        ];
     }
 
     public function toMail(object $notifiable): MailMessage
