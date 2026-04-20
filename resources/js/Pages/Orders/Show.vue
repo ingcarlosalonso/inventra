@@ -145,12 +145,17 @@
         </table>
       </div>
 
-      <!-- Payments card (if any) -->
-      <div v-if="order.payments?.length > 0" class="rounded-xl bg-white shadow-sm ring-1 ring-gray-200 overflow-hidden">
-        <div class="px-5 py-4 border-b border-gray-200">
+      <!-- Payments card -->
+      <div class="rounded-xl bg-white shadow-sm ring-1 ring-gray-200 overflow-hidden">
+        <div class="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
           <h2 class="text-sm font-semibold text-gray-700">{{ $t('orders.payments_section') }}</h2>
+          <div class="flex items-center gap-3 text-sm">
+            <span class="text-gray-500">{{ $t('sales.payment_paid') }}: <span class="font-semibold text-green-600">${{ formatNumber(order.paid_amount) }}</span></span>
+            <span v-if="pendingAmount > 0" class="text-red-600 font-semibold">{{ $t('sales.payment_remaining') }}: ${{ formatNumber(pendingAmount) }}</span>
+            <span v-else class="text-green-600 font-semibold">✓ {{ $t('sales.paid') }}</span>
+          </div>
         </div>
-        <table class="w-full text-sm">
+        <table v-if="order.payments?.length > 0" class="w-full text-sm">
           <thead>
             <tr class="bg-gray-50 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
               <th class="px-5 py-3">{{ $t('orders.payment_method') }}</th>
@@ -164,6 +169,51 @@
             </tr>
           </tbody>
         </table>
+        <p v-else class="px-5 py-4 text-sm text-gray-400">{{ $t('sales.no_payments') }}</p>
+      </div>
+
+      <!-- Register pending payment -->
+      <div v-if="pendingAmount > 0" class="rounded-xl bg-amber-50 shadow-sm ring-1 ring-amber-200 overflow-hidden">
+        <div class="px-5 py-4 border-b border-amber-200 flex items-center gap-2">
+          <svg class="h-4 w-4 text-amber-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+          </svg>
+          <h2 class="text-sm font-semibold text-amber-800">{{ $t('payments.title') }} — ${{ formatNumber(pendingAmount) }} {{ $t('payments.pending') }}</h2>
+        </div>
+        <form class="px-5 py-4 flex flex-wrap items-end gap-4" @submit.prevent="submitPayment">
+          <SelectField
+            v-model="payForm.payment_method_id"
+            :label="$t('payments.payment_method')"
+            :options="paymentMethodOptions"
+            :placeholder="$t('payments.select_payment_method')"
+            :error="payErrors.payment_method_id?.[0]"
+            required
+            class="w-56"
+          />
+          <InputField
+            v-model="payForm.amount"
+            :label="$t('payments.amount')"
+            type="number"
+            step="0.01"
+            min="0.01"
+            :error="payErrors.amount?.[0]"
+            required
+            class="w-40"
+          />
+          <div class="pb-0.5">
+            <button
+              type="submit"
+              :disabled="paying || !payForm.payment_method_id || !payForm.amount"
+              class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            >
+              <svg v-if="paying" class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 12 0 12 12h4a8 8 0 01-8 8z" />
+              </svg>
+              {{ paying ? $t('payments.registering') : $t('payments.register_payment') }}
+            </button>
+          </div>
+        </form>
       </div>
 
       <!-- Notes -->
@@ -198,6 +248,7 @@ import { Link, router } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import ConfirmModal from '@/Components/ConfirmModal.vue'
 import SelectField from '@/Components/SelectField.vue'
+import InputField from '@/Components/InputField.vue'
 import { useApi } from '@/composables/useApi'
 
 defineOptions({ layout: AppLayout })
@@ -207,24 +258,52 @@ const props = defineProps({ uuid: String })
 const { loading, get } = useApi()
 const { patch: patchForm, loading: updatingState } = useApi()
 const { del } = useApi()
+const { loading: paying, errors: payErrors, post } = useApi()
 
 const order = ref(null)
 const confirmOpen = ref(false)
 const orderStates = ref([])
 const newStateId = ref(null)
+const paymentMethods = ref([])
+const payForm = ref({ payment_method_id: null, amount: '' })
 
 const orderStateOptions = computed(() => orderStates.value.map(s => ({ value: s.id, label: s.name })))
 
+const pendingAmount = computed(() => {
+  if (!order.value) return 0
+  return Math.max(0, Math.round((order.value.total - order.value.paid_amount) * 100) / 100)
+})
+
+const paymentMethodOptions = computed(() =>
+  paymentMethods.value.filter((m) => m.is_active).map((m) => ({ value: m.id, label: m.name }))
+)
+
 async function fetchOrder() {
-  const [orderRes, statesRes] = await Promise.all([
+  const [orderRes, statesRes, methodsRes] = await Promise.all([
     get(`/api/orders/${props.uuid}`),
     get('/api/order-states'),
+    get('/api/payment-methods'),
   ])
   if (orderRes.data) {
     order.value = orderRes.data.data
     newStateId.value = order.value.order_state?.id ?? null
+    payForm.value.amount = String(Math.max(0, order.value.total - order.value.paid_amount))
   }
   if (statesRes.data) orderStates.value = statesRes.data.data ?? statesRes.data
+  if (methodsRes.data) paymentMethods.value = methodsRes.data.data
+}
+
+async function submitPayment() {
+  const { data } = await post('/api/payments', {
+    payable_type: 'order',
+    payable_id: props.uuid,
+    payment_method_id: payForm.value.payment_method_id,
+    amount: parseFloat(payForm.value.amount),
+  })
+  if (data) {
+    payForm.value = { payment_method_id: null, amount: '' }
+    await fetchOrder()
+  }
 }
 
 async function updateState() {
