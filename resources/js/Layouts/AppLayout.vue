@@ -11,11 +11,14 @@
         <slot />
       </main>
     </div>
+
+    <AiAssistant />
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import AiAssistant from '@/Components/AiAssistant.vue'
 import Sidebar from '@/Components/Sidebar.vue'
 import TopBar from '@/Components/TopBar.vue'
 

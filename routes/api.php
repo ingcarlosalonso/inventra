@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AssistantController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BulkPriceController;
 use App\Http\Controllers\CashMovementController;
@@ -48,6 +49,9 @@ Route::middleware(['api', 'tenant'])->group(function () {
 
         // Dashboard
         Route::get('dashboard', DashboardController::class);
+
+        // AI Assistant
+        Route::post('assistant/chat', [AssistantController::class, 'chat']);
 
         // Product Types
         Route::apiResource('product-types', ProductTypeController::class)->except(['show']);
