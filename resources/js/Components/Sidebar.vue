@@ -37,9 +37,10 @@
       <NavItem href="/clients" :label="$t('clients.title')" :icon="icons.clients" />
       <NavItem href="/receptions" :label="$t('receptions.title')" :icon="icons.receptions" />
 
-      <NavGroup :label="$t('sales.title')" :icon="icons.sales" :matches="['/sales', '/quotes', '/settings/points-of-sale', '/settings/sale-states', '/settings/payment-methods']">
+      <NavGroup :label="$t('sales.title')" :icon="icons.sales" :matches="['/sales', '/quotes', '/payments', '/settings/points-of-sale', '/settings/sale-states', '/settings/payment-methods']">
         <NavItem href="/sales" :label="$t('sales.title')" sub />
         <NavItem href="/quotes" :label="$t('quotes.title')" sub />
+        <NavItem href="/payments/create" :label="$t('payments.title')" sub />
         <NavItem href="/settings/points-of-sale" :label="$t('points_of_sale.title')" sub />
         <NavItem href="/settings/sale-states" :label="$t('sale_states.title')" sub />
         <NavItem href="/settings/payment-methods" :label="$t('payment_methods.title')" sub />

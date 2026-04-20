@@ -66,6 +66,9 @@ Route::middleware('tenant')->group(function () {
         Route::get('/receptions/create', fn () => Inertia::render('Receptions/Create'))->name('receptions.create');
         Route::get('/receptions/{uuid}', fn () => Inertia::render('Receptions/Show', ['uuid' => request()->route('uuid')]))->name('receptions.show');
 
+        // Payments
+        Route::get('/payments/create', fn () => Inertia::render('Payments/Create'))->name('payments.create');
+
         // Sales
         Route::get('/sales', fn () => Inertia::render('Sales/Index'))->name('sales');
         Route::get('/sales/create', fn () => Inertia::render('Sales/Create'))->name('sales.create');

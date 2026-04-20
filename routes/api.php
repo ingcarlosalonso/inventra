@@ -14,6 +14,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderStateController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PointOfSaleController;
@@ -115,6 +116,10 @@ Route::middleware(['api', 'tenant'])->group(function () {
 
         // Receptions
         Route::apiResource('receptions', ReceptionController::class)->only(['index', 'store', 'show', 'destroy']);
+
+        // Payments
+        Route::get('payments/pending', [PaymentController::class, 'pending']);
+        Route::post('payments', [PaymentController::class, 'store']);
 
         // Sales
         Route::apiResource('sales', SaleController::class)->only(['index', 'store', 'show', 'destroy']);
