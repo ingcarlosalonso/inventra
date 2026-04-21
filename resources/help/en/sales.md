@@ -1,6 +1,6 @@
 # Sales
 
-The Sales module is the heart of Inventra. It allows registering all sales transactions with their items, discounts, payments, and associated stock.
+The Sales module is the heart of In-ventra. It allows registering all sales transactions with their items, discounts, payments, and associated stock.
 
 ## Sale Workflow
 

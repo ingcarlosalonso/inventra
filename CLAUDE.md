@@ -1,4 +1,4 @@
-# Inventra — Claude Guide
+# In-ventra — Claude Guide
 
 ## Modo de trabajo
 
@@ -9,7 +9,7 @@
 
 ## Project Description
 
-**Inventra** is a multi-tenant SaaS system for inventory, sales, and order management aimed at small and medium businesses. Each client company operates on its own subdomain with an isolated database.
+**In-ventra** is a multi-tenant SaaS system for inventory, sales, and order management aimed at small and medium businesses. Each client company operates on its own subdomain with an isolated database.
 
 ## Tech Stack
 
@@ -384,7 +384,7 @@ Add entry to `CHANGELOG.md` under the current version section:
 APP_URL=http://localhost
 SUBDOMAIN_URL="development."
 EXT_SUBDOMAIN_URL=".com"
-CENTRAL_DOMAIN="development.central.inventra.com"
+CENTRAL_DOMAIN="development.central.in-ventra.com"
 WEBDOMAIN="127.0.0.1"
 DB_DATABASE=inventra
 TENANCY_DATABASE=inventra

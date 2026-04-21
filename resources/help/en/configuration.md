@@ -1,6 +1,6 @@
 # Configuration
 
-The Configuration section groups all system parameters that define how Inventra works. It is divided into several subsections.
+The Configuration section groups all system parameters that define how In-ventra works. It is divided into several subsections.
 
 ## Presentation Types
 

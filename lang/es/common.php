@@ -59,7 +59,7 @@ return [
     'login_subtitle' => 'Ingresá a tu cuenta',
     'manage_subtitle' => 'Gestioná los registros de este módulo.',
     'dashboard' => 'Dashboard',
-    'dashboard_subtitle' => 'Bienvenido a Inventra',
+    'dashboard_subtitle' => 'Bienvenido a In-ventra',
     'today_revenue' => 'Facturado hoy',
     'today_sales_count' => 'Ventas hoy',
     'today_collected' => 'Cobrado hoy',

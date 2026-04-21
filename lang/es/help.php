@@ -2,7 +2,7 @@
 
 return [
     'title' => 'Ayuda',
-    'subtitle' => 'Manual de usuario de Inventra',
+    'subtitle' => 'Manual de usuario de In-ventra',
     'search_placeholder' => 'Buscar en la ayuda...',
     'topics' => [
         'dashboard' => 'Dashboard',

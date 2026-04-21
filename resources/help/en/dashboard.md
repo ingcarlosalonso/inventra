@@ -1,6 +1,6 @@
 # Dashboard
 
-The Dashboard is Inventra's main screen. It provides a consolidated view of your business's current status: sales, cash, orders, stock, and more.
+The Dashboard is In-ventra's main screen. It provides a consolidated view of your business's current status: sales, cash, orders, stock, and more.
 
 ## Main KPIs
 

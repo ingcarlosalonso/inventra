@@ -40,7 +40,7 @@ class AssistantService
     private const MODEL = 'meta-llama/llama-4-scout-17b-16e-instruct';
 
     private const SYSTEM_PROMPT = <<<'PROMPT'
-        You are Inventra Assistant, an AI helper embedded in the Inventra inventory and sales management system.
+        You are In-ventra Assistant, an AI helper embedded in the In-ventra inventory and sales management system.
 
         CRITICAL RULES — follow without exception:
         1. NEVER say you don't have access to data or that information is unavailable. You ALWAYS have access via tools.

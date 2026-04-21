@@ -9,7 +9,7 @@
           </svg>
         </div>
         <div class="text-center">
-          <h1 class="text-lg font-bold text-white">Inventra</h1>
+          <h1 class="text-lg font-bold text-white">In-ventra</h1>
           <p class="text-xs text-gray-500">{{ $t('central.title') }}</p>
         </div>
       </div>

@@ -15,7 +15,7 @@ class StorePromotionActionTest extends TestCase
     {
         parent::setUp();
 
-        config(['database.connections.tenant.database' => env('DB_TENANT_DATABASE', 'inventra_testing')]);
+        config(['database.connections.tenant.database' => env('DB_TENANT_DATABASE', 'in_ventra_testing')]);
 
         if (! self::$migrated) {
             Artisan::call('migrate:fresh', [

@@ -90,7 +90,7 @@ Podés consultar el stock actual en el detalle del producto o en el reporte de I
 
 ## Importación masiva
 
-Podés importar productos desde un archivo Excel (XLSX). El archivo debe tener el formato estándar de Inventra. Accedé a esta función desde el menú de Productos → **Importar XLSX**.
+Podés importar productos desde un archivo Excel (XLSX). El archivo debe tener el formato estándar de In-ventra. Accedé a esta función desde el menú de Productos → **Importar XLSX**.
 
 ## Consejos
 

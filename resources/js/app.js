@@ -27,7 +27,7 @@ const i18nPlugin = {
 }
 
 createInertiaApp({
-    title: (title) => (title ? `${title} — Inventra` : 'Inventra'),
+    title: (title) => (title ? `${title} — In-ventra` : 'In-ventra'),
 
     resolve: (name) =>
         resolvePageComponent(

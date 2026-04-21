@@ -1,6 +1,6 @@
 # Configuración
 
-La sección de Configuración agrupa todos los parámetros del sistema que definen cómo funciona Inventra. Está dividida en varias subsecciones.
+La sección de Configuración agrupa todos los parámetros del sistema que definen cómo funciona In-ventra. Está dividida en varias subsecciones.
 
 ## Tipos de Producto
 

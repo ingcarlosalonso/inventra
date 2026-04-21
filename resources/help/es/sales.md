@@ -1,6 +1,6 @@
 # Ventas
 
-El módulo de Ventas es el corazón de Inventra. Permite registrar todas las transacciones de venta con sus ítems, descuentos, pagos y stock asociado.
+El módulo de Ventas es el corazón de In-ventra. Permite registrar todas las transacciones de venta con sus ítems, descuentos, pagos y stock asociado.
 
 ## Flujo de una venta
 

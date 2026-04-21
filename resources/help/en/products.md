@@ -90,7 +90,7 @@ You can check the current stock in the product detail or in the Inventory Report
 
 ## Bulk Import
 
-You can import products from an Excel file (XLSX). The file must follow Inventra's standard format. Access this feature from the Products menu → **Import XLSX**.
+You can import products from an Excel file (XLSX). The file must follow In-ventra's standard format. Access this feature from the Products menu → **Import XLSX**.
 
 ## Tips
 

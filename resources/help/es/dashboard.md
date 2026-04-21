@@ -1,6 +1,6 @@
 # Dashboard
 
-El Dashboard es la pantalla principal de Inventra. Ofrece una vista consolidada del estado actual del negocio: ventas, caja, pedidos, stock y más.
+El Dashboard es la pantalla principal de In-ventra. Ofrece una vista consolidada del estado actual del negocio: ventas, caja, pedidos, stock y más.
 
 ## Indicadores principales (KPIs)
 
