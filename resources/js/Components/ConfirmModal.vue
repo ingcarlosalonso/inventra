@@ -8,7 +8,7 @@
       leave-from-class="opacity-100"
       leave-to-class="opacity-0"
     >
-      <div v-if="modelValue" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50">
+      <div v-if="modelValue" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50" @keydown.escape="$emit('update:modelValue', false)" tabindex="-1">
         <div class="w-full max-w-sm rounded-xl bg-white shadow-lg ring-1 ring-gray-200 p-6">
           <div class="flex items-start gap-4">
             <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100">
@@ -35,7 +35,7 @@
               class="rounded-lg bg-red-600 px-3.5 py-2 text-sm font-medium text-white hover:bg-red-700"
               @click="$emit('confirm')"
             >
-              {{ $t('common.delete') }}
+              {{ confirmLabel ?? $t('common.delete') }}
             </button>
           </div>
         </div>
@@ -49,6 +49,7 @@ defineProps({
   modelValue: { type: Boolean, required: true },
   title: { type: String, required: true },
   message: { type: String, default: null },
+  confirmLabel: { type: String, default: null },
 })
 defineEmits(['update:modelValue', 'confirm'])
 </script>

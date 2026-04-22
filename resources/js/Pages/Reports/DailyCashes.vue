@@ -16,7 +16,7 @@
         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
         </svg>
-        {{ exporting ? 'Exportando...' : $t('reports.export_excel') }}
+        {{ exporting ? $t('common.exporting') : $t('reports.export_excel') }}
       </button>
     </div>
 
@@ -102,7 +102,7 @@
                 <th class="px-5 py-3 text-right">{{ $t('reports.total_income_extra') }}</th>
                 <th class="px-5 py-3 text-right">{{ $t('reports.total_expense_extra') }}</th>
                 <th class="px-5 py-3 text-right">{{ $t('reports.closing_balance') }}</th>
-                <th class="px-5 py-3 text-center">Estado</th>
+                <th class="px-5 py-3 text-center">{{ $t('common.state') }}</th>
                 <th class="px-5 py-3 text-right">{{ $t('reports.opened_at') }}</th>
               </tr>
             </thead>

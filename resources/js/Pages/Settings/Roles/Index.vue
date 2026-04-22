@@ -120,7 +120,7 @@ import ConfirmModal from '@/Components/ConfirmModal.vue'
 import EmptyState from '@/Components/EmptyState.vue'
 import InputField from '@/Components/InputField.vue'
 import { useApi } from '@/composables/useApi'
-import { usePage } from '@inertiajs/vue3'
+import { getCurrentInstance } from 'vue'
 
 defineOptions({ layout: AppLayout })
 
@@ -129,8 +129,7 @@ const { loading: loadingPermissions, get: getPerms } = useApi()
 const { loading: saving, errors: formErrors, post: postForm, put: putForm } = useApi()
 const { del } = useApi()
 
-const page = usePage()
-const locale = computed(() => page.props.locale ?? 'es')
+const { proxy } = getCurrentInstance()
 
 const items = ref([])
 const allPermissions = ref([])
@@ -143,33 +142,17 @@ const formError = ref(null)
 const emptyForm = () => ({ name: '', permissions: [] })
 const form = ref(emptyForm())
 
-const permissionGroupLabels = {
-  users: { es: 'Usuarios', en: 'Users' },
-  roles: { es: 'Roles', en: 'Roles' },
-  clients: { es: 'Clientes', en: 'Clients' },
-  suppliers: { es: 'Proveedores', en: 'Suppliers' },
-  products: { es: 'Productos', en: 'Products' },
-  receptions: { es: 'Recepciones', en: 'Receptions' },
-  sales: { es: 'Ventas', en: 'Sales' },
-  quotes: { es: 'Presupuestos', en: 'Quotes' },
-  orders: { es: 'Pedidos', en: 'Orders' },
-  daily_cashes: { es: 'Cajas', en: 'Daily Cashes' },
-  reports: { es: 'Reportes', en: 'Reports' },
-  currencies: { es: 'Monedas', en: 'Currencies' },
-  other: { es: 'Otros', en: 'Other' },
-}
+const PERMISSION_GROUPS = ['users', 'roles', 'clients', 'suppliers', 'products', 'receptions', 'sales', 'quotes', 'orders', 'daily_cashes', 'reports', 'currencies']
 
 function permissionGroup(name) {
-  const known = ['users', 'roles', 'clients', 'suppliers', 'products', 'receptions', 'sales', 'quotes', 'orders', 'daily_cashes', 'reports', 'currencies']
-  for (const group of known) {
+  for (const group of PERMISSION_GROUPS) {
     if (name.includes(group)) return group
   }
   return 'other'
 }
 
 function groupLabel(group) {
-  const lang = locale.value === 'en' ? 'en' : 'es'
-  return permissionGroupLabels[group]?.[lang] ?? group
+  return proxy.$t(`roles.group_${group}`)
 }
 
 const groupedPermissions = computed(() => {

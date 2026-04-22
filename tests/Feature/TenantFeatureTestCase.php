@@ -3,14 +3,16 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
 use Spatie\Multitenancy\Http\Middleware\NeedsTenant;
 use Tests\TestCase;
 
 abstract class TenantFeatureTestCase extends TestCase
 {
-    private static bool $tenantMigrated = false;
+    use DatabaseTransactions;
+
+    protected $connectionsToTransact = ['tenant'];
 
     protected User $user;
 
@@ -21,15 +23,7 @@ abstract class TenantFeatureTestCase extends TestCase
         config(['database.connections.tenant.database' => env('DB_TENANT_DATABASE', 'in_ventra_testing')]);
         DB::purge('tenant');
 
-        if (! self::$tenantMigrated) {
-            Artisan::call('migrate:fresh', [
-                '--database' => 'tenant',
-                '--path' => 'database/migrations/tenant',
-                '--force' => true,
-            ]);
-
-            self::$tenantMigrated = true;
-        }
+        self::migrateTenantDb();
 
         $this->withoutMiddleware([NeedsTenant::class]);
 

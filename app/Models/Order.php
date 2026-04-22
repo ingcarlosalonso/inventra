@@ -80,6 +80,12 @@ class Order extends Model
 
     protected static function booted(): void
     {
-        static::deleting(fn (Order $order) => $order->payments()->delete());
+        static::deleting(function (Order $order): void {
+            $order->items()->withTrashed()->each(function (OrderItem $item): void {
+                $item->productPresentation()->increment('stock', (float) $item->quantity);
+                $item->delete();
+            });
+            $order->payments()->delete();
+        });
     }
 }

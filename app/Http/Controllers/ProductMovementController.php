@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\CheckLowStockAction;
 use App\Http\Requests\ProductMovement\StoreProductMovementRequest;
 use App\Http\Resources\ProductMovement\ProductMovementResource;
+use App\Models\Product\Scopes\BySearch as ProductBySearch;
 use App\Models\ProductMovement;
 use App\Models\ProductMovementType;
 use App\Models\ProductPresentation;
@@ -24,8 +25,7 @@ class ProductMovementController extends Controller
         ]);
 
         if ($request->filled('search')) {
-            $search = $request->string('search');
-            $query->whereHas('product', fn ($q) => $q->where('name', 'like', "%{$search}%"));
+            $query->whereHas('product', fn ($q) => $q->withScopes(new ProductBySearch($request->string('search'))));
         }
 
         return ProductMovementResource::collection(

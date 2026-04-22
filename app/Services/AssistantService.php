@@ -391,7 +391,9 @@ class AssistantService
                 $products = Sale::query()
                     ->withScopes(new SaleByDateRange($fromDate, $toDate))
                     ->join('sale_items', 'sales.id', '=', 'sale_items.sale_id')
-                    ->join('products', 'sale_items.product_id', '=', 'products.id')
+                    ->join('product_presentations', 'sale_items.product_presentation_id', '=', 'product_presentations.id')
+                    ->join('products', 'product_presentations.product_id', '=', 'products.id')
+                    ->whereNull('products.deleted_at')
                     ->selectRaw('products.id, products.name, SUM(sale_items.quantity) as total_qty, SUM(sale_items.total) as total_revenue')
                     ->groupBy('products.id', 'products.name')
                     ->orderByDesc('total_revenue')
@@ -469,7 +471,7 @@ class AssistantService
                     return 'No users found.';
                 }
 
-                return $users->map(fn ($u) => "- {$u->name} | {$u->email}".($u->roles->isNotEmpty() ? ' | roles: '.$u->roles->pluck('name')->join(', ') : ''))->join("\n");
+                return $users->map(fn ($u) => "- {$u->name}".($u->roles->isNotEmpty() ? ' | roles: '.$u->roles->pluck('name')->join(', ') : ''))->join("\n");
             });
     }
 }

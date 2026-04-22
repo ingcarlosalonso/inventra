@@ -38,15 +38,13 @@
 <script setup>
 import { computed } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
-import { router, usePage } from '@inertiajs/vue3'
+import { router } from '@inertiajs/vue3'
+import { getCurrentInstance } from 'vue'
 
 defineOptions({ layout: AppLayout })
 
-const page = usePage()
-const t = (key) => {
-  const parts = key.split('.')
-  return page.props.translations?.[parts[0]]?.[parts[1]] ?? key
-}
+const { proxy } = getCurrentInstance()
+const t = (key) => proxy.$t(key)
 
 const reports = computed(() => [
   {

@@ -31,6 +31,12 @@ class ConvertQuoteToSaleAction
     public function execute(Quote $quote, array $data, int $userId): Sale
     {
         return DB::transaction(function () use ($quote, $data, $userId): Sale {
+            $quote = Quote::lockForUpdate()->findOrFail($quote->id);
+
+            if ($quote->sale_id !== null) {
+                throw new \RuntimeException('Quote already converted.');
+            }
+
             // Build sale payload from quote data
             $saleData = [
                 'client_id' => $quote->client ? $quote->client->uuid : null,

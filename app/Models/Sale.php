@@ -70,6 +70,12 @@ class Sale extends Model
 
     protected static function booted(): void
     {
-        static::deleting(fn (Sale $sale) => $sale->payments()->delete());
+        static::deleting(function (Sale $sale): void {
+            $sale->items()->withTrashed()->each(function (SaleItem $item): void {
+                $item->productPresentation()->increment('stock', (float) $item->quantity);
+                $item->delete();
+            });
+            $sale->payments()->delete();
+        });
     }
 }

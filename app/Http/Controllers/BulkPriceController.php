@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Actions\BulkPriceUpdateAction;
 use App\Http\Resources\Product\ProductResource;
 use App\Models\Product;
+use App\Models\Product\Scopes\BySearch as ProductBySearch;
 use App\Models\ProductType;
+use App\Models\Scopes\Active;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -22,7 +24,7 @@ class BulkPriceController extends Controller
         $query = Product::with([
             'productType',
             'productPresentations.presentation.presentationType',
-        ])->where('is_active', true);
+        ])->withScopes(new Active);
 
         if ($request->filled('product_type_id')) {
             $productType = ProductType::where('uuid', $request->input('product_type_id'))->first();
@@ -30,7 +32,7 @@ class BulkPriceController extends Controller
         }
 
         if ($request->filled('search')) {
-            $query->where('name', 'like', '%'.$request->string('search').'%');
+            $query->withScopes(new ProductBySearch($request->string('search')));
         }
 
         return ProductResource::collection($query->orderBy('name')->get());

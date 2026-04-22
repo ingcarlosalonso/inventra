@@ -3,7 +3,6 @@
 namespace Tests\Unit\Models;
 
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
@@ -13,21 +12,13 @@ abstract class ModelTestCase extends TestCase
 
     protected $connectionsToTransact = ['tenant'];
 
-    private static bool $tenantMigrationsRun = false;
-
     protected function setUp(): void
     {
         parent::setUp();
 
-        if (! self::$tenantMigrationsRun) {
-            Artisan::call('migrate:fresh', [
-                '--database' => 'tenant',
-                '--path'     => 'database/migrations/tenant',
-                '--force'    => true,
-            ]);
+        config(['database.connections.tenant.database' => env('DB_TENANT_DATABASE', 'in_ventra_testing')]);
 
-            self::$tenantMigrationsRun = true;
-        }
+        self::migrateTenantDb();
     }
 
     /**

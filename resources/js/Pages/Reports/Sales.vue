@@ -21,7 +21,7 @@
         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
         </svg>
-        {{ exporting ? 'Exportando...' : $t('reports.export_excel') }}
+        {{ exporting ? $t('common.exporting') : $t('reports.export_excel') }}
       </button>
     </div>
 
@@ -106,7 +106,7 @@
           <h2 class="text-sm font-semibold text-gray-900">
             {{ data.meta.total }} {{ $t('reports.total_records') }}
           </h2>
-          <input v-model="search" type="text" placeholder="Buscar..." class="rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none w-48" />
+          <input v-model="search" type="text" :placeholder="$t('common.search')" class="rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none w-48" />
         </div>
         <div v-if="filteredTable.length === 0" class="flex h-32 items-center justify-center text-sm text-gray-400">
           {{ $t('reports.no_data') }}
@@ -157,6 +157,7 @@
 import { ref, computed, onMounted } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Link } from '@inertiajs/vue3'
+import { getCurrentInstance } from 'vue'
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Filler } from 'chart.js'
 import { Line } from 'vue-chartjs'
 import { useReport } from '@/composables/useReport'
@@ -164,6 +165,8 @@ import { useReport } from '@/composables/useReport'
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Filler)
 
 defineOptions({ layout: AppLayout })
+
+const { proxy } = getCurrentInstance()
 
 const { data, loading, exporting, error, filters, fetchData, exportXlsx, fmtMoney, fmtDateTime, stateBadgeStyle } = useReport('sales', {
   client_id: '',
@@ -205,7 +208,7 @@ const chartData = computed(() => {
     }),
     datasets: [
       {
-        label: 'Facturación',
+        label: proxy.$t('common.revenue'),
         data: rows.map(r => r.revenue),
         borderColor: '#6366f1',
         backgroundColor: 'rgba(99,102,241,0.08)',

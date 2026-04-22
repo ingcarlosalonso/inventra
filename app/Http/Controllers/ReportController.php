@@ -29,106 +29,138 @@ class ReportController extends Controller
         private readonly PurchasesReport $purchases,
     ) {}
 
+    private function validateDateFilters(Request $request): array
+    {
+        return $request->validate([
+            'date_from' => ['nullable', 'date'],
+            'date_to' => ['nullable', 'date'],
+        ]);
+    }
+
     public function sales(Request $request): JsonResponse
     {
-        return response()->json($this->sales->getData($request->all()));
+        $filters = array_merge($this->validateDateFilters($request), $request->only(['client_id', 'sale_state_id', 'point_of_sale_id']));
+
+        return response()->json($this->sales->getData($filters));
     }
 
     public function salesExport(Request $request): BinaryFileResponse
     {
+        $filters = array_merge($this->validateDateFilters($request), $request->only(['client_id', 'sale_state_id', 'point_of_sale_id']));
+
         return Excel::download(
-            new ReportExport($this->sales->getExportData($request->all()), $this->sales->getHeadings()),
+            new ReportExport($this->sales->getExportData($filters), $this->sales->getHeadings()),
             'reporte-ventas-'.now()->format('Y-m-d').'.xlsx'
         );
     }
 
     public function products(Request $request): JsonResponse
     {
-        return response()->json($this->products->getData($request->all()));
+        return response()->json($this->products->getData($this->validateDateFilters($request)));
     }
 
     public function productsExport(Request $request): BinaryFileResponse
     {
         return Excel::download(
-            new ReportExport($this->products->getExportData($request->all()), $this->products->getHeadings()),
+            new ReportExport($this->products->getExportData($this->validateDateFilters($request)), $this->products->getHeadings()),
             'reporte-productos-'.now()->format('Y-m-d').'.xlsx'
         );
     }
 
     public function payments(Request $request): JsonResponse
     {
-        return response()->json($this->payments->getData($request->all()));
+        $filters = array_merge($this->validateDateFilters($request), $request->only(['payment_method_id']));
+
+        return response()->json($this->payments->getData($filters));
     }
 
     public function paymentsExport(Request $request): BinaryFileResponse
     {
+        $filters = array_merge($this->validateDateFilters($request), $request->only(['payment_method_id']));
+
         return Excel::download(
-            new ReportExport($this->payments->getExportData($request->all()), $this->payments->getHeadings()),
+            new ReportExport($this->payments->getExportData($filters), $this->payments->getHeadings()),
             'reporte-cobros-'.now()->format('Y-m-d').'.xlsx'
         );
     }
 
     public function inventory(Request $request): JsonResponse
     {
-        return response()->json($this->inventory->getData($request->all()));
+        $filters = array_merge($this->validateDateFilters($request), $request->only(['search', 'product_type_id']));
+
+        return response()->json($this->inventory->getData($filters));
     }
 
     public function inventoryExport(Request $request): BinaryFileResponse
     {
+        $filters = array_merge($this->validateDateFilters($request), $request->only(['search', 'product_type_id']));
+
         return Excel::download(
-            new ReportExport($this->inventory->getExportData($request->all()), $this->inventory->getHeadings()),
+            new ReportExport($this->inventory->getExportData($filters), $this->inventory->getHeadings()),
             'reporte-inventario-'.now()->format('Y-m-d').'.xlsx'
         );
     }
 
     public function dailyCashes(Request $request): JsonResponse
     {
-        return response()->json($this->dailyCashes->getData($request->all()));
+        $filters = array_merge($this->validateDateFilters($request), $request->only(['point_of_sale_id']));
+
+        return response()->json($this->dailyCashes->getData($filters));
     }
 
     public function dailyCashesExport(Request $request): BinaryFileResponse
     {
+        $filters = array_merge($this->validateDateFilters($request), $request->only(['point_of_sale_id']));
+
         return Excel::download(
-            new ReportExport($this->dailyCashes->getExportData($request->all()), $this->dailyCashes->getHeadings()),
+            new ReportExport($this->dailyCashes->getExportData($filters), $this->dailyCashes->getHeadings()),
             'reporte-cajas-'.now()->format('Y-m-d').'.xlsx'
         );
     }
 
     public function orders(Request $request): JsonResponse
     {
-        return response()->json($this->orders->getData($request->all()));
+        $filters = array_merge($this->validateDateFilters($request), $request->only(['order_state_id', 'courier_id']));
+
+        return response()->json($this->orders->getData($filters));
     }
 
     public function ordersExport(Request $request): BinaryFileResponse
     {
+        $filters = array_merge($this->validateDateFilters($request), $request->only(['order_state_id', 'courier_id']));
+
         return Excel::download(
-            new ReportExport($this->orders->getExportData($request->all()), $this->orders->getHeadings()),
+            new ReportExport($this->orders->getExportData($filters), $this->orders->getHeadings()),
             'reporte-pedidos-'.now()->format('Y-m-d').'.xlsx'
         );
     }
 
     public function clients(Request $request): JsonResponse
     {
-        return response()->json($this->clients->getData($request->all()));
+        return response()->json($this->clients->getData($this->validateDateFilters($request)));
     }
 
     public function clientsExport(Request $request): BinaryFileResponse
     {
         return Excel::download(
-            new ReportExport($this->clients->getExportData($request->all()), $this->clients->getHeadings()),
+            new ReportExport($this->clients->getExportData($this->validateDateFilters($request)), $this->clients->getHeadings()),
             'reporte-clientes-'.now()->format('Y-m-d').'.xlsx'
         );
     }
 
     public function purchases(Request $request): JsonResponse
     {
-        return response()->json($this->purchases->getData($request->all()));
+        $filters = array_merge($this->validateDateFilters($request), $request->only(['supplier_id']));
+
+        return response()->json($this->purchases->getData($filters));
     }
 
     public function purchasesExport(Request $request): BinaryFileResponse
     {
+        $filters = array_merge($this->validateDateFilters($request), $request->only(['supplier_id']));
+
         return Excel::download(
-            new ReportExport($this->purchases->getExportData($request->all()), $this->purchases->getHeadings()),
+            new ReportExport($this->purchases->getExportData($filters), $this->purchases->getHeadings()),
             'reporte-compras-'.now()->format('Y-m-d').'.xlsx'
         );
     }

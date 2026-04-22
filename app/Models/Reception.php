@@ -44,4 +44,14 @@ class Reception extends Model
     {
         return $this->hasMany(ReceptionItem::class);
     }
+
+    protected static function booted(): void
+    {
+        static::deleting(function (Reception $reception): void {
+            $reception->items()->each(function (ReceptionItem $item): void {
+                $item->productPresentation()->decrement('stock', (float) $item->quantity);
+                $item->delete();
+            });
+        });
+    }
 }

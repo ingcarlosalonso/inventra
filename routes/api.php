@@ -43,7 +43,7 @@ Route::middleware('api')->group(function () {
 
 // Tenant routes
 Route::middleware(['api', 'tenant'])->group(function () {
-    Route::post('auth/login', [AuthController::class, 'login']);
+    Route::post('auth/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('auth/logout', [AuthController::class, 'logout']);
@@ -154,18 +154,26 @@ Route::middleware(['api', 'tenant'])->group(function () {
         Route::post('products/import', [ProductImportController::class, 'store']);
 
         // Bulk Price
-        Route::get('bulk-price/preview', [BulkPriceController::class, 'preview']);
-        Route::post('bulk-price', [BulkPriceController::class, 'update']);
+        Route::middleware('permission:bulk_update_product_price')->group(function () {
+            Route::get('bulk-price/preview', [BulkPriceController::class, 'preview']);
+            Route::post('bulk-price', [BulkPriceController::class, 'update']);
+        });
 
         // Users
-        Route::apiResource('users', UserController::class)->except(['show']);
-        Route::patch('users/{user}/toggle', [UserController::class, 'toggle']);
+        Route::middleware('permission:create_edit_delete_users')->group(function () {
+            Route::apiResource('users', UserController::class)->except(['show']);
+            Route::patch('users/{user}/toggle', [UserController::class, 'toggle']);
+        });
 
         // Roles
-        Route::apiResource('roles', RoleController::class);
+        Route::middleware('permission:create_edit_delete_roles')->group(function () {
+            Route::apiResource('roles', RoleController::class);
+        });
 
         // Permissions
-        Route::get('permissions', [PermissionController::class, 'index']);
+        Route::middleware('permission:create_edit_delete_roles')->group(function () {
+            Route::get('permissions', [PermissionController::class, 'index']);
+        });
 
         // Reports
         Route::prefix('reports')->group(function () {

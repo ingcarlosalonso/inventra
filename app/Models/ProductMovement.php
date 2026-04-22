@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasAuditFields;
 use Illuminate\Database\Eloquent\Model as BaseModel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProductMovement extends BaseModel
 {
+    use HasAuditFields, SoftDeletes;
+
     protected $connection = 'tenant';
 
     protected $guarded = [];

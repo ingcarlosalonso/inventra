@@ -14,7 +14,7 @@
         <svg :class="['h-4 w-4 text-gray-400 transition-transform', loading && 'animate-spin']" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
         </svg>
-        Actualizar
+        {{ $t('common.refresh') }}
       </button>
     </div>
 
@@ -122,7 +122,7 @@
             <Doughnut :data="paymentMethodsData" :options="donutOptions" />
           </div>
           <div v-else class="flex h-48 items-center justify-center text-sm text-gray-400">
-            Sin datos
+            {{ $t('common.no_data') }}
           </div>
           <ul class="mt-3 space-y-1.5">
             <li v-for="(pm, i) in data.payment_methods" :key="pm.name" class="flex items-center justify-between text-xs">
@@ -164,7 +164,7 @@
             </div>
           </div>
           <div v-else class="flex h-32 items-center justify-center text-sm text-gray-400">
-            Sin datos
+            {{ $t('common.no_data') }}
           </div>
         </div>
       </div>
@@ -178,7 +178,7 @@
             <Bar :data="topProductsData" :options="topProductsOptions" />
           </div>
           <div v-else class="flex h-52 items-center justify-center text-sm text-gray-400">
-            Sin datos
+            {{ $t('common.no_data') }}
           </div>
         </div>
 
@@ -202,7 +202,7 @@
               </div>
               <div class="ml-2 shrink-0 text-right">
                 <p class="text-sm font-semibold text-red-600">{{ fmtNum(item.stock) }}</p>
-                <p class="text-xs text-gray-400">min {{ fmtNum(item.min_stock) }}</p>
+                <p class="text-xs text-gray-400">{{ $t('common.min') }} {{ fmtNum(item.min_stock) }}</p>
               </div>
             </div>
           </div>
@@ -210,7 +210,7 @@
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            Todo en orden
+            {{ $t('common.all_ok') }}
           </div>
         </div>
 
@@ -228,7 +228,7 @@
                   <p class="text-sm font-semibold text-gray-900">{{ dc.pos_name }}</p>
                   <p class="mt-0.5 text-xs text-gray-400">{{ $t('common.open_since') }}: {{ formatDate(dc.opened_at) }}</p>
                 </div>
-                <span class="ml-2 inline-flex shrink-0 items-center rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-emerald-200">Abierta</span>
+                <span class="ml-2 inline-flex shrink-0 items-center rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-emerald-200">{{ $t('common.open') }}</span>
               </div>
               <div class="mt-2.5 grid grid-cols-2 gap-2">
                 <div class="rounded-md bg-white p-2 text-center ring-1 ring-gray-100">
@@ -252,17 +252,17 @@
       <div class="rounded-xl bg-white shadow-sm ring-1 ring-gray-200">
         <div class="flex items-center justify-between border-b border-gray-100 px-5 py-4">
           <h2 class="text-sm font-semibold text-gray-900">{{ $t('common.recent_sales_title') }}</h2>
-          <a href="/sales" class="text-xs font-medium text-indigo-600 hover:text-indigo-700">{{ $t('common.view_all') }} →</a>
+          <Link href="/sales" class="text-xs font-medium text-indigo-600 hover:text-indigo-700">{{ $t('common.view_all') }} →</Link>
         </div>
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-100">
             <thead>
               <tr class="bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wide">
-                <th class="px-5 py-3 text-left">Cliente</th>
-                <th class="px-5 py-3 text-left">Estado</th>
-                <th class="px-5 py-3 text-right">Total</th>
-                <th class="px-5 py-3 text-right">Cobrado</th>
-                <th class="px-5 py-3 text-right">Fecha</th>
+                <th class="px-5 py-3 text-left">{{ $t('common.client') }}</th>
+                <th class="px-5 py-3 text-left">{{ $t('common.state') }}</th>
+                <th class="px-5 py-3 text-right">{{ $t('common.total') }}</th>
+                <th class="px-5 py-3 text-right">{{ $t('common.collected') }}</th>
+                <th class="px-5 py-3 text-right">{{ $t('common.date') }}</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-50">
@@ -291,7 +291,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, getCurrentInstance } from 'vue'
+import { Link } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import {
   Chart as ChartJS,
@@ -316,6 +317,7 @@ defineOptions({ layout: AppLayout })
 const { get } = useApi()
 const loading = ref(false)
 const data = ref(null)
+const { proxy } = getCurrentInstance()
 
 // ── KPI Card component (inline) ─────────────────────────────────────────────
 const KpiCard = {
@@ -355,7 +357,7 @@ const salesChartData = computed(() => {
     labels: rows.map((r) => fmtDateShort(r.date)),
     datasets: [
       {
-        label: 'Facturación',
+        label: proxy.$t('common.revenue'),
         data: rows.map((r) => r.revenue),
         borderColor: '#6366f1',
         backgroundColor: 'rgba(99,102,241,0.08)',
@@ -366,7 +368,7 @@ const salesChartData = computed(() => {
         yAxisID: 'y',
       },
       {
-        label: 'Ventas',
+        label: proxy.$t('common.sales_count'),
         data: rows.map((r) => r.count),
         borderColor: '#a78bfa',
         backgroundColor: 'transparent',
@@ -385,7 +387,7 @@ const salesChartOptions = {
   responsive: true,
   maintainAspectRatio: false,
   interaction: { mode: 'index', intersect: false },
-  plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => ctx.datasetIndex === 0 ? ' ' + fmtMoney(ctx.raw) : ' ' + ctx.raw + ' ventas' } } },
+  plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => ctx.datasetIndex === 0 ? ' ' + fmtMoney(ctx.raw) : ' ' + ctx.raw + ' ' + proxy.$t('common.sales') } } },
   scales: {
     x: { grid: { display: false }, ticks: { font: { size: 10 }, maxTicksLimit: 10 } },
     y: { position: 'left', grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { size: 10 }, callback: (v) => '$' + fmtNum(v) } },
@@ -419,7 +421,7 @@ const weeklyChartData = computed(() => {
   return {
     labels: data.value.weekly_comparison.map((r) => r.day),
     datasets: [{
-      label: 'Facturación',
+      label: proxy.$t('common.revenue'),
       data: data.value.weekly_comparison.map((r) => r.revenue),
       backgroundColor: 'rgba(99,102,241,0.75)',
       borderRadius: 6,
@@ -443,7 +445,7 @@ const topProductsData = computed(() => {
   return {
     labels: products.map((p) => p.product_name),
     datasets: [{
-      label: 'Facturación',
+      label: proxy.$t('common.revenue'),
       data: products.map((p) => p.revenue),
       backgroundColor: ['#6366f1', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b'],
       borderRadius: 4,

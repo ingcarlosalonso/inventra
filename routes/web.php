@@ -9,19 +9,8 @@ use App\Models\ProductType;
 use App\Models\Supplier;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Spatie\Multitenancy\Contracts\IsTenant;
 
-Route::post('/locale', [LocaleController::class, 'update'])->name('locale.update');
-
-// TEMP DEBUG - remove after diagnosis
-Route::get('/debug-tenant', function () {
-    $tenant = app(IsTenant::class)::current();
-
-    return response()->json([
-        'host' => request()->getHost(),
-        'tenant' => $tenant ? $tenant->toArray() : null,
-    ]);
-});
+Route::middleware('auth')->post('/locale', [LocaleController::class, 'update'])->name('locale.update');
 
 Route::middleware('tenant')->group(function () {
     Route::get('/login', fn () => Inertia::render('Auth/Login'))->name('login');

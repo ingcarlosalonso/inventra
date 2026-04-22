@@ -91,12 +91,10 @@ async function switchLocale(code) {
   router.reload({ only: [] })
 }
 
-async function logout() {
+function logout() {
   userOpen.value = false
-  try { await axios.post('/logout') } finally {
-    localStorage.removeItem('token')
-    delete axios.defaults.headers.common['Authorization']
-    router.visit('/login')
-  }
+  router.post('/logout', {}, {
+    onFinish: () => router.visit('/login'),
+  })
 }
 </script>
