@@ -22,7 +22,7 @@ class StoreReceptionAction
      */
     public function execute(array $data, int $userId): Reception
     {
-        return DB::transaction(function () use ($data, $userId): Reception {
+        return DB::connection('tenant')->transaction(function () use ($data, $userId): Reception {
             $supplierId = isset($data['supplier_id'])
                 ? Supplier::where('uuid', $data['supplier_id'])->value('id')
                 : null;

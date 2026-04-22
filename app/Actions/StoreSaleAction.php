@@ -48,7 +48,7 @@ class StoreSaleAction
      */
     public function execute(array $data, int $userId): Sale
     {
-        return DB::transaction(function () use ($data, $userId): Sale {
+        return DB::connection('tenant')->transaction(function () use ($data, $userId): Sale {
             // Resolve UUIDs to IDs
             $clientId = isset($data['client_id'])
                 ? Client::where('uuid', $data['client_id'])->value('id')

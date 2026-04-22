@@ -8,25 +8,31 @@ use App\Models\CashMovementType;
 use App\Models\DailyCash;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class CalculateDailyCashBalanceActionTest extends TestCase
 {
-    private static bool $migrated = false;
+    use DatabaseTransactions;
+
+    protected $connectionsToTransact = ['tenant'];
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        if (! self::$migrated) {
-            Artisan::call('migrate:fresh', [
-                '--database' => 'tenant',
-                '--path' => 'database/migrations/tenant',
-                '--force' => true,
-            ]);
-            self::$migrated = true;
-        }
+        config(['database.connections.tenant.database' => env('DB_TENANT_DATABASE', 'in_ventra_testing')]);
+        DB::purge('tenant');
+        DB::connection('tenant')->beginTransaction();
+
+        self::migrateTenantDb();
+    }
+
+    protected function tearDown(): void
+    {
+        DB::connection('tenant')->rollBack();
+        parent::tearDown();
     }
 
     private function action(): CalculateDailyCashBalanceAction

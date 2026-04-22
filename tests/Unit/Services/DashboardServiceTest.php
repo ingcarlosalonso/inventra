@@ -3,28 +3,31 @@
 namespace Tests\Unit\Services;
 
 use App\Services\DashboardService;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class DashboardServiceTest extends TestCase
 {
-    private static bool $migrated = false;
+    use DatabaseTransactions;
+
+    protected $connectionsToTransact = ['tenant'];
 
     protected function setUp(): void
     {
         parent::setUp();
 
         config(['database.connections.tenant.database' => env('DB_TENANT_DATABASE', 'in_ventra_testing')]);
+        DB::purge('tenant');
+        DB::connection('tenant')->beginTransaction();
 
-        if (! self::$migrated) {
-            Artisan::call('migrate:fresh', [
-                '--database' => 'tenant',
-                '--path' => 'database/migrations/tenant',
-                '--force' => true,
-            ]);
+        self::migrateTenantDb();
+    }
 
-            self::$migrated = true;
-        }
+    protected function tearDown(): void
+    {
+        DB::connection('tenant')->rollBack();
+        parent::tearDown();
     }
 
     private function service(): DashboardService

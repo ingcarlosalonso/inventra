@@ -34,7 +34,7 @@ class StoreQuoteAction
      */
     public function execute(array $data, int $userId): Quote
     {
-        return DB::transaction(function () use ($data, $userId): Quote {
+        return DB::connection('tenant')->transaction(function () use ($data, $userId): Quote {
             $clientId = isset($data['client_id'])
                 ? Client::where('uuid', $data['client_id'])->value('id')
                 : null;

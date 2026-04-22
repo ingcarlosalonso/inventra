@@ -54,7 +54,7 @@ class StoreOrderAction
      */
     public function execute(array $data, int $userId): Order
     {
-        return DB::transaction(function () use ($data, $userId): Order {
+        return DB::connection('tenant')->transaction(function () use ($data, $userId): Order {
             $clientId = isset($data['client_id'])
                 ? Client::where('uuid', $data['client_id'])->value('id')
                 : null;

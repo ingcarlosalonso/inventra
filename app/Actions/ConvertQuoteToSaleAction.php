@@ -30,7 +30,7 @@ class ConvertQuoteToSaleAction
      */
     public function execute(Quote $quote, array $data, int $userId): Sale
     {
-        return DB::transaction(function () use ($quote, $data, $userId): Sale {
+        return DB::connection('tenant')->transaction(function () use ($quote, $data, $userId): Sale {
             $quote = Quote::lockForUpdate()->findOrFail($quote->id);
 
             if ($quote->sale_id !== null) {
