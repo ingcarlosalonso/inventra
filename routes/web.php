@@ -81,6 +81,9 @@ Route::middleware('tenant')->group(function () {
         Route::get('/settings/order-states', fn () => Inertia::render('Settings/OrderStates/Index'))->name('settings.order-states');
         Route::get('/settings/couriers', fn () => Inertia::render('Settings/Couriers/Index'))->name('settings.couriers');
 
+        // Customization
+        Route::get('/settings/customization', fn () => Inertia::render('Settings/Customization/Index'))->name('settings.customization');
+
         // Users & Roles
         Route::get('/settings/users', fn () => Inertia::render('Settings/Users/Index'))->name('settings.users');
         Route::get('/settings/roles', fn () => Inertia::render('Settings/Roles/Index'))->name('settings.roles');

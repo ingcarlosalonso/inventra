@@ -14,12 +14,13 @@
   <!-- Sidebar panel -->
   <aside
     :class="[
-      'fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-gray-900 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0',
+      'fixed inset-y-0 left-0 z-50 flex w-64 flex-col transition-transform duration-300 ease-in-out lg:static lg:translate-x-0',
       open ? 'translate-x-0' : '-translate-x-full',
     ]"
+    :style="{ backgroundColor: customization.secondary_color ?? '#111827' }"
   >
     <!-- Logo -->
-    <div class="flex h-16 shrink-0 items-center gap-2 border-b border-gray-800 px-6">
+    <div class="flex h-16 shrink-0 items-center gap-2 border-b border-white/10 px-6">
       <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600">
         <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
@@ -71,13 +72,14 @@
       <NavGroup
         :label="$t('common.settings')"
         :icon="icons.settings"
-        :matches="['/settings/product-movement-types', '/settings/cash-movement-types', '/settings/currencies', '/settings/users', '/settings/roles']"
+        :matches="['/settings/product-movement-types', '/settings/cash-movement-types', '/settings/currencies', '/settings/customization', '/settings/users', '/settings/roles']"
       >
         <NavItem href="/settings/users" :label="$t('users.title')" sub />
         <NavItem href="/settings/roles" :label="$t('roles.title')" sub />
         <NavItem href="/settings/product-movement-types" :label="$t('product_movement_types.title')" sub />
         <NavItem href="/settings/cash-movement-types" :label="$t('cash_movement_types.title')" sub />
         <NavItem href="/settings/currencies" :label="$t('currencies.title')" sub />
+        <NavItem href="/settings/customization" :label="$t('customization.title')" sub />
       </NavGroup>
 
       <NavItem href="/reports" :label="$t('reports.title')" :icon="icons.reports" />
@@ -86,7 +88,7 @@
     </nav>
 
     <!-- User -->
-    <div class="border-t border-gray-800 px-4 py-3">
+    <div class="border-t border-white/10 px-4 py-3">
       <div class="flex items-center gap-3">
         <div class="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 text-xs font-semibold text-white uppercase">
           {{ userInitials }}
@@ -111,6 +113,7 @@ defineEmits(['close'])
 
 const page = usePage()
 const user = computed(() => page.props.auth?.user)
+const customization = computed(() => page.props.customization ?? {})
 const userInitials = computed(() => {
   const name = user.value?.name ?? ''
   return name.split(' ').map(w => w[0]).slice(0, 2).join('')

@@ -9,6 +9,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CompositeProductController;
 use App\Http\Controllers\CourierController;
 use App\Http\Controllers\CurrencyController;
+use App\Http\Controllers\CustomizationController;
 use App\Http\Controllers\DailyCashController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotificationController;
@@ -75,6 +76,10 @@ Route::middleware(['api', 'tenant'])->group(function () {
 
         // Clients
         Route::apiResource('clients', ClientController::class)->except(['show']);
+
+        // Customization
+        Route::get('customization', [CustomizationController::class, 'show']);
+        Route::post('customization', [CustomizationController::class, 'update']);
 
         // Currencies
         Route::apiResource('currencies', CurrencyController::class)->except(['show']);

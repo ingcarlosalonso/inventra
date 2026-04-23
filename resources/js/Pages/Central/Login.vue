@@ -74,7 +74,7 @@ const form = useForm({
 })
 
 function submit() {
-  form.post('/central-admin/login', {
+  form.post(route('central.login.post'), {
     onFinish: () => form.reset('password'),
   })
 }

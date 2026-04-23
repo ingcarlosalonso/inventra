@@ -1,5 +1,8 @@
 <template>
-  <header class="flex h-16 shrink-0 items-center gap-4 border-b border-gray-200 bg-white px-4 sm:px-6">
+  <header
+    class="flex h-16 shrink-0 items-center gap-4 border-b border-black/10 px-4 sm:px-6"
+    :style="{ backgroundColor: customization.accent_color ?? '#ffffff' }"
+  >
     <button
       type="button"
       class="rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 lg:hidden"
@@ -68,6 +71,7 @@ defineEmits(['toggle-sidebar'])
 
 const page = usePage()
 const user = computed(() => page.props.auth?.user)
+const customization = computed(() => page.props.customization ?? {})
 const flash = computed(() => page.props.flash ?? {})
 const currentLocale = computed(() => page.props.locale ?? 'es')
 const userInitials = computed(() => (user.value?.name ?? '').split(' ').map(w => w[0]).slice(0, 2).join(''))

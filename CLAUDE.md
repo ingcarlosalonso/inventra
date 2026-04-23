@@ -82,6 +82,18 @@ Quick Actions (top bar): Nueva Venta · Nuevo Pedido · Ingresar Pago · Presupu
 - Empty states, loading skeletons, and inline validation feedback are required.
 - All UI text goes through `$t()`.
 
+## Central Admin Domain
+
+The central domain (`CENTRAL_DOMAIN=development.central.in-ventra.com`) is the **landlord admin panel** — it is NOT a tenant. Its purpose is to create and manage tenants (client companies).
+
+- Login at: `http://development.central.in-ventra.com/login` (auth guard: `central`, user model: `Admin`)
+- After login → `/tenants` to list/create/suspend/activate tenants
+- Routes live in `routes/central.php` with a domain constraint (`Route::domain(config('app.central_domain'))`)
+- Controllers: `App\Http\Controllers\Central\{AuthController, TenantController}`
+- Vue pages: `resources/js/Pages/Central/{Login.vue, Tenants/}`
+- `routes/central.php` is registered **before** `routes/web.php` in `bootstrap/app.php` so the domain constraint takes precedence over the tenant `/login` route
+- The `central_domain` key is defined in `config/app.php` sourced from `CENTRAL_DOMAIN` env var
+
 ## Multi-tenant Architecture (Spatie)
 
 - **Central database** (`inventra`): `tenants` and `domains` tables from spatie/laravel-multitenancy, plus company data.

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-screen overflow-hidden bg-gray-50">
+  <div class="flex h-screen overflow-hidden bg-gray-50" :style="fontStyle">
     <!-- Sidebar -->
     <Sidebar :open="sidebarOpen" @close="sidebarOpen = false" />
 
@@ -17,10 +17,28 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { usePage } from '@inertiajs/vue3'
 import AiAssistant from '@/Components/AiAssistant.vue'
 import Sidebar from '@/Components/Sidebar.vue'
 import TopBar from '@/Components/TopBar.vue'
+import { applyTheme } from '@/composables/useTheme.js'
 
 const sidebarOpen = ref(false)
+const page = usePage()
+
+const customization = computed(() => page.props.customization ?? {})
+
+const fontStyle = computed(() => ({
+    fontFamily: customization.value.font_family ?? 'Inter',
+}))
+
+// Apply on first load
+applyTheme(customization.value.primary_color)
+
+// Re-apply when customization changes (e.g. after saving on the settings page)
+watch(
+    () => customization.value.primary_color,
+    (color) => applyTheme(color),
+)
 </script>
