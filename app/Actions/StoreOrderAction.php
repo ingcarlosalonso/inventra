@@ -2,8 +2,10 @@
 
 namespace App\Actions;
 
+use App\Enums\SaleItemType;
 use App\Exceptions\InsufficientStockException;
 use App\Models\Client;
+use App\Models\CompositeProduct;
 use App\Models\Courier;
 use App\Models\Currency;
 use App\Models\DailyCash;
@@ -12,6 +14,9 @@ use App\Models\OrderState;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
 use App\Models\PointOfSale;
+use App\Models\ProductPresentation;
+use App\Models\Promotion;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 class StoreOrderAction
@@ -36,7 +41,8 @@ class StoreOrderAction
      *     discount_type: string|null,
      *     discount_value: float|string|null,
      *     items: array<int, array{
-     *         product_presentation_id: string,
+     *         item_type: string,
+     *         saleable_id: string,
      *         description: string,
      *         quantity: float|string,
      *         unit_price: float|string,
@@ -85,16 +91,14 @@ class StoreOrderAction
                 $data['discount_value'] ?? null,
             );
 
-            // Validate stock availability before any writes
-            foreach ($data['items'] as $index => $inputItem) {
-                $presentation = $built['presentations']->get($inputItem['product_presentation_id']);
-                $builtItem = $built['items'][$index];
-
-                if ($presentation && (float) $presentation->stock < $builtItem['quantity']) {
+            // Validate stock for all components before any write
+            $stockOps = $this->collectStockOperations($data['items'], $built);
+            foreach ($stockOps as $op) {
+                if ((float) $op['presentation']->stock < $op['quantity']) {
                     throw new InsufficientStockException(
-                        $presentation->product->name.' - '.$presentation->presentation->name,
-                        $builtItem['quantity'],
-                        (float) $presentation->stock,
+                        $op['label'],
+                        $op['quantity'],
+                        (float) $op['presentation']->stock,
                     );
                 }
             }
@@ -119,18 +123,14 @@ class StoreOrderAction
                 'total' => $built['total'],
             ]);
 
-            // Create items and decrement stock
-            foreach ($data['items'] as $index => $inputItem) {
-                $builtItem = $built['items'][$index];
+            foreach ($built['items'] as $builtItem) {
                 $order->items()->create($builtItem);
-
-                $presentation = $built['presentations']->get($inputItem['product_presentation_id']);
-                if ($presentation) {
-                    $presentation->decrement('stock', $builtItem['quantity']);
-                }
             }
 
-            // Create payments
+            foreach ($stockOps as $op) {
+                $op['presentation']->decrement('stock', $op['quantity']);
+            }
+
             foreach ($data['payments'] ?? [] as $paymentData) {
                 $paymentMethodId = PaymentMethod::where('uuid', $paymentData['payment_method_id'])->value('id');
 
@@ -150,18 +150,67 @@ class StoreOrderAction
                 ]);
             }
 
-            return $order->load([
-                'client',
-                'courier',
-                'orderState',
-                'pointOfSale',
-                'currency',
-                'user',
-                'items.productPresentation.product',
-                'items.productPresentation.presentation',
-                'payments.paymentMethod',
-                'payments.currency',
+            $order->load(['client', 'courier', 'orderState', 'pointOfSale', 'currency', 'user', 'items', 'payments.paymentMethod', 'payments.currency']);
+
+            $order->items->loadMorph('saleable', [
+                ProductPresentation::class => ['product', 'presentation'],
+                CompositeProduct::class => [],
+                Promotion::class => [],
             ]);
+
+            return $order;
         });
+    }
+
+    /**
+     * @param  array<int, array{item_type: string, saleable_id: string, quantity: float|string}>  $inputItems
+     * @param  array{presentations: Collection, composites: Collection, promotions: Collection, items: array<int, array{quantity: float}>}  $built
+     * @return array<int, array{presentation: ProductPresentation, quantity: float, label: string}>
+     */
+    private function collectStockOperations(array $inputItems, array $built): array
+    {
+        $ops = [];
+
+        foreach ($inputItems as $index => $inputItem) {
+            $itemQty = (float) $built['items'][$index]['quantity'];
+            $type = SaleItemType::from($inputItem['item_type']);
+
+            if ($type === SaleItemType::Product) {
+                $pp = $built['presentations']->get($inputItem['saleable_id']);
+                if ($pp) {
+                    $ops[] = [
+                        'presentation' => $pp,
+                        'quantity' => $itemQty,
+                        'label' => $pp->product->name.' - '.$pp->presentation->name,
+                    ];
+                }
+            } elseif ($type === SaleItemType::Composite) {
+                $composite = $built['composites']->get($inputItem['saleable_id']);
+                foreach ($composite?->items ?? [] as $component) {
+                    $pp = $component->product->productPresentations->first();
+                    if ($pp) {
+                        $ops[] = [
+                            'presentation' => $pp,
+                            'quantity' => $itemQty * $component->quantity,
+                            'label' => $composite->name.' › '.$component->product->name,
+                        ];
+                    }
+                }
+            } elseif ($type === SaleItemType::Promotion) {
+                $promotion = $built['promotions']->get($inputItem['saleable_id']);
+                foreach ($promotion?->items ?? [] as $promoItem) {
+                    $pp = $promoItem->product->productPresentations->first();
+                    if ($pp) {
+                        $ops[] = [
+                            'presentation' => $pp,
+                            'quantity' => $itemQty * $promoItem->quantity,
+                            'label' => $promotion->name.' › '.$promoItem->product->name,
+                        ];
+                    }
+                }
+            }
+        }
+
+        return $ops;
     }
 }

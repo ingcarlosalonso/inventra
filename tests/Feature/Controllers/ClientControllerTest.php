@@ -25,19 +25,29 @@ class ClientControllerTest extends TenantFeatureTestCase
     public function test_store_creates_client(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/clients', ['name' => 'Pedro García', 'email' => 'pedro@email.com'])
+            ->postJson('/api/clients', ['first_name' => 'Pedro', 'last_name' => 'García', 'email' => 'pedro@email.com'])
             ->assertCreated()
-            ->assertJsonPath('data.name', 'Pedro García');
+            ->assertJsonPath('data.first_name', 'Pedro')
+            ->assertJsonPath('data.last_name', 'García')
+            ->assertJsonPath('data.full_name', 'Pedro García');
 
-        $this->assertDatabaseHas('clients', ['name' => 'Pedro García'], 'tenant');
+        $this->assertDatabaseHas('clients', ['first_name' => 'Pedro', 'last_name' => 'García'], 'tenant');
     }
 
-    public function test_store_validates_name_required(): void
+    public function test_store_validates_first_name_required(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/clients', [])
+            ->postJson('/api/clients', ['last_name' => 'García'])
             ->assertUnprocessable()
-            ->assertJsonValidationErrors(['name']);
+            ->assertJsonValidationErrors(['first_name']);
+    }
+
+    public function test_store_validates_last_name_required(): void
+    {
+        $this->actingAs($this->user, 'sanctum')
+            ->postJson('/api/clients', ['first_name' => 'Pedro'])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['last_name']);
     }
 
     public function test_update_modifies_client(): void
@@ -45,9 +55,10 @@ class ClientControllerTest extends TenantFeatureTestCase
         $client = Client::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->putJson("/api/clients/{$client->uuid}", ['name' => 'Nombre Nuevo', 'is_active' => false])
+            ->putJson("/api/clients/{$client->uuid}", ['first_name' => 'Nuevo', 'last_name' => 'Nombre', 'is_active' => false])
             ->assertOk()
-            ->assertJsonPath('data.is_active', false);
+            ->assertJsonPath('data.is_active', false)
+            ->assertJsonPath('data.full_name', 'Nuevo Nombre');
     }
 
     public function test_destroy_soft_deletes(): void

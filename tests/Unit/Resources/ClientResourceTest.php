@@ -14,7 +14,7 @@ class ClientResourceTest extends ModelTestCase
         $client = Client::factory()->create();
         $resource = ClientResource::make($client)->toArray(new Request);
 
-        foreach (['id', 'name', 'email', 'phone', 'address', 'notes', 'is_active', 'created_at', 'updated_at'] as $key) {
+        foreach (['id', 'first_name', 'last_name', 'full_name', 'email', 'phone', 'address', 'notes', 'is_active', 'created_at', 'updated_at'] as $key) {
             $this->assertArrayHasKey($key, $resource);
         }
     }

@@ -21,7 +21,6 @@ class SaleFactory extends Factory
             'client_id' => null,
             'point_of_sale_id' => PointOfSale::factory(),
             'sale_state_id' => SaleState::factory(),
-            'daily_cash_id' => null,
             'currency_id' => null,
             'user_id' => User::factory(),
             'subtotal' => 0,

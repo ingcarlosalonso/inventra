@@ -7,6 +7,7 @@ use App\Models\Concerns\HasAuditFields;
 use App\Models\Concerns\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SaleItem extends Model
@@ -32,6 +33,11 @@ class SaleItem extends Model
     public function sale(): BelongsTo
     {
         return $this->belongsTo(Sale::class);
+    }
+
+    public function saleable(): MorphTo
+    {
+        return $this->morphTo();
     }
 
     public function productPresentation(): BelongsTo

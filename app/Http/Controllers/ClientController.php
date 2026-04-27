@@ -22,7 +22,7 @@ class ClientController extends Controller
         }
 
         return ClientResource::collection(
-            $query->orderBy('name')->paginate(20)
+            $query->orderBy('last_name')->orderBy('first_name')->paginate(20)
         );
     }
 

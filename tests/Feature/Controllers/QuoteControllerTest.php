@@ -18,7 +18,7 @@ class QuoteControllerTest extends TenantFeatureTestCase
         return array_merge([
             'starts_at' => '2026-04-13',
             'items' => [[
-                'product_presentation_id' => $pp->uuid,
+                'item_type' => 'product', 'saleable_id' => $pp->uuid,
                 'description' => 'Widget',
                 'quantity' => 2,
                 'unit_price' => 200,
@@ -78,7 +78,7 @@ class QuoteControllerTest extends TenantFeatureTestCase
             'starts_at' => '2026-04-13',
             'expires_at' => '2026-04-30',
             'items' => [[
-                'product_presentation_id' => $pp->uuid,
+                'item_type' => 'product', 'saleable_id' => $pp->uuid,
                 'description' => 'Test product',
                 'quantity' => 5,
                 'unit_price' => 100,
@@ -104,7 +104,7 @@ class QuoteControllerTest extends TenantFeatureTestCase
             'discount_type' => 'percentage',
             'discount_value' => 10,
             'items' => [[
-                'product_presentation_id' => $pp->uuid,
+                'item_type' => 'product', 'saleable_id' => $pp->uuid,
                 'description' => 'Test',
                 'quantity' => 1,
                 'unit_price' => 200,
@@ -136,7 +136,7 @@ class QuoteControllerTest extends TenantFeatureTestCase
                 'starts_at' => '2026-04-30',
                 'expires_at' => '2026-04-01',
                 'items' => [[
-                    'product_presentation_id' => $pp->uuid,
+                    'item_type' => 'product', 'saleable_id' => $pp->uuid,
                     'description' => 'Test',
                     'quantity' => 1,
                     'unit_price' => 100,

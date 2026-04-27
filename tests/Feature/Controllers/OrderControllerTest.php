@@ -20,7 +20,7 @@ class OrderControllerTest extends TenantFeatureTestCase
         return array_merge([
             'order_state_id' => $state->uuid,
             'items' => [[
-                'product_presentation_id' => $pp->uuid,
+                'item_type' => 'product', 'saleable_id' => $pp->uuid,
                 'description' => 'Widget',
                 'quantity' => 2,
                 'unit_price' => 500,
@@ -81,7 +81,7 @@ class OrderControllerTest extends TenantFeatureTestCase
         $payload = [
             'order_state_id' => $state->uuid,
             'items' => [[
-                'product_presentation_id' => $pp->uuid,
+                'item_type' => 'product', 'saleable_id' => $pp->uuid,
                 'description' => 'Test product',
                 'quantity' => 3,
                 'unit_price' => 100,
@@ -110,7 +110,7 @@ class OrderControllerTest extends TenantFeatureTestCase
             'requires_delivery' => true,
             'delivery_date' => '2026-05-01',
             'items' => [[
-                'product_presentation_id' => $pp->uuid,
+                'item_type' => 'product', 'saleable_id' => $pp->uuid,
                 'description' => 'Test',
                 'quantity' => 1,
                 'unit_price' => 50,
@@ -134,7 +134,7 @@ class OrderControllerTest extends TenantFeatureTestCase
         $payload = [
             'order_state_id' => $state->uuid,
             'items' => [[
-                'product_presentation_id' => $pp->uuid,
+                'item_type' => 'product', 'saleable_id' => $pp->uuid,
                 'description' => 'Test',
                 'quantity' => 1,
                 'unit_price' => 100,
@@ -159,7 +159,7 @@ class OrderControllerTest extends TenantFeatureTestCase
 
         $payload = [
             'items' => [[
-                'product_presentation_id' => $pp->uuid,
+                'item_type' => 'product', 'saleable_id' => $pp->uuid,
                 'description' => 'Test',
                 'quantity' => 1,
                 'unit_price' => 100,
@@ -182,7 +182,7 @@ class OrderControllerTest extends TenantFeatureTestCase
         $payload = [
             'order_state_id' => $state->uuid,
             'items' => [[
-                'product_presentation_id' => $pp->uuid,
+                'item_type' => 'product', 'saleable_id' => $pp->uuid,
                 'description' => 'Test',
                 'quantity' => 5,
                 'unit_price' => 100,
@@ -272,7 +272,7 @@ class OrderControllerTest extends TenantFeatureTestCase
             ->postJson('/api/orders', [
                 'order_state_id' => $state->uuid,
                 'items' => [[
-                    'product_presentation_id' => $pp->uuid,
+                    'item_type' => 'product', 'saleable_id' => $pp->uuid,
                     'description' => 'Widget',
                     'quantity' => 1,
                     'unit_price' => 100,
@@ -313,7 +313,7 @@ class OrderControllerTest extends TenantFeatureTestCase
                 'order_state_id' => $state->uuid,
                 'point_of_sale_id' => $pos->uuid,
                 'items' => [[
-                    'product_presentation_id' => $pp->uuid,
+                    'item_type' => 'product', 'saleable_id' => $pp->uuid,
                     'description' => 'Widget',
                     'quantity' => 1,
                     'unit_price' => 100,

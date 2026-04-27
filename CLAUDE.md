@@ -322,6 +322,7 @@ For simple CRUD, use `$request->validated()` directly. Do not create DTOs just t
 - Always use **constructor injection**. Never `new ServiceName()` manually.
 - Domain-specific exceptions only (e.g. `StockException`). Use structured logging.
 - Classes: `PascalCase` · Methods/variables: `camelCase` · Constants: `UPPER_CASE`
+- **After modifying any PHP file, always run `vendor/bin/pint --dirty --format agent` to apply code style before finalizing.** Never skip this step — failing to run Pint after edits breaks the project's formatting.
 
 ## Migrations
 

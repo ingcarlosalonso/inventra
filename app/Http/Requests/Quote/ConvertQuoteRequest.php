@@ -16,9 +16,8 @@ class ConvertQuoteRequest extends FormRequest
         return [
             'point_of_sale_id' => ['required', 'string', 'exists:tenant.points_of_sale,uuid'],
             'sale_state_id' => ['nullable', 'string', 'exists:tenant.sale_states,uuid'],
-            'daily_cash_id' => ['nullable', 'string', 'exists:tenant.daily_cashes,uuid'],
 
-            'payments' => ['required', 'array', 'min:1'],
+            'payments' => ['nullable', 'array'],
             'payments.*.payment_method_id' => ['required', 'string', 'exists:tenant.payment_methods,uuid'],
             'payments.*.currency_id' => ['nullable', 'string', 'exists:tenant.currencies,uuid'],
             'payments.*.amount' => ['required', 'numeric', 'min:0.01'],

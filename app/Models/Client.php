@@ -21,4 +21,9 @@ class Client extends Model
             'is_active' => 'boolean',
         ];
     }
+
+    public function getFullNameAttribute(): string
+    {
+        return trim("{$this->first_name} {$this->last_name}");
+    }
 }

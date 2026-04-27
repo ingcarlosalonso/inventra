@@ -51,11 +51,11 @@
             class="group flex items-center gap-4 px-5 py-3.5 hover:bg-gray-50 transition"
           >
             <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-violet-100 text-sm font-semibold text-violet-700">
-              {{ item.name.charAt(0).toUpperCase() }}
+              {{ item.first_name.charAt(0).toUpperCase() }}
             </div>
 
             <div class="flex-1 min-w-0">
-              <p class="truncate text-sm font-medium text-gray-900">{{ item.name }}</p>
+              <p class="truncate text-sm font-medium text-gray-900">{{ item.full_name }}</p>
               <div class="flex items-center gap-3 mt-0.5">
                 <span v-if="item.phone" class="text-xs text-gray-400">{{ item.phone }}</span>
                 <span v-if="item.email" class="text-xs text-gray-400">{{ item.email }}</span>
@@ -83,7 +83,10 @@
 
     <SlideOver v-model="slideOverOpen" :title="editing ? $t('clients.edit') : $t('clients.create')">
       <form class="space-y-5" @submit.prevent="save">
-        <InputField v-model="form.name" :label="$t('clients.first_name')" :error="formErrors.name?.[0]" required />
+        <div class="grid grid-cols-2 gap-4">
+          <InputField v-model="form.first_name" :label="$t('clients.first_name')" :error="formErrors.first_name?.[0]" required />
+          <InputField v-model="form.last_name" :label="$t('clients.last_name')" :error="formErrors.last_name?.[0]" required />
+        </div>
         <div class="grid grid-cols-2 gap-4">
           <InputField v-model="form.phone" :label="$t('clients.phone')" type="tel" :error="formErrors.phone?.[0]" />
           <InputField v-model="form.email" :label="$t('clients.email')" type="email" :error="formErrors.email?.[0]" />
@@ -104,7 +107,7 @@
       </template>
     </SlideOver>
 
-    <ConfirmModal v-model="confirmOpen" :title="$t('clients.delete_confirm', { name: deleteTarget?.name })" @confirm="doDelete" />
+    <ConfirmModal v-model="confirmOpen" :title="$t('clients.delete_confirm', { name: deleteTarget?.full_name })" @confirm="doDelete" />
 </template>
 
 <script setup>
@@ -136,7 +139,7 @@ const editing = ref(null)
 const deleteTarget = ref(null)
 const formError = ref(null)
 
-const emptyForm = () => ({ name: '', email: '', phone: '', address: '', notes: '', is_active: true })
+const emptyForm = () => ({ first_name: '', last_name: '', email: '', phone: '', address: '', notes: '', is_active: true })
 const form = ref(emptyForm())
 
 async function fetchItems(url = null) {
@@ -152,7 +155,7 @@ function openCreate() {
 
 function openEdit(item) {
     editing.value = item
-    form.value = { name: item.name, email: item.email ?? '', phone: item.phone ?? '', address: item.address ?? '', notes: item.notes ?? '', is_active: item.is_active }
+    form.value = { first_name: item.first_name, last_name: item.last_name, email: item.email ?? '', phone: item.phone ?? '', address: item.address ?? '', notes: item.notes ?? '', is_active: item.is_active }
     formError.value = null; slideOverOpen.value = true
 }
 

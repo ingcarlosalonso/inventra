@@ -13,28 +13,37 @@ class StoreClientRequestTest extends TestCase
         return (new StoreClientRequest)->rules();
     }
 
-    public function test_name_is_required(): void
+    public function test_first_name_is_required(): void
     {
-        $v = Validator::make(['name' => ''], $this->rules());
+        $v = Validator::make(['last_name' => 'García'], $this->rules());
         $this->assertFalse($v->passes());
+        $this->assertArrayHasKey('first_name', $v->errors()->toArray());
+    }
+
+    public function test_last_name_is_required(): void
+    {
+        $v = Validator::make(['first_name' => 'Pedro'], $this->rules());
+        $this->assertFalse($v->passes());
+        $this->assertArrayHasKey('last_name', $v->errors()->toArray());
     }
 
     public function test_email_must_be_valid(): void
     {
-        $v = Validator::make(['name' => 'Pedro', 'email' => 'bad'], $this->rules());
+        $v = Validator::make(['first_name' => 'Pedro', 'last_name' => 'García', 'email' => 'bad'], $this->rules());
         $this->assertFalse($v->passes());
     }
 
     public function test_all_optional_fields_nullable(): void
     {
-        $v = Validator::make(['name' => 'Pedro'], $this->rules());
+        $v = Validator::make(['first_name' => 'Pedro', 'last_name' => 'García'], $this->rules());
         $this->assertTrue($v->passes());
     }
 
     public function test_valid_payload_passes(): void
     {
         $v = Validator::make([
-            'name' => 'Pedro García',
+            'first_name' => 'Pedro',
+            'last_name' => 'García',
             'email' => 'pedro@email.com',
             'phone' => '1122334455',
             'address' => 'Av. Siempre Viva 742',

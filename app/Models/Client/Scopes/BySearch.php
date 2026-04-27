@@ -13,7 +13,8 @@ class BySearch implements Scope
     public function apply(Builder $builder, Model $model): void
     {
         $builder->where(function (Builder $q) {
-            $q->where('name', 'like', "%{$this->search}%")
+            $q->where('first_name', 'like', "%{$this->search}%")
+                ->orWhere('last_name', 'like', "%{$this->search}%")
                 ->orWhere('email', 'like', "%{$this->search}%")
                 ->orWhere('phone', 'like', "%{$this->search}%");
         });

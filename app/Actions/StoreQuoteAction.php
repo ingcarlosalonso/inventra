@@ -3,7 +3,10 @@
 namespace App\Actions;
 
 use App\Models\Client;
+use App\Models\CompositeProduct;
 use App\Models\Currency;
+use App\Models\ProductPresentation;
+use App\Models\Promotion;
 use App\Models\Quote;
 use Illuminate\Support\Facades\DB;
 
@@ -23,7 +26,8 @@ class StoreQuoteAction
      *     starts_at: string|null,
      *     expires_at: string|null,
      *     items: array<int, array{
-     *         product_presentation_id: string,
+     *         item_type: string,
+     *         saleable_id: string,
      *         description: string,
      *         quantity: float|string,
      *         unit_price: float|string,
@@ -68,13 +72,15 @@ class StoreQuoteAction
                 $quote->items()->create($built['items'][$index]);
             }
 
-            return $quote->load([
-                'client',
-                'currency',
-                'user',
-                'items.productPresentation.product',
-                'items.productPresentation.presentation',
+            $quote->load(['client', 'currency', 'user', 'items']);
+
+            $quote->items->loadMorph('saleable', [
+                ProductPresentation::class => ['product', 'presentation'],
+                CompositeProduct::class => [],
+                Promotion::class => [],
             ]);
+
+            return $quote;
         });
     }
 }
