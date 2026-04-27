@@ -1,0 +1,68 @@
+<?php
+
+namespace App\Actions;
+
+use App\Enums\SaleItemType;
+use App\Models\Quote;
+use App\Models\Sale;
+use Illuminate\Support\Facades\DB;
+
+class ConvertQuoteToSaleAction
+{
+    public function __construct(
+        private readonly StoreSaleAction $storeSaleAction
+    ) {}
+
+    /**
+     * Convert a quote into a sale.
+     *
+     * @param  array{
+     *     point_of_sale_id: string,
+     *     sale_state_id: string|null,
+     *     payments: array<int, array{
+     *         payment_method_id: string,
+     *         currency_id: string|null,
+     *         amount: float|string,
+     *         exchange_rate: float|string|null,
+     *         notes: string|null,
+     *     }>|null,
+     * }  $data
+     */
+    public function execute(Quote $quote, array $data, int $userId): Sale
+    {
+        return DB::connection('tenant')->transaction(function () use ($quote, $data, $userId): Sale {
+            $quote = Quote::lockForUpdate()->findOrFail($quote->id);
+
+            if ($quote->sale_id !== null) {
+                throw new \RuntimeException('Quote already converted.');
+            }
+
+            // Build sale payload from quote data
+            $saleData = [
+                'client_id' => $quote->client ? $quote->client->uuid : null,
+                'point_of_sale_id' => $data['point_of_sale_id'],
+                'sale_state_id' => $data['sale_state_id'] ?? null,
+                'currency_id' => $quote->currency ? $quote->currency->uuid : null,
+                'notes' => $quote->notes,
+                'discount_type' => $quote->discount_type?->value,
+                'discount_value' => (float) $quote->discount_value,
+                'items' => $quote->items->map(fn ($item) => [
+                    'item_type' => SaleItemType::Product->value,
+                    'saleable_id' => $item->productPresentation->uuid,
+                    'description' => $item->description,
+                    'quantity' => (float) $item->quantity,
+                    'unit_price' => (float) $item->unit_price,
+                    'discount_type' => $item->discount_type?->value,
+                    'discount_value' => (float) $item->discount_value,
+                ])->toArray(),
+                'payments' => $data['payments'],
+            ];
+
+            $sale = $this->storeSaleAction->execute($saleData, $userId);
+
+            $quote->update(['sale_id' => $sale->id]);
+
+            return $sale;
+        });
+    }
+}
