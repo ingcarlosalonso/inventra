@@ -3,6 +3,9 @@
 namespace App\Reports;
 
 use App\Models\Reception;
+use App\Models\Reception\Scopes\ByDateRange as ReceptionByDateRange;
+use App\Models\Reception\Scopes\BySupplier as ReceptionBySupplier;
+use App\Models\Scopes\ByUuid;
 use App\Models\Supplier;
 use Illuminate\Support\Carbon;
 
@@ -68,12 +71,13 @@ class PurchasesReport
 
     private function buildQuery(array $filters, Carbon $from, Carbon $to)
     {
+        $supplierId = isset($filters['supplier_id']) && $filters['supplier_id']
+            ? Supplier::query()->withScopes(new ByUuid($filters['supplier_id']))->value('id')
+            : null;
+
         return Reception::with(['supplier', 'user'])
-            ->whereBetween('received_at', [$from, $to])
-            ->when(
-                isset($filters['supplier_id']) && $filters['supplier_id'],
-                fn ($q) => $q->whereHas('supplier', fn ($q2) => $q2->where('uuid', $filters['supplier_id']))
-            )
+            ->withScopes(new ReceptionByDateRange($from, $to))
+            ->when($supplierId, fn ($q) => $q->withScopes(new ReceptionBySupplier($supplierId)))
             ->orderByDesc('received_at');
     }
 

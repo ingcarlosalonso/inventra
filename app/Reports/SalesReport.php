@@ -5,7 +5,12 @@ namespace App\Reports;
 use App\Models\Client;
 use App\Models\PointOfSale;
 use App\Models\Sale;
+use App\Models\Sale\Scopes\ByClient as SaleByClient;
+use App\Models\Sale\Scopes\ByDateRange as SaleByDateRange;
+use App\Models\Sale\Scopes\ByPointOfSale as SaleByPointOfSale;
+use App\Models\Sale\Scopes\ByState as SaleByState;
 use App\Models\SaleState;
+use App\Models\Scopes\ByUuid;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -45,21 +50,38 @@ class SalesReport
         return $filled;
     }
 
+    /** @return array<string, int|null> */
+    private function resolveFilterIds(array $filters): array
+    {
+        return [
+            'client_id' => ! empty($filters['client_id'])
+                ? Client::query()->withScopes(new ByUuid($filters['client_id']))->value('id')
+                : null,
+            'point_of_sale_id' => ! empty($filters['point_of_sale_id'])
+                ? PointOfSale::query()->withScopes(new ByUuid($filters['point_of_sale_id']))->value('id')
+                : null,
+            'sale_state_id' => ! empty($filters['sale_state_id'])
+                ? SaleState::query()->withScopes(new ByUuid($filters['sale_state_id']))->value('id')
+                : null,
+        ];
+    }
+
     public function getData(array $filters): array
     {
         [$from, $to] = $this->dateRange($filters);
+        $ids = $this->resolveFilterIds($filters);
 
         $query = Sale::with(['client', 'saleState', 'pointOfSale', 'payments'])
-            ->whereBetween('created_at', [$from, $to]);
+            ->withScopes(new SaleByDateRange($from, $to));
 
-        if (! empty($filters['client_id'])) {
-            $query->whereHas('client', fn ($q) => $q->where('uuid', $filters['client_id']));
+        if ($ids['client_id']) {
+            $query->withScopes(new SaleByClient($ids['client_id']));
         }
-        if (! empty($filters['point_of_sale_id'])) {
-            $query->whereHas('pointOfSale', fn ($q) => $q->where('uuid', $filters['point_of_sale_id']));
+        if ($ids['point_of_sale_id']) {
+            $query->withScopes(new SaleByPointOfSale($ids['point_of_sale_id']));
         }
-        if (! empty($filters['sale_state_id'])) {
-            $query->whereHas('saleState', fn ($q) => $q->where('uuid', $filters['sale_state_id']));
+        if ($ids['sale_state_id']) {
+            $query->withScopes(new SaleByState($ids['sale_state_id']));
         }
 
         $sales = $query->orderByDesc('created_at')->get();
@@ -75,10 +97,10 @@ class SalesReport
             DB::raw('SUM(total) as revenue'),
             DB::raw('SUM(discount_amount) as discounts'),
         )
-            ->whereBetween('created_at', [$from, $to])
-            ->when(! empty($filters['client_id']), fn ($q) => $q->whereHas('client', fn ($q2) => $q2->where('uuid', $filters['client_id'])))
-            ->when(! empty($filters['point_of_sale_id']), fn ($q) => $q->whereHas('pointOfSale', fn ($q2) => $q2->where('uuid', $filters['point_of_sale_id'])))
-            ->when(! empty($filters['sale_state_id']), fn ($q) => $q->whereHas('saleState', fn ($q2) => $q2->where('uuid', $filters['sale_state_id'])))
+            ->withScopes(new SaleByDateRange($from, $to))
+            ->when($ids['client_id'], fn ($q) => $q->withScopes(new SaleByClient($ids['client_id'])))
+            ->when($ids['point_of_sale_id'], fn ($q) => $q->withScopes(new SaleByPointOfSale($ids['point_of_sale_id'])))
+            ->when($ids['sale_state_id'], fn ($q) => $q->withScopes(new SaleByState($ids['sale_state_id'])))
             ->groupBy(DB::raw('DATE(created_at)'))
             ->orderBy('date')
             ->get();
@@ -116,12 +138,13 @@ class SalesReport
     public function getExportData(array $filters): array
     {
         [$from, $to] = $this->dateRange($filters);
+        $ids = $this->resolveFilterIds($filters);
 
         $sales = Sale::with(['client', 'saleState', 'pointOfSale', 'payments'])
-            ->whereBetween('created_at', [$from, $to])
-            ->when(! empty($filters['client_id']), fn ($q) => $q->whereHas('client', fn ($q2) => $q2->where('uuid', $filters['client_id'])))
-            ->when(! empty($filters['point_of_sale_id']), fn ($q) => $q->whereHas('pointOfSale', fn ($q2) => $q2->where('uuid', $filters['point_of_sale_id'])))
-            ->when(! empty($filters['sale_state_id']), fn ($q) => $q->whereHas('saleState', fn ($q2) => $q2->where('uuid', $filters['sale_state_id'])))
+            ->withScopes(new SaleByDateRange($from, $to))
+            ->when($ids['client_id'], fn ($q) => $q->withScopes(new SaleByClient($ids['client_id'])))
+            ->when($ids['point_of_sale_id'], fn ($q) => $q->withScopes(new SaleByPointOfSale($ids['point_of_sale_id'])))
+            ->when($ids['sale_state_id'], fn ($q) => $q->withScopes(new SaleByState($ids['sale_state_id'])))
             ->orderByDesc('created_at')
             ->get();
 

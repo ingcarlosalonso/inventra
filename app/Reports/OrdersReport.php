@@ -5,7 +5,12 @@ namespace App\Reports;
 use App\Models\Client;
 use App\Models\Courier;
 use App\Models\Order;
+use App\Models\Order\Scopes\ByClient as OrderByClient;
+use App\Models\Order\Scopes\ByCourier as OrderByCourier;
+use App\Models\Order\Scopes\ByDateRange as OrderByDateRange;
+use App\Models\Order\Scopes\ByState as OrderByState;
 use App\Models\OrderState;
+use App\Models\Scopes\ByUuid;
 use Illuminate\Support\Carbon;
 
 class OrdersReport
@@ -75,11 +80,23 @@ class OrdersReport
 
     private function buildQuery(array $filters, Carbon $from, Carbon $to)
     {
+        $clientId = isset($filters['client_id']) && $filters['client_id']
+            ? Client::query()->withScopes(new ByUuid($filters['client_id']))->value('id')
+            : null;
+
+        $orderStateId = isset($filters['order_state_id']) && $filters['order_state_id']
+            ? OrderState::query()->withScopes(new ByUuid($filters['order_state_id']))->value('id')
+            : null;
+
+        $courierId = isset($filters['courier_id']) && $filters['courier_id']
+            ? Courier::query()->withScopes(new ByUuid($filters['courier_id']))->value('id')
+            : null;
+
         return Order::with(['client', 'orderState', 'courier'])
-            ->whereBetween('created_at', [$from, $to])
-            ->when(isset($filters['client_id']) && $filters['client_id'], fn ($q) => $q->whereHas('client', fn ($q2) => $q2->where('uuid', $filters['client_id'])))
-            ->when(isset($filters['order_state_id']) && $filters['order_state_id'], fn ($q) => $q->whereHas('orderState', fn ($q2) => $q2->where('uuid', $filters['order_state_id'])))
-            ->when(isset($filters['courier_id']) && $filters['courier_id'], fn ($q) => $q->whereHas('courier', fn ($q2) => $q2->where('uuid', $filters['courier_id'])))
+            ->withScopes(new OrderByDateRange($from, $to))
+            ->when($clientId, fn ($q) => $q->withScopes(new OrderByClient($clientId)))
+            ->when($orderStateId, fn ($q) => $q->withScopes(new OrderByState($orderStateId)))
+            ->when($courierId, fn ($q) => $q->withScopes(new OrderByCourier($courierId)))
             ->orderByDesc('created_at');
     }
 

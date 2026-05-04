@@ -7,6 +7,7 @@ use App\Models\Client\Scopes\BySearch as ClientBySearch;
 use App\Models\CompositeProduct;
 use App\Models\CompositeProduct\Scopes\BySearch as CompositeProductBySearch;
 use App\Models\DailyCash;
+use App\Models\DailyCash\Scopes\ByPointOfSaleName as DailyCashByPointOfSaleName;
 use App\Models\DailyCash\Scopes\Open;
 use App\Models\Order;
 use App\Models\Order\Scopes\BySearch as OrderBySearch;
@@ -14,6 +15,7 @@ use App\Models\Product;
 use App\Models\Product\Scopes\BelowMinStock;
 use App\Models\Product\Scopes\BySearch as ProductBySearch;
 use App\Models\ProductMovement;
+use App\Models\ProductMovement\Scopes\BySearch as ProductMovementBySearch;
 use App\Models\Promotion;
 use App\Models\Promotion\Scopes\BySearch as PromotionBySearch;
 use App\Models\Quote;
@@ -334,7 +336,7 @@ class AssistantService
                     ->with(['pointOfSale', 'movements.cashMovementType']);
 
                 if ($point_of_sale !== '') {
-                    $query->whereHas('pointOfSale', fn ($q) => $q->where('name', 'like', "%{$point_of_sale}%"));
+                    $query->withScopes(new DailyCashByPointOfSaleName($point_of_sale));
                 }
 
                 $cashes = $query->get();
@@ -364,7 +366,7 @@ class AssistantService
                     ->latest();
 
                 if ($search !== '') {
-                    $query->whereHas('product', fn ($q) => $q->where('name', 'like', "%{$search}%"));
+                    $query->withScopes(new ProductMovementBySearch($search));
                 }
 
                 $movements = $query->limit((int) min((int) $limit, 50))->get();

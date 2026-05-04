@@ -3,7 +3,11 @@
 namespace App\Reports;
 
 use App\Models\DailyCash;
+use App\Models\DailyCash\Scopes\ByDateRange as DailyCashByDateRange;
+use App\Models\DailyCash\Scopes\ByPointOfSale as DailyCashByPointOfSale;
+use App\Models\DailyCash\Scopes\ByStatus as DailyCashByStatus;
 use App\Models\PointOfSale;
+use App\Models\Scopes\ByUuid;
 use Illuminate\Support\Carbon;
 
 class DailyCashesReport
@@ -68,19 +72,17 @@ class DailyCashesReport
 
     private function buildQuery(array $filters, Carbon $from, Carbon $to)
     {
+        $pointOfSaleId = isset($filters['point_of_sale_id']) && $filters['point_of_sale_id']
+            ? PointOfSale::query()->withScopes(new ByUuid($filters['point_of_sale_id']))->value('id')
+            : null;
+
         return DailyCash::with(['pointOfSale', 'user'])
             ->withSum('payments', 'amount')
             ->withSum(['cashMovements as income_sum' => fn ($q) => $q->whereRelation('cashMovementType', 'is_income', true)], 'amount')
             ->withSum(['cashMovements as expense_sum' => fn ($q) => $q->whereRelation('cashMovementType', 'is_income', false)], 'amount')
-            ->whereBetween('opened_at', [$from, $to])
-            ->when(
-                isset($filters['point_of_sale_id']) && $filters['point_of_sale_id'],
-                fn ($q) => $q->whereHas('pointOfSale', fn ($q2) => $q2->where('uuid', $filters['point_of_sale_id']))
-            )
-            ->when(
-                isset($filters['only_closed']) && $filters['only_closed'],
-                fn ($q) => $q->where('is_closed', true)
-            )
+            ->withScopes(new DailyCashByDateRange($from, $to))
+            ->when($pointOfSaleId, fn ($q) => $q->withScopes(new DailyCashByPointOfSale($pointOfSaleId)))
+            ->when(isset($filters['only_closed']) && $filters['only_closed'], fn ($q) => $q->withScopes(new DailyCashByStatus(true)))
             ->orderByDesc('opened_at');
     }
 

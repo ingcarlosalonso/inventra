@@ -4,11 +4,18 @@ namespace App\Services;
 
 use App\Models\Client;
 use App\Models\DailyCash;
+use App\Models\DailyCash\Scopes\Open as DailyCashOpen;
 use App\Models\Order;
+use App\Models\Order\Scopes\WithNonFinalState;
 use App\Models\Payment;
 use App\Models\ProductPresentation;
+use App\Models\ProductPresentation\Scopes\BelowMinStock as PresentationBelowMinStock;
 use App\Models\Quote;
+use App\Models\Quote\Scopes\NotConverted;
 use App\Models\Sale;
+use App\Models\Scopes\Active;
+use App\Models\Scopes\CreatedAfter;
+use App\Models\Scopes\CreatedOn;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -35,22 +42,20 @@ class DashboardService
 
     private function kpis(Carbon $today): array
     {
-        $todaySales = Sale::whereDate('created_at', today())->get();
+        $todaySales = Sale::query()->withScopes(new CreatedOn(today()))->get();
         $monthStart = now()->startOfMonth();
 
         return [
             'today_revenue' => (float) $todaySales->sum('total'),
             'today_sales_count' => $todaySales->count(),
-            'today_collected' => (float) Payment::whereDate('created_at', today())->sum('amount'),
-            'month_revenue' => (float) Sale::where('created_at', '>=', $monthStart)->sum('total'),
-            'month_sales_count' => Sale::where('created_at', '>=', $monthStart)->count(),
-            'active_orders' => Order::whereHas('orderState', fn ($q) => $q->where('is_final_state', false))->count(),
-            'pending_quotes' => Quote::whereNull('sale_id')->count(),
+            'today_collected' => (float) Payment::query()->withScopes(new CreatedOn(today()))->sum('amount'),
+            'month_revenue' => (float) Sale::query()->withScopes(new CreatedAfter($monthStart))->sum('total'),
+            'month_sales_count' => Sale::query()->withScopes(new CreatedAfter($monthStart))->count(),
+            'active_orders' => Order::query()->withScopes(new WithNonFinalState)->count(),
+            'pending_quotes' => Quote::query()->withScopes(new NotConverted)->count(),
             'total_clients' => Client::count(),
-            'low_stock_count' => ProductPresentation::whereColumn('stock', '<=', 'min_stock')
-                ->where('is_active', true)
-                ->count(),
-            'open_cashes_count' => DailyCash::where('is_closed', false)->count(),
+            'low_stock_count' => ProductPresentation::query()->withScopes([new PresentationBelowMinStock, new Active])->count(),
+            'open_cashes_count' => DailyCash::query()->withScopes(new DailyCashOpen)->count(),
         ];
     }
 
@@ -62,7 +67,7 @@ class DashboardService
             DB::raw('SUM(total) as revenue'),
             DB::raw('SUM(discount_amount) as discounts'),
         )
-            ->where('created_at', '>=', $from)
+            ->withScopes(new CreatedAfter($from))
             ->groupBy(DB::raw('DATE(created_at)'))
             ->orderBy('date')
             ->get();
@@ -123,7 +128,7 @@ class DashboardService
             ->withSum('payments', 'amount')
             ->withSum(['cashMovements as income_sum' => fn ($q) => $q->whereRelation('cashMovementType', 'is_income', true)], 'amount')
             ->withSum(['cashMovements as expense_sum' => fn ($q) => $q->whereRelation('cashMovementType', 'is_income', false)], 'amount')
-            ->where('is_closed', false)
+            ->withScopes(new DailyCashOpen)
             ->orderByDesc('opened_at')
             ->get()
             ->map(fn ($dc) => [
@@ -189,8 +194,7 @@ class DashboardService
     private function lowStock(): array
     {
         return ProductPresentation::with(['product', 'presentation'])
-            ->whereColumn('stock', '<=', 'min_stock')
-            ->where('is_active', true)
+            ->withScopes([new PresentationBelowMinStock, new Active])
             ->orderByRaw('stock - min_stock ASC')
             ->limit(5)
             ->get()
@@ -210,7 +214,7 @@ class DashboardService
             DB::raw('SUM(total) as revenue'),
             DB::raw('COUNT(*) as count'),
         )
-            ->where('created_at', '>=', $from)
+            ->withScopes(new CreatedAfter($from))
             ->groupBy(DB::raw('DATE(created_at)'))
             ->orderBy('sale_date')
             ->get()
