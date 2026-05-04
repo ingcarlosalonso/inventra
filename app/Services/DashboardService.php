@@ -206,17 +206,16 @@ class DashboardService
     private function weeklyComparison(Carbon $from): array
     {
         return Sale::select(
-            DB::raw('DAYOFWEEK(created_at) as dow'),
-            DB::raw('DAYNAME(created_at) as day_name'),
+            DB::raw('DATE(created_at) as sale_date'),
             DB::raw('SUM(total) as revenue'),
             DB::raw('COUNT(*) as count'),
         )
             ->where('created_at', '>=', $from)
-            ->groupBy(DB::raw('DAYOFWEEK(created_at)'), DB::raw('DAYNAME(created_at)'))
-            ->orderBy('dow')
+            ->groupBy(DB::raw('DATE(created_at)'))
+            ->orderBy('sale_date')
             ->get()
             ->map(fn ($r) => [
-                'day' => $r->day_name,
+                'day' => Carbon::parse($r->sale_date)->dayName,
                 'revenue' => (float) $r->revenue,
                 'count' => (int) $r->count,
             ])

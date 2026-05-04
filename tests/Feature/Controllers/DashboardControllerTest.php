@@ -152,13 +152,14 @@ class DashboardControllerTest extends TenantFeatureTestCase
                 'point_of_sale_id' => $pos->uuid,
                 'sale_state_id' => $state->uuid,
                 'items' => [[
-                    'product_presentation_id' => $pp->uuid,
+                    'item_type' => 'product',
+                    'saleable_id' => $pp->uuid,
                     'description' => 'Test',
                     'quantity' => 1,
                     'unit_price' => 100,
                 ]],
                 'payments' => [['payment_method_id' => $pm->uuid, 'amount' => 100]],
-            ]);
+            ])->assertCreated();
 
         $response = $this->actingAs($this->user, 'sanctum')
             ->getJson('/api/dashboard')

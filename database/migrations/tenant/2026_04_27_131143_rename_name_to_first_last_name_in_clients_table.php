@@ -14,10 +14,12 @@ return new class extends Migration
             $table->string('last_name')->after('first_name');
         });
 
-        DB::table('clients')->update([
-            'first_name' => DB::raw("SUBSTRING_INDEX(`name`, ' ', 1)"),
-            'last_name' => DB::raw("TRIM(SUBSTR(`name`, LOCATE(' ', `name`)))"),
-        ]);
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::table('clients')->update([
+                'first_name' => DB::raw("SUBSTRING_INDEX(`name`, ' ', 1)"),
+                'last_name' => DB::raw("TRIM(SUBSTR(`name`, LOCATE(' ', `name`)))"),
+            ]);
+        }
 
         Schema::table('clients', function (Blueprint $table) {
             $table->dropColumn('name');
@@ -30,9 +32,11 @@ return new class extends Migration
             $table->string('name')->after('uuid');
         });
 
-        DB::table('clients')->update([
-            'name' => DB::raw("CONCAT(`first_name`, ' ', `last_name`)"),
-        ]);
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::table('clients')->update([
+                'name' => DB::raw("CONCAT(`first_name`, ' ', `last_name`)"),
+            ]);
+        }
 
         Schema::table('clients', function (Blueprint $table) {
             $table->dropColumn(['first_name', 'last_name']);

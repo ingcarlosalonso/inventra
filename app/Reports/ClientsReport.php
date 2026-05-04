@@ -23,12 +23,12 @@ class ClientsReport
                 'total_clients' => $rows->count(),
             ],
             'chart' => $rows->take(10)->filter(fn ($r) => $r->sales_count > 0)->map(fn ($r) => [
-                'name' => $r->name,
+                'name' => trim("{$r->first_name} {$r->last_name}"),
                 'revenue' => (float) $r->total_revenue,
                 'sales_count' => (int) $r->sales_count,
             ])->values(),
             'table' => $rows->map(fn ($r) => [
-                'name' => $r->name,
+                'name' => trim("{$r->first_name} {$r->last_name}"),
                 'email' => $r->email,
                 'phone' => $r->phone,
                 'sales_count' => (int) $r->sales_count,
@@ -47,7 +47,7 @@ class ClientsReport
         return $this->buildQuery($from, $to)
             ->get()
             ->map(fn ($r) => [
-                $r->name,
+                trim("{$r->first_name} {$r->last_name}"),
                 $r->email ?? '—',
                 $r->phone ?? '—',
                 (int) $r->sales_count,
@@ -68,7 +68,8 @@ class ClientsReport
             ->table('clients')
             ->select(
                 'clients.uuid',
-                'clients.name',
+                'clients.first_name',
+                'clients.last_name',
                 'clients.email',
                 'clients.phone',
                 DB::raw('COUNT(sales.id) as sales_count'),
@@ -82,7 +83,7 @@ class ClientsReport
                     ->whereBetween('sales.created_at', [$from, $to]);
             })
             ->whereNull('clients.deleted_at')
-            ->groupBy('clients.id', 'clients.uuid', 'clients.name', 'clients.email', 'clients.phone')
+            ->groupBy('clients.id', 'clients.uuid', 'clients.first_name', 'clients.last_name', 'clients.email', 'clients.phone')
             ->orderByDesc('total_revenue');
     }
 

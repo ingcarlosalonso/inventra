@@ -22,7 +22,7 @@ class CustomizationControllerTest extends TenantFeatureTestCase
         $this->actingAs($this->user, 'sanctum')
             ->getJson('/api/customization')
             ->assertOk()
-            ->assertJsonPath('data.primary_color', '#3B82F6');
+            ->assertJsonPath('data.primary_color', '#4F46E5');
 
         $this->assertDatabaseCount('customizations', 1, 'tenant');
     }

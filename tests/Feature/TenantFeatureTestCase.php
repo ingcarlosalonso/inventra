@@ -20,14 +20,16 @@ abstract class TenantFeatureTestCase extends TestCase
     {
         parent::setUp();
 
+        config(['database.connections.tenant.database' => env('DB_TENANT_DATABASE', 'in_ventra_testing')]);
+        DB::purge('tenant');
+
+        // Migrate before opening any transaction so Artisan can acquire the write lock.
+        self::migrateTenantDb();
+
         // Set config and purge BEFORE DatabaseTransactions begins its transaction.
         // Since DatabaseTransactions uses a #[Before] hook in PHPUnit 11 that fires
         // after setUp(), we need to manually restart the transaction here.
-        config(['database.connections.tenant.database' => env('DB_TENANT_DATABASE', 'in_ventra_testing')]);
-        DB::purge('tenant');
         DB::connection('tenant')->beginTransaction();
-
-        self::migrateTenantDb();
 
         $this->withoutMiddleware([NeedsTenant::class]);
 

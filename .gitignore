@@ -24,3 +24,5 @@ Homestead.yaml
 Thumbs.db
 .claude/
 stockadministrator_floreria_structure.sql
+/database/testing.sqlite
+/database/testing_tenant.sqlite

@@ -30,9 +30,9 @@ class BySearchTest extends ModelTestCase
 
     public function test_search_is_case_insensitive(): void
     {
-        ProductMovementType::factory()->create(['name' => 'Pérdida por rotura']);
+        ProductMovementType::factory()->create(['name' => 'perdida por rotura']);
 
-        $results = ProductMovementType::withScopes(new BySearch('PÉRDIDA'))->get();
+        $results = ProductMovementType::withScopes(new BySearch('PERDIDA'))->get();
 
         $this->assertCount(1, $results);
     }

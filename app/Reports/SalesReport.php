@@ -83,7 +83,7 @@ class SalesReport
             ->orderBy('date')
             ->get();
 
-        $clients = Client::orderBy('name')->get(['uuid', 'name'])->map(fn ($c) => ['id' => $c->uuid, 'name' => $c->name]);
+        $clients = Client::orderBy('first_name')->orderBy('last_name')->get(['uuid', 'first_name', 'last_name'])->map(fn ($c) => ['id' => $c->uuid, 'name' => $c->name]);
         $pointsOfSale = PointOfSale::orderBy('name')->get(['uuid', 'name'])->map(fn ($p) => ['id' => $p->uuid, 'name' => $p->name]);
         $saleStates = SaleState::orderBy('name')->get(['uuid', 'name'])->map(fn ($s) => ['id' => $s->uuid, 'name' => $s->name]);
 
