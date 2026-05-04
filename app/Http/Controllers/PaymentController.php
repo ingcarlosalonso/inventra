@@ -6,6 +6,8 @@ use App\Http\Requests\Payment\StorePaymentRequest;
 use App\Http\Resources\Payment\PaymentResource;
 use App\Models\Currency;
 use App\Models\DailyCash;
+use App\Models\DailyCash\Scopes\ByPointOfSale as DailyCashByPointOfSale;
+use App\Models\DailyCash\Scopes\Open;
 use App\Models\Order;
 use App\Models\Order\Scopes\BySearch as OrderBySearch;
 use App\Models\Order\Scopes\WithPendingBalance as OrderWithPendingBalance;
@@ -14,6 +16,7 @@ use App\Models\PaymentMethod;
 use App\Models\Sale;
 use App\Models\Sale\Scopes\BySearch as SaleBySearch;
 use App\Models\Sale\Scopes\WithPendingBalance as SaleWithPendingBalance;
+use App\Models\Scopes\ByUuid;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -83,20 +86,20 @@ class PaymentController extends Controller
         $data = $request->validated();
 
         $payable = match ($data['payable_type']) {
-            'sale' => Sale::where('uuid', $data['payable_id'])->firstOrFail(),
-            'order' => Order::where('uuid', $data['payable_id'])->firstOrFail(),
+            'sale' => Sale::query()->withScopes(new ByUuid($data['payable_id']))->firstOrFail(),
+            'order' => Order::query()->withScopes(new ByUuid($data['payable_id']))->firstOrFail(),
         };
 
-        $paymentMethodId = PaymentMethod::where('uuid', $data['payment_method_id'])->value('id');
+        $paymentMethodId = PaymentMethod::query()->withScopes(new ByUuid($data['payment_method_id']))->value('id');
 
         $currencyId = isset($data['currency_id'])
-            ? Currency::where('uuid', $data['currency_id'])->value('id')
+            ? Currency::query()->withScopes(new ByUuid($data['currency_id']))->value('id')
             : null;
 
         $dailyCashId = isset($data['daily_cash_id'])
-            ? DailyCash::where('uuid', $data['daily_cash_id'])->value('id')
-            : DailyCash::where('point_of_sale_id', $payable->point_of_sale_id)
-                ->where('is_closed', false)
+            ? DailyCash::query()->withScopes(new ByUuid($data['daily_cash_id']))->value('id')
+            : DailyCash::query()
+                ->withScopes([new DailyCashByPointOfSale($payable->point_of_sale_id), new Open])
                 ->orderByDesc('id')
                 ->value('id');
 

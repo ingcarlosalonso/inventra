@@ -5,6 +5,7 @@ namespace App\Actions;
 use App\Models\DailyCash;
 use App\Models\ProductPresentation;
 use App\Models\Reception;
+use App\Models\Scopes\ByUuid;
 use App\Models\Supplier;
 use Illuminate\Support\Facades\DB;
 
@@ -24,11 +25,11 @@ class StoreReceptionAction
     {
         return DB::connection('tenant')->transaction(function () use ($data, $userId): Reception {
             $supplierId = isset($data['supplier_id'])
-                ? Supplier::where('uuid', $data['supplier_id'])->value('id')
+                ? Supplier::query()->withScopes(new ByUuid($data['supplier_id']))->value('id')
                 : null;
 
             $dailyCashId = isset($data['daily_cash_id'])
-                ? DailyCash::where('uuid', $data['daily_cash_id'])->value('id')
+                ? DailyCash::query()->withScopes(new ByUuid($data['daily_cash_id']))->value('id')
                 : null;
 
             $reception = Reception::create([
@@ -44,7 +45,9 @@ class StoreReceptionAction
             $total = 0;
 
             foreach ($data['items'] as $item) {
-                $productPresentation = ProductPresentation::where('uuid', $item['product_presentation_id'])->firstOrFail();
+                $productPresentation = ProductPresentation::query()
+                    ->withScopes(new ByUuid($item['product_presentation_id']))
+                    ->firstOrFail();
 
                 $quantity = (float) $item['quantity'];
                 $unitCost = (float) $item['unit_cost'];

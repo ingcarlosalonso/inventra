@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\StoreSaleAction;
 use App\Http\Requests\Sale\IndexSaleRequest;
 use App\Http\Requests\Sale\StoreSaleRequest;
 use App\Http\Resources\Sale\SaleResource;
@@ -10,6 +9,8 @@ use App\Models\Sale;
 use App\Models\Sale\Scopes\BySearch;
 use App\Models\Sale\Scopes\ByState;
 use App\Models\SaleState;
+use App\Models\Scopes\ByUuid;
+use App\Services\ProcessSaleService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
@@ -25,7 +26,7 @@ class SaleController extends Controller
         }
 
         if ($request->filled('sale_state_id')) {
-            $stateId = SaleState::where('uuid', $request->string('sale_state_id'))->value('id');
+            $stateId = SaleState::query()->withScopes(new ByUuid($request->string('sale_state_id')))->value('id');
             if ($stateId) {
                 $query->withScopes(new ByState($stateId));
             }
@@ -36,9 +37,9 @@ class SaleController extends Controller
         );
     }
 
-    public function store(StoreSaleRequest $request, StoreSaleAction $action): JsonResponse
+    public function store(StoreSaleRequest $request, ProcessSaleService $service): JsonResponse
     {
-        $sale = $action->execute($request->validated(), $request->user()->id);
+        $sale = $service->execute($request->validated(), $request->user()->id);
 
         return SaleResource::make($sale)->response()->setStatusCode(201);
     }

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Actions\ConvertQuoteToSaleAction;
-use App\Actions\StoreQuoteAction;
 use App\Http\Requests\Quote\ConvertQuoteRequest;
 use App\Http\Requests\Quote\IndexQuoteRequest;
 use App\Http\Requests\Quote\StoreQuoteRequest;
@@ -11,6 +10,7 @@ use App\Http\Resources\Quote\QuoteResource;
 use App\Http\Resources\Sale\SaleResource;
 use App\Models\Quote;
 use App\Models\Quote\Scopes\BySearch;
+use App\Services\ProcessQuoteService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
@@ -29,9 +29,9 @@ class QuoteController extends Controller
         );
     }
 
-    public function store(StoreQuoteRequest $request, StoreQuoteAction $action): JsonResponse
+    public function store(StoreQuoteRequest $request, ProcessQuoteService $service): JsonResponse
     {
-        $quote = $action->execute($request->validated(), $request->user()->id);
+        $quote = $service->execute($request->validated(), $request->user()->id);
 
         return QuoteResource::make($quote)->response()->setStatusCode(201);
     }

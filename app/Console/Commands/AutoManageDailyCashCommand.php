@@ -3,7 +3,13 @@
 namespace App\Console\Commands;
 
 use App\Models\DailyCash;
+use App\Models\DailyCash\Scopes\ByPointOfSale as DailyCashByPointOfSale;
+use App\Models\DailyCash\Scopes\Open;
+use App\Models\DailyCash\Scopes\OpenedToday;
 use App\Models\PointOfSale;
+use App\Models\PointOfSale\Scopes\WithAutoCloseTime;
+use App\Models\PointOfSale\Scopes\WithAutoOpenTime;
+use App\Models\Scopes\Active;
 use App\Models\Tenant;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
@@ -28,17 +34,16 @@ class AutoManageDailyCashCommand extends Command
 
     private function processOpenings(string $now): void
     {
-        PointOfSale::where('is_active', true)
-            ->whereNotNull('auto_open_time')
+        PointOfSale::query()
+            ->withScopes([new Active, new WithAutoOpenTime])
             ->get()
             ->each(function (PointOfSale $pos) use ($now) {
                 if (substr($pos->auto_open_time, 0, 5) !== $now) {
                     return;
                 }
 
-                $alreadyOpen = DailyCash::where('point_of_sale_id', $pos->id)
-                    ->where('is_closed', false)
-                    ->whereDate('opened_at', today())
+                $alreadyOpen = DailyCash::query()
+                    ->withScopes([new DailyCashByPointOfSale($pos->id), new Open, new OpenedToday])
                     ->exists();
 
                 if ($alreadyOpen) {
@@ -59,17 +64,16 @@ class AutoManageDailyCashCommand extends Command
 
     private function processClosings(string $now): void
     {
-        PointOfSale::where('is_active', true)
-            ->whereNotNull('auto_close_time')
+        PointOfSale::query()
+            ->withScopes([new Active, new WithAutoCloseTime])
             ->get()
             ->each(function (PointOfSale $pos) use ($now) {
                 if (substr($pos->auto_close_time, 0, 5) !== $now) {
                     return;
                 }
 
-                $dailyCash = DailyCash::where('point_of_sale_id', $pos->id)
-                    ->where('is_closed', false)
-                    ->whereDate('opened_at', today())
+                $dailyCash = DailyCash::query()
+                    ->withScopes([new DailyCashByPointOfSale($pos->id), new Open, new OpenedToday])
                     ->first();
 
                 if (! $dailyCash) {

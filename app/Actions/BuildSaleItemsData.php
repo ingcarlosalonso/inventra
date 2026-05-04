@@ -7,6 +7,7 @@ use App\Enums\SaleItemType;
 use App\Models\CompositeProduct;
 use App\Models\ProductPresentation;
 use App\Models\Promotion;
+use App\Models\Scopes\ByUuids;
 use Illuminate\Database\Eloquent\Collection;
 
 class BuildSaleItemsData
@@ -48,17 +49,20 @@ class BuildSaleItemsData
     {
         [$productUuids, $compositeUuids, $promotionUuids] = $this->partitionUuids($items);
 
-        $presentations = ProductPresentation::whereIn('uuid', $productUuids)
+        $presentations = ProductPresentation::query()
+            ->withScopes(new ByUuids($productUuids))
             ->with(['product', 'presentation'])
             ->get()
             ->keyBy('uuid');
 
-        $composites = CompositeProduct::whereIn('uuid', $compositeUuids)
+        $composites = CompositeProduct::query()
+            ->withScopes(new ByUuids($compositeUuids))
             ->with(['items.product.productPresentations'])
             ->get()
             ->keyBy('uuid');
 
-        $promotions = Promotion::whereIn('uuid', $promotionUuids)
+        $promotions = Promotion::query()
+            ->withScopes(new ByUuids($promotionUuids))
             ->with(['items.product.productPresentations'])
             ->get()
             ->keyBy('uuid');

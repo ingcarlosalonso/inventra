@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\StoreOrderAction;
 use App\Http\Requests\Order\IndexOrderRequest;
 use App\Http\Requests\Order\StoreOrderRequest;
 use App\Http\Requests\Order\UpdateOrderStateRequest;
@@ -11,6 +10,8 @@ use App\Models\Order;
 use App\Models\Order\Scopes\BySearch;
 use App\Models\Order\Scopes\ByState;
 use App\Models\OrderState;
+use App\Models\Scopes\ByUuid;
+use App\Services\ProcessOrderService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
@@ -26,7 +27,7 @@ class OrderController extends Controller
         }
 
         if ($request->filled('order_state_id')) {
-            $stateId = OrderState::where('uuid', $request->string('order_state_id'))->value('id');
+            $stateId = OrderState::query()->withScopes(new ByUuid($request->string('order_state_id')))->value('id');
             if ($stateId) {
                 $query->withScopes(new ByState($stateId));
             }
@@ -37,9 +38,9 @@ class OrderController extends Controller
         );
     }
 
-    public function store(StoreOrderRequest $request, StoreOrderAction $action): JsonResponse
+    public function store(StoreOrderRequest $request, ProcessOrderService $service): JsonResponse
     {
-        $order = $action->execute($request->validated(), $request->user()->id);
+        $order = $service->execute($request->validated(), $request->user()->id);
 
         return OrderResource::make($order)->response()->setStatusCode(201);
     }

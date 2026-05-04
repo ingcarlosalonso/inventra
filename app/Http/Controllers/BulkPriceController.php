@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Actions\BulkPriceUpdateAction;
 use App\Http\Resources\Product\ProductResource;
 use App\Models\Product;
+use App\Models\Product\Scopes\ByProductType;
 use App\Models\Product\Scopes\BySearch as ProductBySearch;
 use App\Models\ProductType;
 use App\Models\Scopes\Active;
+use App\Models\Scopes\ByUuid;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -27,8 +29,10 @@ class BulkPriceController extends Controller
         ])->withScopes(new Active);
 
         if ($request->filled('product_type_id')) {
-            $productType = ProductType::where('uuid', $request->input('product_type_id'))->first();
-            $query->where('product_type_id', $productType?->id);
+            $productType = ProductType::query()->withScopes(new ByUuid($request->input('product_type_id')))->first();
+            if ($productType) {
+                $query->withScopes(new ByProductType($productType->id));
+            }
         }
 
         if ($request->filled('search')) {
@@ -48,8 +52,7 @@ class BulkPriceController extends Controller
         ]);
 
         if (! empty($validated['product_type_id'])) {
-            $productType = ProductType::where('uuid', $validated['product_type_id'])->first();
-            $validated['product_type_id'] = $productType?->id;
+            $validated['product_type_id'] = ProductType::query()->withScopes(new ByUuid($validated['product_type_id']))->value('id');
         }
 
         $updated = $action->handle($validated);

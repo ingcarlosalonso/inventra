@@ -5,12 +5,13 @@ namespace App\Actions;
 use App\Enums\SaleItemType;
 use App\Models\Quote;
 use App\Models\Sale;
+use App\Services\ProcessSaleService;
 use Illuminate\Support\Facades\DB;
 
 class ConvertQuoteToSaleAction
 {
     public function __construct(
-        private readonly StoreSaleAction $storeSaleAction
+        private readonly ProcessSaleService $processSaleService
     ) {}
 
     /**
@@ -58,7 +59,7 @@ class ConvertQuoteToSaleAction
                 'payments' => $data['payments'],
             ];
 
-            $sale = $this->storeSaleAction->execute($saleData, $userId);
+            $sale = $this->processSaleService->execute($saleData, $userId);
 
             $quote->update(['sale_id' => $sale->id]);
 

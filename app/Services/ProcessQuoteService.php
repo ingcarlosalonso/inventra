@@ -1,16 +1,18 @@
 <?php
 
-namespace App\Actions;
+namespace App\Services;
 
+use App\Actions\BuildSaleItemsData;
 use App\Models\Client;
 use App\Models\CompositeProduct;
 use App\Models\Currency;
 use App\Models\ProductPresentation;
 use App\Models\Promotion;
 use App\Models\Quote;
+use App\Models\Scopes\ByUuid;
 use Illuminate\Support\Facades\DB;
 
-class StoreQuoteAction
+class ProcessQuoteService
 {
     public function __construct(
         private readonly BuildSaleItemsData $buildSaleItemsData
@@ -40,11 +42,11 @@ class StoreQuoteAction
     {
         return DB::connection('tenant')->transaction(function () use ($data, $userId): Quote {
             $clientId = isset($data['client_id'])
-                ? Client::where('uuid', $data['client_id'])->value('id')
+                ? Client::query()->withScopes(new ByUuid($data['client_id']))->value('id')
                 : null;
 
             $currencyId = isset($data['currency_id'])
-                ? Currency::where('uuid', $data['currency_id'])->value('id')
+                ? Currency::query()->withScopes(new ByUuid($data['currency_id']))->value('id')
                 : null;
 
             $built = $this->buildSaleItemsData->execute(

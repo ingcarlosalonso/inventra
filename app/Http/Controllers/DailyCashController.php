@@ -12,6 +12,7 @@ use App\Models\DailyCash;
 use App\Models\DailyCash\Scopes\BySearch;
 use App\Models\DailyCash\Scopes\ByStatus;
 use App\Models\PointOfSale;
+use App\Models\Scopes\ByUuid;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
@@ -43,7 +44,7 @@ class DailyCashController extends Controller
 
     public function store(StoreDailyCashRequest $request): JsonResponse
     {
-        $pointOfSale = PointOfSale::where('uuid', $request->point_of_sale_id)->firstOrFail();
+        $pointOfSale = PointOfSale::query()->withScopes(new ByUuid($request->point_of_sale_id))->firstOrFail();
 
         $dailyCash = DailyCash::create([
             'point_of_sale_id' => $pointOfSale->id,
