@@ -181,7 +181,7 @@ function openCreate() {
 
 async function openEdit(item) {
   editing.value = item
-  const { data } = await get(`/api/roles/${item.id}`)
+  const { data } = await get(`/api/v1/settings/roles/${item.id}`)
   const permissions = data?.data?.permissions?.map(p => p.id) ?? []
   form.value = { name: item.name, permissions }
   formError.value = null; slideOverOpen.value = true
@@ -190,14 +190,14 @@ async function openEdit(item) {
 async function save() {
   formError.value = null
   const result = editing.value
-    ? await putForm(`/api/roles/${editing.value.id}`, form.value)
+    ? await putForm(`/api/v1/settings/roles/${editing.value.id}`, form.value)
     : await postForm('/api/v1/settings/roles', form.value)
   if (result.error) { if (!Object.keys(formErrors.value).length) formError.value = result.error; return }
   slideOverOpen.value = false; await fetchItems()
 }
 
 function confirmDelete(item) { deleteTarget.value = item; confirmOpen.value = true }
-async function doDelete() { confirmOpen.value = false; await del(`/api/roles/${deleteTarget.value.id}`); await fetchItems() }
+async function doDelete() { confirmOpen.value = false; await del(`/api/v1/settings/roles/${deleteTarget.value.id}`); await fetchItems() }
 
 onMounted(() => { fetchItems(); fetchPermissions() })
 </script>

@@ -12,7 +12,7 @@ use Inertia\Inertia;
 
 Route::middleware('auth')->post('/locale', [LocaleController::class, 'update'])->name('locale.update');
 
-Route::middleware('tenant')->group(function () {
+Route::middleware(['tenant', 'tenant.active'])->group(function () {
     Route::get('/login', fn () => Inertia::render('Auth/Login'))->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');

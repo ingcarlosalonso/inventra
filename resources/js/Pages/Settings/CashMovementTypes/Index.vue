@@ -158,14 +158,14 @@ async function save() {
     formError.value = null
     const payload = { name: form.value.name, is_income: form.value.is_income, is_active: form.value.is_active }
     const result = editing.value
-        ? await putForm(`/api/cash-movement-types/${editing.value.id}`, payload)
+        ? await putForm(`/api/v1/cash-movement-types/${editing.value.id}`, payload)
         : await postForm('/api/v1/cash-movement-types', payload)
     if (result.error) { if (!Object.keys(formErrors.value).length) formError.value = result.error; return }
     slideOverOpen.value = false; await fetchItems()
 }
 
 function confirmDelete(item) { deleteTarget.value = item; confirmOpen.value = true }
-async function doDelete() { confirmOpen.value = false; await del(`/api/cash-movement-types/${deleteTarget.value.id}`); await fetchItems() }
+async function doDelete() { confirmOpen.value = false; await del(`/api/v1/cash-movement-types/${deleteTarget.value.id}`); await fetchItems() }
 function navigateTo(url) { fetchItems(url) }
 
 let searchDebounce

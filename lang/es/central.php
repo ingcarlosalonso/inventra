@@ -14,6 +14,9 @@ return [
     'edit_tenant' => 'Editar cliente',
     'tenant_provisioned' => 'Cliente creado y base de datos provisionada.',
     'tenant_updated' => 'Cliente actualizado.',
+    'tenant_suspended' => 'Cliente suspendido.',
+    'tenant_suspended_access' => 'Esta cuenta se encuentra suspendida.',
+    'tenant_activated' => 'Cliente reactivado.',
 
     'name' => 'Nombre',
     'subdomain' => 'Subdominio',

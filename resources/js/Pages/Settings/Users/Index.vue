@@ -200,14 +200,14 @@ async function save() {
   const payload = { ...form.value }
   if (editing.value && !payload.password) delete payload.password
   const result = editing.value
-    ? await putForm(`/api/users/${editing.value.id}`, payload)
+    ? await putForm(`/api/v1/settings/users/${editing.value.id}`, payload)
     : await postForm('/api/v1/settings/users', payload)
   if (result.error) { if (!Object.keys(formErrors.value).length) formError.value = result.error; return }
   slideOverOpen.value = false; await fetchItems()
 }
 
 function confirmDelete(item) { deleteTarget.value = item; confirmOpen.value = true }
-async function doDelete() { confirmOpen.value = false; await del(`/api/users/${deleteTarget.value.id}`); await fetchItems() }
+async function doDelete() { confirmOpen.value = false; await del(`/api/v1/settings/users/${deleteTarget.value.id}`); await fetchItems() }
 function navigateTo(url) { fetchItems(url) }
 
 let searchDebounce

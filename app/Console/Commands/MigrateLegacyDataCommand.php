@@ -91,7 +91,7 @@ class MigrateLegacyDataCommand extends Command
 
     private function migrateTenant(Tenant $tenant): void
     {
-        $domain = $tenant->domains()->first()?->domain ?? '';
+        $domain = $tenant->domain ?? '';
         $subdomain = explode('.', $domain)[0] ?: Str::slug($tenant->name ?? 'tenant');
         $suggestedDb = "stockadministrator_{$subdomain}";
 

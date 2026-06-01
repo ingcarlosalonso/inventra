@@ -275,7 +275,7 @@ function confirmDelete(item) { deleteTarget.value = item; confirmOpen.value = tr
 
 async function doDelete() {
   confirmOpen.value = false
-  await del(`/api/daily-cashes/${deleteTarget.value.id}`)
+  await del(`/api/v1/daily-cashes/${deleteTarget.value.id}`)
   await fetchItems()
 }
 

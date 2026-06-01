@@ -36,6 +36,12 @@ class ProvisionTenantAction
             '--force' => true,
         ]);
 
+        Artisan::call('db:seed', [
+            '--class' => 'PermissionSeeder',
+            '--database' => 'tenant',
+            '--force' => true,
+        ]);
+
         Tenant::forgetCurrent();
 
         return $tenant;

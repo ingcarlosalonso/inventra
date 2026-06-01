@@ -211,7 +211,7 @@ async function save() {
     const payload = { name: form.value.name, is_income: form.value.is_income, is_active: form.value.is_active }
 
     const result = editing.value
-        ? await putForm(`/api/product-movement-types/${editing.value.id}`, payload)
+        ? await putForm(`/api/v1/products/movement-types/${editing.value.id}`, payload)
         : await postForm('/api/v1/products/movement-types', payload)
 
     if (result.error) {
@@ -230,7 +230,7 @@ function confirmDelete(item) {
 
 async function doDelete() {
     confirmOpen.value = false
-    await del(`/api/product-movement-types/${deleteTarget.value.id}`)
+    await del(`/api/v1/products/movement-types/${deleteTarget.value.id}`)
     await fetchItems()
 }
 

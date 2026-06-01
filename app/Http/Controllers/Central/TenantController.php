@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Central;
 use App\Actions\ProvisionTenantAction;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -72,17 +71,17 @@ class TenantController extends Controller
         return back()->with('success', __('central.tenant_updated'));
     }
 
-    public function suspend(Tenant $tenant): JsonResponse
+    public function suspend(Tenant $tenant): RedirectResponse
     {
         $tenant->suspend();
 
-        return response()->json(['status' => $tenant->status]);
+        return back()->with('success', __('central.tenant_suspended'));
     }
 
-    public function activate(Tenant $tenant): JsonResponse
+    public function activate(Tenant $tenant): RedirectResponse
     {
         $tenant->activate();
 
-        return response()->json(['status' => $tenant->status]);
+        return back()->with('success', __('central.tenant_activated'));
     }
 }

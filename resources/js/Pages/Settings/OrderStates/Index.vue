@@ -215,7 +215,7 @@ function openEdit(item) {
 async function save() {
   formError.value = null
   const result = editing.value
-    ? await putForm(`/api/order-states/${editing.value.id}`, form.value)
+    ? await putForm(`/api/v1/orders/states/${editing.value.id}`, form.value)
     : await postForm('/api/v1/orders/states', form.value)
   if (result.error) {
     if (!Object.keys(formErrors.value).length) formError.value = result.error
@@ -232,7 +232,7 @@ function confirmDelete(item) {
 
 async function doDelete() {
   confirmOpen.value = false
-  await del(`/api/order-states/${deleteTarget.value.id}`)
+  await del(`/api/v1/orders/states/${deleteTarget.value.id}`)
   await fetchItems()
 }
 

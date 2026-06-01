@@ -339,14 +339,14 @@ async function save() {
     barcodes: form.value.barcodes.filter(b => b.trim() !== ''),
   }
   const result = editing.value
-    ? await putForm(`/api/products/${editing.value.id}`, payload)
+    ? await putForm(`/api/v1/products/${editing.value.id}`, payload)
     : await postForm('/api/v1/products', payload)
   if (result.error) { if (!Object.keys(formErrors.value).length) formError.value = result.error; return }
   slideOverOpen.value = false; await fetchItems()
 }
 
 function confirmDelete(item) { deleteTarget.value = item; confirmOpen.value = true }
-async function doDelete() { confirmOpen.value = false; await del(`/api/products/${deleteTarget.value.id}`); await fetchItems() }
+async function doDelete() { confirmOpen.value = false; await del(`/api/v1/products/${deleteTarget.value.id}`); await fetchItems() }
 function navigateTo(url) { fetchItems(url) }
 
 let searchDebounce

@@ -1,6 +1,7 @@
 <?php
 
 use App\Exceptions\InsufficientStockException;
+use App\Http\Middleware\EnsureActiveTenant;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
@@ -34,6 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'tenant' => NeedsTenant::class,
             'tenant.session' => EnsureValidTenantSession::class,
+            'tenant.active' => EnsureActiveTenant::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

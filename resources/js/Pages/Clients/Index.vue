@@ -162,14 +162,14 @@ function openEdit(item) {
 async function save() {
     formError.value = null
     const result = editing.value
-        ? await putForm(`/api/clients/${editing.value.id}`, form.value)
+        ? await putForm(`/api/v1/clients/${editing.value.id}`, form.value)
         : await postForm('/api/v1/clients', form.value)
     if (result.error) { if (!Object.keys(formErrors.value).length) formError.value = result.error; return }
     slideOverOpen.value = false; await fetchItems()
 }
 
 function confirmDelete(item) { deleteTarget.value = item; confirmOpen.value = true }
-async function doDelete() { confirmOpen.value = false; await del(`/api/clients/${deleteTarget.value.id}`); await fetchItems() }
+async function doDelete() { confirmOpen.value = false; await del(`/api/v1/clients/${deleteTarget.value.id}`); await fetchItems() }
 function navigateTo(url) { fetchItems(url) }
 
 let searchDebounce

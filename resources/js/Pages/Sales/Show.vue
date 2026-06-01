@@ -231,7 +231,7 @@ const paymentMethodOptions = computed(() =>
 
 async function fetchSale() {
   const [saleRes, methodsRes] = await Promise.all([
-    get(`/api/sales/${props.uuid}`),
+    get(`/api/v1/sales/${props.uuid}`),
     get('/api/v1/sales/payment-methods'),
   ])
   if (saleRes.data) {
@@ -256,7 +256,7 @@ async function submitPayment() {
 
 async function doDelete() {
   confirmOpen.value = false
-  await del(`/api/sales/${props.uuid}`)
+  await del(`/api/v1/sales/${props.uuid}`)
   router.visit('/sales')
 }
 

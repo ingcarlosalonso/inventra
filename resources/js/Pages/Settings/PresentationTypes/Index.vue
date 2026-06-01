@@ -207,7 +207,7 @@ async function save() {
 
   let result
   if (editing.value) {
-    result = await putForm(`/api/presentation-types/${editing.value.id}`, payload)
+    result = await putForm(`/api/v1/products/presentation-types/${editing.value.id}`, payload)
   } else {
     result = await postForm('/api/v1/products/presentation-types', payload)
   }
@@ -228,7 +228,7 @@ function confirmDelete(item) {
 
 async function doDelete() {
   confirmOpen.value = false
-  await del(`/api/presentation-types/${deleteTarget.value.id}`)
+  await del(`/api/v1/products/presentation-types/${deleteTarget.value.id}`)
   await fetchItems()
 }
 

@@ -256,7 +256,7 @@ const posOptions = computed(() => pointsOfSale.value.map(p => ({ value: p.id, la
 const paymentMethodOptions = computed(() => paymentMethods.value.map(m => ({ value: m.id, label: m.name })))
 
 async function fetchQuote() {
-  const { data } = await get(`/api/quotes/${props.uuid}`)
+  const { data } = await get(`/api/v1/quotes/${props.uuid}`)
   if (data) quote.value = data.data
 }
 
@@ -290,7 +290,7 @@ async function doConvert() {
       amount: p.amount,
     })),
   }
-  const result = await postConvert(`/api/quotes/${props.uuid}/convert`, payload)
+  const result = await postConvert(`/api/v1/quotes/${props.uuid}/convert`, payload)
   if (result.error) {
     if (!Object.keys(convertErrors.value).length) convertError.value = result.error
     return
@@ -300,7 +300,7 @@ async function doConvert() {
 
 async function doDelete() {
   confirmOpen.value = false
-  await del(`/api/quotes/${props.uuid}`)
+  await del(`/api/v1/quotes/${props.uuid}`)
   router.visit('/quotes')
 }
 

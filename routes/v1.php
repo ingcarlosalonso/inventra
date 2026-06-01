@@ -37,7 +37,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['api', 'tenant'])->prefix('v1')->group(function () {
+Route::middleware(['api', 'tenant', 'tenant.active'])->prefix('v1')->group(function () {
 
     // ── Auth ──────────────────────────────────────────────────────────────────
     Route::post('auth/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
@@ -73,7 +73,6 @@ Route::middleware(['api', 'tenant'])->prefix('v1')->group(function () {
 
         // ── Orders ────────────────────────────────────────────────────────────
         Route::patch('orders/{order}/state', [OrderController::class, 'updateState']);
-        Route::apiResource('orders', OrderController::class)->only(['index', 'store', 'show', 'destroy']);
 
         Route::prefix('orders')->group(function () {
             Route::apiResource('couriers', CourierController::class)->except(['show']);
@@ -82,6 +81,8 @@ Route::middleware(['api', 'tenant'])->prefix('v1')->group(function () {
             Route::apiResource('states', OrderStateController::class)->except(['show']);
             Route::patch('states/{orderState}/toggle', [OrderStateController::class, 'toggle']);
         });
+
+        Route::apiResource('orders', OrderController::class)->only(['index', 'store', 'show', 'destroy']);
 
         // ── Products ──────────────────────────────────────────────────────────
         Route::apiResource('products', ProductController::class)->except(['show']);
@@ -166,8 +167,6 @@ Route::middleware(['api', 'tenant'])->prefix('v1')->group(function () {
         });
 
         // ── Sales ─────────────────────────────────────────────────────────────
-        Route::apiResource('sales', SaleController::class)->only(['index', 'store', 'show', 'destroy']);
-
         Route::prefix('sales')->group(function () {
             Route::apiResource('payment-methods', PaymentMethodController::class)->except(['show']);
             Route::patch('payment-methods/{paymentMethod}/toggle', [PaymentMethodController::class, 'toggle']);
@@ -183,6 +182,8 @@ Route::middleware(['api', 'tenant'])->prefix('v1')->group(function () {
             Route::apiResource('states', SaleStateController::class)->except(['show']);
             Route::patch('states/{saleState}/toggle', [SaleStateController::class, 'toggle']);
         });
+
+        Route::apiResource('sales', SaleController::class)->only(['index', 'store', 'show', 'destroy']);
 
         // ── Settings ──────────────────────────────────────────────────────────
         Route::prefix('settings')->group(function () {

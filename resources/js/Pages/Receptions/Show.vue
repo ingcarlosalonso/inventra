@@ -161,13 +161,13 @@ const reception = ref(null)
 const confirmOpen = ref(false)
 
 async function fetchReception() {
-  const { data } = await get(`/api/receptions/${props.uuid}`)
+  const { data } = await get(`/api/v1/receptions/${props.uuid}`)
   if (data) reception.value = data.data
 }
 
 async function doDelete() {
   confirmOpen.value = false
-  await del(`/api/receptions/${props.uuid}`)
+  await del(`/api/v1/receptions/${props.uuid}`)
   router.visit('/receptions')
 }
 

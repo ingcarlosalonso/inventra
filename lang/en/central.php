@@ -14,6 +14,9 @@ return [
     'edit_tenant' => 'Edit client',
     'tenant_provisioned' => 'Client created and database provisioned.',
     'tenant_updated' => 'Client updated.',
+    'tenant_suspended' => 'Client suspended.',
+    'tenant_suspended_access' => 'This account has been suspended.',
+    'tenant_activated' => 'Client activated.',
 
     'name' => 'Name',
     'subdomain' => 'Subdomain',

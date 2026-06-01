@@ -144,7 +144,7 @@ async function fetchItems(url = null) {
 function confirmDelete(item) { deleteTarget.value = item; confirmOpen.value = true }
 async function doDelete() {
   confirmOpen.value = false
-  await del(`/api/receptions/${deleteTarget.value.id}`)
+  await del(`/api/v1/receptions/${deleteTarget.value.id}`)
   await fetchItems()
 }
 function navigateTo(url) { fetchItems(url) }

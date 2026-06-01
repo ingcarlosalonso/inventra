@@ -277,11 +277,11 @@ function closeSlideOver() {
 
 function submitForm() {
   if (editing.value) {
-    form.put(`/central-admin/tenants/${editing.value.id}`, {
+    form.put(route('central.tenants.update', editing.value.id), {
       onSuccess: () => closeSlideOver(),
     })
   } else {
-    form.post('/central-admin/tenants', {
+    form.post(route('central.tenants.store'), {
       onSuccess: () => closeSlideOver(),
     })
   }
@@ -289,12 +289,12 @@ function submitForm() {
 
 function suspendTenant(tenant) {
   if (!confirm(`¿Suspender acceso de "${tenant.name}"?`)) return
-  router.post(`/central-admin/tenants/${tenant.id}/suspend`, {}, { preserveScroll: true })
+  router.post(route('central.tenants.suspend', tenant.id), {}, { preserveScroll: true })
 }
 
 function activateTenant(tenant) {
   if (!confirm(`¿Reactivar acceso de "${tenant.name}"?`)) return
-  router.post(`/central-admin/tenants/${tenant.id}/activate`, {}, { preserveScroll: true })
+  router.post(route('central.tenants.activate', tenant.id), {}, { preserveScroll: true })
 }
 </script>
 

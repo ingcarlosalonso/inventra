@@ -351,7 +351,7 @@ const incomeTypes = computed(() => movementTypes.value.filter(t => t.is_income &
 const outcomeTypes = computed(() => movementTypes.value.filter(t => !t.is_income && t.is_active))
 
 async function fetchDailyCash() {
-  const { data } = await get(`/api/daily-cashes/${props.uuid}`)
+  const { data } = await get(`/api/v1/daily-cashes/${props.uuid}`)
   if (data) dailyCash.value = data.data
 }
 
@@ -374,7 +374,7 @@ function openClose() {
 
 async function saveMovement() {
   movementError.value = null
-  const result = await postMovement(`/api/daily-cashes/${props.uuid}/movements`, movementForm.value)
+  const result = await postMovement(`/api/v1/daily-cashes/${props.uuid}/movements`, movementForm.value)
   if (result.error) {
     if (!Object.keys(movementErrors.value).length) movementError.value = result.error
     return
@@ -385,7 +385,7 @@ async function saveMovement() {
 
 async function closeCash() {
   closeError.value = null
-  const result = await postClose(`/api/daily-cashes/${props.uuid}/close`, closeForm.value)
+  const result = await postClose(`/api/v1/daily-cashes/${props.uuid}/close`, closeForm.value)
   if (result.error) {
     if (!Object.keys(closeErrors.value).length) closeError.value = result.error
     return
@@ -401,7 +401,7 @@ function confirmDeleteMovement(mv) {
 
 async function doDeleteMovement() {
   confirmMovementDelete.value = false
-  await del(`/api/daily-cashes/${props.uuid}/movements/${movementToDelete.value.id}`)
+  await del(`/api/v1/daily-cashes/${props.uuid}/movements/${movementToDelete.value.id}`)
   await fetchDailyCash()
 }
 

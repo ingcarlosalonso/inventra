@@ -280,7 +280,7 @@ const paymentMethodOptions = computed(() =>
 
 async function fetchOrder() {
   const [orderRes, statesRes, methodsRes] = await Promise.all([
-    get(`/api/orders/${props.uuid}`),
+    get(`/api/v1/orders/${props.uuid}`),
     get('/api/v1/orders/states'),
     get('/api/v1/sales/payment-methods'),
   ])
@@ -307,7 +307,7 @@ async function submitPayment() {
 }
 
 async function updateState() {
-  const result = await patchForm(`/api/orders/${props.uuid}/state`, { order_state_id: newStateId.value })
+  const result = await patchForm(`/api/v1/orders/${props.uuid}/state`, { order_state_id: newStateId.value })
   if (result.data) {
     order.value.order_state = result.data.data?.order_state
   }
@@ -315,7 +315,7 @@ async function updateState() {
 
 async function doDelete() {
   confirmOpen.value = false
-  await del(`/api/orders/${props.uuid}`)
+  await del(`/api/v1/orders/${props.uuid}`)
   router.visit('/orders')
 }
 
