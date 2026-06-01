@@ -14,8 +14,8 @@ class ChatAssistantRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'messages' => ['required', 'array', 'min:1'],
-            'messages.*.role' => ['required', 'in:user,assistant'],
+            'messages' => ['required', 'array', 'min:1', 'max:50'],
+            'messages.*.role' => ['required', 'string', 'in:user,assistant'],
             'messages.*.content' => ['required', 'string', 'max:2000'],
         ];
     }

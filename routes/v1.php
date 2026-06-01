@@ -46,7 +46,7 @@ Route::middleware(['api', 'tenant'])->prefix('v1')->group(function () {
         Route::post('auth/logout', [AuthController::class, 'logout']);
 
         // ── Assistant ─────────────────────────────────────────────────────────
-        Route::post('assistant/chat', [AssistantController::class, 'chat']);
+        Route::post('assistant/chat', [AssistantController::class, 'chat'])->middleware('throttle:20,1');
 
         // ── Clients ───────────────────────────────────────────────────────────
         Route::apiResource('clients', ClientController::class)->except(['show']);
@@ -123,23 +123,46 @@ Route::middleware(['api', 'tenant'])->prefix('v1')->group(function () {
         Route::apiResource('receptions', ReceptionController::class)->only(['index', 'store', 'show', 'destroy']);
 
         // ── Reports ───────────────────────────────────────────────────────────
-        Route::prefix('reports')->group(function () {
-            Route::get('clients', [ReportController::class, 'clients']);
-            Route::get('clients/export', [ReportController::class, 'clientsExport']);
-            Route::get('daily-cashes', [ReportController::class, 'dailyCashes']);
-            Route::get('daily-cashes/export', [ReportController::class, 'dailyCashesExport']);
-            Route::get('inventory', [ReportController::class, 'inventory']);
-            Route::get('inventory/export', [ReportController::class, 'inventoryExport']);
-            Route::get('orders', [ReportController::class, 'orders']);
-            Route::get('orders/export', [ReportController::class, 'ordersExport']);
-            Route::get('payments', [ReportController::class, 'payments']);
-            Route::get('payments/export', [ReportController::class, 'paymentsExport']);
-            Route::get('products', [ReportController::class, 'products']);
-            Route::get('products/export', [ReportController::class, 'productsExport']);
-            Route::get('purchases', [ReportController::class, 'purchases']);
-            Route::get('purchases/export', [ReportController::class, 'purchasesExport']);
-            Route::get('sales', [ReportController::class, 'sales']);
-            Route::get('sales/export', [ReportController::class, 'salesExport']);
+        Route::prefix('reports')->middleware('throttle:30,1')->group(function () {
+            Route::middleware('permission:list_report_clients')->group(function () {
+                Route::get('clients', [ReportController::class, 'clients']);
+                Route::get('clients/export', [ReportController::class, 'clientsExport']);
+            });
+
+            Route::middleware('permission:list_report_daily_cashes')->group(function () {
+                Route::get('daily-cashes', [ReportController::class, 'dailyCashes']);
+                Route::get('daily-cashes/export', [ReportController::class, 'dailyCashesExport']);
+            });
+
+            Route::middleware('permission:list_report_inventory')->group(function () {
+                Route::get('inventory', [ReportController::class, 'inventory']);
+                Route::get('inventory/export', [ReportController::class, 'inventoryExport']);
+            });
+
+            Route::middleware('permission:list_report_orders')->group(function () {
+                Route::get('orders', [ReportController::class, 'orders']);
+                Route::get('orders/export', [ReportController::class, 'ordersExport']);
+            });
+
+            Route::middleware('permission:list_report_payments')->group(function () {
+                Route::get('payments', [ReportController::class, 'payments']);
+                Route::get('payments/export', [ReportController::class, 'paymentsExport']);
+            });
+
+            Route::middleware('permission:list_report_products')->group(function () {
+                Route::get('products', [ReportController::class, 'products']);
+                Route::get('products/export', [ReportController::class, 'productsExport']);
+            });
+
+            Route::middleware('permission:list_report_purchases')->group(function () {
+                Route::get('purchases', [ReportController::class, 'purchases']);
+                Route::get('purchases/export', [ReportController::class, 'purchasesExport']);
+            });
+
+            Route::middleware('permission:list_report_sales')->group(function () {
+                Route::get('sales', [ReportController::class, 'sales']);
+                Route::get('sales/export', [ReportController::class, 'salesExport']);
+            });
         });
 
         // ── Sales ─────────────────────────────────────────────────────────────
