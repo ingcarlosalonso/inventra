@@ -1,0 +1,27 @@
+<?php
+
+namespace App\Models;
+
+use App\Models\Concerns\HasUuid;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class PointOfSale extends Model
+{
+    use HasFactory, HasUuid, SoftDeletes;
+
+    protected $connection = 'tenant';
+
+    protected $table = 'points_of_sale';
+
+    protected $guarded = [];
+
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean',
+            'auto_open_time' => 'string',
+            'auto_close_time' => 'string',
+        ];
+    }
+}
