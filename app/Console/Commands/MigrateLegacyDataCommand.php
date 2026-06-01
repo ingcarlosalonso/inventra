@@ -72,6 +72,8 @@ class MigrateLegacyDataCommand extends Command
 
     private int $firstUserId;
 
+    private int $defaultPaymentMethodId;
+
     public function handle(): void
     {
         $tenants = Tenant::all();
@@ -254,6 +256,7 @@ class MigrateLegacyDataCommand extends Command
         $typeId = DB::connection('tenant')->table('presentation_types')->insertGetId([
             'uuid' => (string) Str::uuid(),
             'name' => 'Unidades',
+            'abbreviation' => 'u.',
             'is_active' => true,
             'created_at' => now(),
             'updated_at' => now(),
@@ -262,8 +265,7 @@ class MigrateLegacyDataCommand extends Command
         $this->unitPresentationId = DB::connection('tenant')->table('presentations')->insertGetId([
             'uuid' => (string) Str::uuid(),
             'presentation_type_id' => $typeId,
-            'name' => 'Unidad',
-            'abbreviation' => 'u.',
+            'quantity' => 1,
             'is_active' => true,
             'created_at' => now(),
             'updated_at' => now(),
@@ -570,6 +572,20 @@ class MigrateLegacyDataCommand extends Command
 
             $this->paymentMethodMap[$row->id] = $newId;
         }
+
+        $firstId = DB::connection('tenant')->table('payment_methods')->value('id');
+
+        if ($firstId === null) {
+            $firstId = DB::connection('tenant')->table('payment_methods')->insertGetId([
+                'uuid' => (string) Str::uuid(),
+                'name' => 'Efectivo',
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        $this->defaultPaymentMethodId = $firstId;
     }
 
     private function migrateClients(): void
@@ -740,7 +756,7 @@ class MigrateLegacyDataCommand extends Command
                 'point_of_sale_id' => $this->pointOfSaleMap[$row->punto_de_venta_id] ?? null,
                 'sale_state_id' => $saleStateId,
                 'currency_id' => $this->arsId,
-                'user_id' => $this->mapUser($row->created_by),
+                'user_id' => $this->mapUser($row->created_by) ?? $this->firstUserId,
                 'subtotal' => $subtotal,
                 'discount_type' => $discountType,
                 'discount_value' => $discountValue,
@@ -946,7 +962,7 @@ class MigrateLegacyDataCommand extends Command
                 'uuid' => (string) Str::uuid(),
                 'payable_type' => 'sale',
                 'payable_id' => $this->saleMap[$row->venta_id],
-                'payment_method_id' => isset($row->medio_pago_id) ? ($this->paymentMethodMap[$row->medio_pago_id] ?? null) : null,
+                'payment_method_id' => isset($row->medio_pago_id) ? ($this->paymentMethodMap[$row->medio_pago_id] ?? $this->defaultPaymentMethodId) : $this->defaultPaymentMethodId,
                 'currency_id' => $this->arsId,
                 'daily_cash_id' => $this->dailyCashMap[$row->caja_id] ?? null,
                 'amount' => $row->monto,
@@ -995,7 +1011,7 @@ class MigrateLegacyDataCommand extends Command
                 'client_id' => $clientId,
                 'courier_id' => isset($row->cadete_id) ? ($this->courierMap[$row->cadete_id] ?? null) : null,
                 'order_state_id' => $this->orderStateMap[$row->estado_id] ?? null,
-                'user_id' => $this->mapUser($row->created_by),
+                'user_id' => $this->mapUser($row->created_by) ?? $this->firstUserId,
                 'point_of_sale_id' => $pointOfSaleId,
                 'currency_id' => $this->arsId,
                 'address' => $row->direccion,

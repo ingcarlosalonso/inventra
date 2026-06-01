@@ -110,6 +110,49 @@
       </div>
     </div>
 
+    <!-- Provisioning overlay (create only) -->
+    <transition
+      enter-active-class="transition ease-out duration-300"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition ease-in duration-200"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
+      <div v-if="form.processing && !editing" class="fixed inset-0 z-[60] flex items-center justify-center bg-gray-950/90 backdrop-blur-sm">
+        <div class="flex flex-col items-center gap-6 rounded-2xl border border-gray-800 bg-gray-900 px-10 py-10 shadow-2xl text-center max-w-sm w-full mx-4">
+          <!-- Animated spinner -->
+          <div class="relative h-16 w-16">
+            <div class="absolute inset-0 rounded-full border-4 border-gray-800"></div>
+            <div class="absolute inset-0 animate-spin rounded-full border-4 border-transparent border-t-indigo-500"></div>
+            <div class="absolute inset-2 animate-ping rounded-full bg-indigo-500/20"></div>
+          </div>
+
+          <div>
+            <p class="text-base font-semibold text-white">{{ $t('central.provisioning_title') }}</p>
+            <p class="mt-1.5 text-sm text-gray-400">{{ $t('central.provisioning_subtitle') }}</p>
+          </div>
+
+          <!-- Steps -->
+          <div class="w-full space-y-2 text-left">
+            <div v-for="(step, i) in provisioningSteps" :key="i" class="flex items-center gap-3">
+              <div class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
+                :class="i < currentStep ? 'bg-green-500/20' : i === currentStep ? 'bg-indigo-500/20' : 'bg-gray-800'">
+                <svg v-if="i < currentStep" class="h-3 w-3 text-green-400" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
+                <div v-else-if="i === currentStep" class="h-2 w-2 animate-pulse rounded-full bg-indigo-400"></div>
+                <div v-else class="h-2 w-2 rounded-full bg-gray-600"></div>
+              </div>
+              <span class="text-xs" :class="i < currentStep ? 'text-green-400' : i === currentStep ? 'text-indigo-300' : 'text-gray-600'">
+                {{ $t(step) }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
+
     <!-- Slide-over create/edit -->
     <transition
       enter-active-class="transition ease-out duration-200"
@@ -208,7 +251,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useForm, router } from '@inertiajs/vue3'
 import CentralLayout from '@/Layouts/CentralLayout.vue'
 
@@ -220,6 +263,29 @@ const search = ref('')
 const filterStatus = ref('')
 const slideOver = ref(false)
 const editing = ref(null)
+
+const provisioningSteps = [
+  'central.step_creating_db',
+  'central.step_running_migrations',
+  'central.step_seeding_permissions',
+  'central.step_done',
+]
+const currentStep = ref(0)
+let stepTimer = null
+
+watch(() => form.processing, (processing) => {
+  if (processing && !editing.value) {
+    currentStep.value = 0
+    stepTimer = setInterval(() => {
+      if (currentStep.value < provisioningSteps.length - 1) {
+        currentStep.value++
+      }
+    }, 1800)
+  } else {
+    clearInterval(stepTimer)
+    currentStep.value = 0
+  }
+})
 
 const filtered = computed(() => {
   return props.tenants.filter((t) => {

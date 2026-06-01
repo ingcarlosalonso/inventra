@@ -43,6 +43,12 @@ return [
     'cancel' => 'Cancel',
     'create' => 'Create',
     'provisioning' => 'Provisioning...',
+    'provisioning_title' => 'Creating new client',
+    'provisioning_subtitle' => 'This may take a few seconds. Do not close this window.',
+    'step_creating_db' => 'Creating database',
+    'step_running_migrations' => 'Running migrations',
+    'step_seeding_permissions' => 'Setting up permissions',
+    'step_done' => 'Finishing up',
 
     'confirm_suspend' => 'Suspend access for this client?',
     'confirm_activate' => 'Reactivate access for this client?',

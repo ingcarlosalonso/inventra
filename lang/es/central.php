@@ -43,6 +43,12 @@ return [
     'cancel' => 'Cancelar',
     'create' => 'Crear',
     'provisioning' => 'Provisionando...',
+    'provisioning_title' => 'Creando nuevo cliente',
+    'provisioning_subtitle' => 'Esto puede demorar unos segundos. No cierres esta ventana.',
+    'step_creating_db' => 'Creando base de datos',
+    'step_running_migrations' => 'Ejecutando migraciones',
+    'step_seeding_permissions' => 'Configurando permisos',
+    'step_done' => 'Finalizando',
 
     'confirm_suspend' => '¿Suspender acceso de este cliente?',
     'confirm_activate' => '¿Reactivar acceso de este cliente?',
