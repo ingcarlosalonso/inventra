@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Actions\BulkPriceUpdateAction;
+use App\Http\Requests\BulkPrice\PreviewBulkPriceRequest;
+use App\Http\Requests\BulkPrice\UpdateBulkPriceRequest;
 use App\Http\Resources\Product\ProductResource;
 use App\Models\Product;
 use App\Models\Product\Scopes\ByProductType;
@@ -11,18 +13,12 @@ use App\Models\ProductType;
 use App\Models\Scopes\Active;
 use App\Models\Scopes\ByUuid;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class BulkPriceController extends Controller
 {
-    public function preview(Request $request): AnonymousResourceCollection
+    public function preview(PreviewBulkPriceRequest $request): AnonymousResourceCollection
     {
-        $request->validate([
-            'product_type_id' => ['nullable', 'string', 'exists:tenant.product_types,uuid'],
-            'search' => ['nullable', 'string', 'max:255'],
-        ]);
-
         $query = Product::with([
             'productType',
             'productPresentations.presentation.presentationType',
@@ -42,14 +38,9 @@ class BulkPriceController extends Controller
         return ProductResource::collection($query->orderBy('name')->get());
     }
 
-    public function update(Request $request, BulkPriceUpdateAction $action): JsonResponse
+    public function update(UpdateBulkPriceRequest $request, BulkPriceUpdateAction $action): JsonResponse
     {
-        $validated = $request->validate([
-            'type' => ['required', 'in:percentage,fixed'],
-            'value' => ['required', 'numeric'],
-            'product_type_id' => ['nullable', 'string', 'exists:tenant.product_types,uuid'],
-            'only_active' => ['boolean'],
-        ]);
+        $validated = $request->validated();
 
         if (! empty($validated['product_type_id'])) {
             $validated['product_type_id'] = ProductType::query()->withScopes(new ByUuid($validated['product_type_id']))->value('id');
