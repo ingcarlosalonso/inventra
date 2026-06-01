@@ -13,7 +13,6 @@ use App\Models\PointOfSale;
 use App\Models\ProductPresentation;
 use App\Models\Reception;
 use App\Models\Sale;
-use App\Models\SaleState;
 use App\Models\Supplier;
 use Tests\Feature\TenantFeatureTestCase;
 
@@ -24,14 +23,14 @@ class ReportControllerTest extends TenantFeatureTestCase
     public function test_all_report_endpoints_require_authentication(): void
     {
         $endpoints = [
-            '/api/reports/sales',
-            '/api/reports/products',
-            '/api/reports/payments',
-            '/api/reports/inventory',
-            '/api/reports/daily-cashes',
-            '/api/reports/orders',
-            '/api/reports/clients',
-            '/api/reports/purchases',
+            '/api/v1/reports/sales',
+            '/api/v1/reports/products',
+            '/api/v1/reports/payments',
+            '/api/v1/reports/inventory',
+            '/api/v1/reports/daily-cashes',
+            '/api/v1/reports/orders',
+            '/api/v1/reports/clients',
+            '/api/v1/reports/purchases',
         ];
 
         foreach ($endpoints as $endpoint) {
@@ -44,7 +43,7 @@ class ReportControllerTest extends TenantFeatureTestCase
     public function test_sales_report_returns_expected_structure(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/sales')
+            ->getJson('/api/v1/reports/sales')
             ->assertOk()
             ->assertJsonStructure([
                 'meta' => ['date_from', 'date_to', 'total'],
@@ -60,7 +59,7 @@ class ReportControllerTest extends TenantFeatureTestCase
         Sale::factory()->count(3)->create(['total' => 500, 'discount_amount' => 0]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/sales')
+            ->getJson('/api/v1/reports/sales')
             ->assertOk();
 
         $this->assertGreaterThanOrEqual(3, $response->json('kpis.count'));
@@ -70,7 +69,7 @@ class ReportControllerTest extends TenantFeatureTestCase
     public function test_sales_report_chart_fills_missing_days(): void
     {
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/sales?date_from=2026-01-01&date_to=2026-01-07')
+            ->getJson('/api/v1/reports/sales?date_from=2026-01-01&date_to=2026-01-07')
             ->assertOk();
 
         $chart = $response->json('chart');
@@ -85,7 +84,7 @@ class ReportControllerTest extends TenantFeatureTestCase
         Sale::factory()->create(['created_at' => '2025-01-15', 'total' => 999]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/sales?date_from=2026-01-01&date_to=2026-12-31')
+            ->getJson('/api/v1/reports/sales?date_from=2026-01-01&date_to=2026-12-31')
             ->assertOk();
 
         $totals = collect($response->json('table'))->pluck('total');
@@ -113,7 +112,7 @@ class ReportControllerTest extends TenantFeatureTestCase
         Sale::factory()->count(2)->create(['total' => 200]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/sales')
+            ->getJson('/api/v1/reports/sales')
             ->assertOk();
 
         $this->assertGreaterThan(0, $response->json('kpis.avg_ticket'));
@@ -124,7 +123,7 @@ class ReportControllerTest extends TenantFeatureTestCase
         Sale::factory()->count(2)->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->get('/api/reports/sales/export')
+            ->get('/api/v1/reports/sales/export')
             ->assertOk()
             ->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     }
@@ -134,7 +133,7 @@ class ReportControllerTest extends TenantFeatureTestCase
     public function test_products_report_returns_expected_structure(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/products')
+            ->getJson('/api/v1/reports/products')
             ->assertOk()
             ->assertJsonStructure([
                 'meta' => ['date_from', 'date_to', 'total'],
@@ -148,7 +147,7 @@ class ReportControllerTest extends TenantFeatureTestCase
     public function test_products_report_returns_zero_kpis_with_no_data(): void
     {
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/products?date_from=2020-01-01&date_to=2020-01-02')
+            ->getJson('/api/v1/reports/products?date_from=2020-01-01&date_to=2020-01-02')
             ->assertOk();
 
         $this->assertEquals(0, $response->json('kpis.total_revenue'));
@@ -158,7 +157,7 @@ class ReportControllerTest extends TenantFeatureTestCase
     public function test_products_export_returns_xlsx(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->get('/api/reports/products/export')
+            ->get('/api/v1/reports/products/export')
             ->assertOk()
             ->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     }
@@ -168,7 +167,7 @@ class ReportControllerTest extends TenantFeatureTestCase
     public function test_payments_report_returns_expected_structure(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/payments')
+            ->getJson('/api/v1/reports/payments')
             ->assertOk()
             ->assertJsonStructure([
                 'meta' => ['date_from', 'date_to', 'total'],
@@ -189,7 +188,7 @@ class ReportControllerTest extends TenantFeatureTestCase
         ]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/payments')
+            ->getJson('/api/v1/reports/payments')
             ->assertOk();
 
         $found = collect($response->json('by_method'))->firstWhere('name', $pm->name);
@@ -204,7 +203,7 @@ class ReportControllerTest extends TenantFeatureTestCase
         Payment::factory()->count(2)->create(['amount' => 200]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/payments')
+            ->getJson('/api/v1/reports/payments')
             ->assertOk();
 
         $this->assertGreaterThanOrEqual(400, $response->json('kpis.total_amount'));
@@ -214,7 +213,7 @@ class ReportControllerTest extends TenantFeatureTestCase
     public function test_payments_report_chart_fills_missing_days(): void
     {
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/payments?date_from=2026-03-01&date_to=2026-03-05')
+            ->getJson('/api/v1/reports/payments?date_from=2026-03-01&date_to=2026-03-05')
             ->assertOk();
 
         $this->assertCount(5, $response->json('chart'));
@@ -223,7 +222,7 @@ class ReportControllerTest extends TenantFeatureTestCase
     public function test_payments_export_returns_xlsx(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->get('/api/reports/payments/export')
+            ->get('/api/v1/reports/payments/export')
             ->assertOk()
             ->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     }
@@ -233,7 +232,7 @@ class ReportControllerTest extends TenantFeatureTestCase
     public function test_inventory_report_returns_expected_structure(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/inventory')
+            ->getJson('/api/v1/reports/inventory')
             ->assertOk()
             ->assertJsonStructure([
                 'meta' => ['total'],
@@ -250,7 +249,7 @@ class ReportControllerTest extends TenantFeatureTestCase
         ProductPresentation::factory()->create(['stock' => 0, 'min_stock' => 5, 'is_active' => true]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/inventory')
+            ->getJson('/api/v1/reports/inventory')
             ->assertOk();
 
         $this->assertGreaterThanOrEqual(1, $response->json('kpis.ok_count'));
@@ -263,7 +262,7 @@ class ReportControllerTest extends TenantFeatureTestCase
         ProductPresentation::factory()->create(['stock' => 0, 'min_stock' => 5, 'is_active' => true]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/inventory?stock_status=out')
+            ->getJson('/api/v1/reports/inventory?stock_status=out')
             ->assertOk();
 
         $this->assertGreaterThanOrEqual(1, $response->json('meta.total'));
@@ -275,7 +274,7 @@ class ReportControllerTest extends TenantFeatureTestCase
         ProductPresentation::factory()->create(['stock' => 3, 'min_stock' => 1000, 'is_active' => true]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/inventory?stock_status=low')
+            ->getJson('/api/v1/reports/inventory?stock_status=low')
             ->assertOk();
 
         $this->assertGreaterThanOrEqual(1, $response->json('meta.total'));
@@ -287,13 +286,13 @@ class ReportControllerTest extends TenantFeatureTestCase
         ProductPresentation::factory()->create(['stock' => 0, 'min_stock' => 5, 'is_active' => false]);
 
         $countBefore = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/inventory')
+            ->getJson('/api/v1/reports/inventory')
             ->json('meta.total');
 
         ProductPresentation::factory()->create(['stock' => 10, 'min_stock' => 5, 'is_active' => true]);
 
         $countAfter = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/inventory')
+            ->getJson('/api/v1/reports/inventory')
             ->json('meta.total');
 
         $this->assertGreaterThan($countBefore, $countAfter);
@@ -302,7 +301,7 @@ class ReportControllerTest extends TenantFeatureTestCase
     public function test_inventory_export_returns_xlsx(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->get('/api/reports/inventory/export')
+            ->get('/api/v1/reports/inventory/export')
             ->assertOk()
             ->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     }
@@ -312,7 +311,7 @@ class ReportControllerTest extends TenantFeatureTestCase
     public function test_daily_cashes_report_returns_expected_structure(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/daily-cashes')
+            ->getJson('/api/v1/reports/daily-cashes')
             ->assertOk()
             ->assertJsonStructure([
                 'meta' => ['date_from', 'date_to', 'total'],
@@ -329,7 +328,7 @@ class ReportControllerTest extends TenantFeatureTestCase
         DailyCash::factory()->create(['point_of_sale_id' => $pos->id, 'is_closed' => false, 'opened_at' => now()]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/daily-cashes')
+            ->getJson('/api/v1/reports/daily-cashes')
             ->assertOk();
 
         $this->assertGreaterThanOrEqual(2, $response->json('kpis.closed_count'));
@@ -357,7 +356,7 @@ class ReportControllerTest extends TenantFeatureTestCase
         DailyCash::factory()->create(['is_closed' => false, 'opened_at' => now()]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/daily-cashes')
+            ->getJson('/api/v1/reports/daily-cashes')
             ->assertOk();
 
         $statuses = collect($response->json('table'))->pluck('status')->unique()->sort()->values();
@@ -368,7 +367,7 @@ class ReportControllerTest extends TenantFeatureTestCase
     public function test_daily_cashes_export_returns_xlsx(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->get('/api/reports/daily-cashes/export')
+            ->get('/api/v1/reports/daily-cashes/export')
             ->assertOk()
             ->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     }
@@ -378,7 +377,7 @@ class ReportControllerTest extends TenantFeatureTestCase
     public function test_orders_report_returns_expected_structure(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/orders')
+            ->getJson('/api/v1/reports/orders')
             ->assertOk()
             ->assertJsonStructure([
                 'meta' => ['date_from', 'date_to', 'total'],
@@ -395,7 +394,7 @@ class ReportControllerTest extends TenantFeatureTestCase
         Order::factory()->count(3)->create(['order_state_id' => $state->id, 'total' => 100]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/orders')
+            ->getJson('/api/v1/reports/orders')
             ->assertOk();
 
         $found = collect($response->json('by_state'))->firstWhere('name', $state->name);
@@ -424,7 +423,7 @@ class ReportControllerTest extends TenantFeatureTestCase
         Order::factory()->count(4)->create(['total' => 250]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/orders')
+            ->getJson('/api/v1/reports/orders')
             ->assertOk();
 
         $this->assertGreaterThanOrEqual(4, $response->json('kpis.count'));
@@ -434,7 +433,7 @@ class ReportControllerTest extends TenantFeatureTestCase
     public function test_orders_export_returns_xlsx(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->get('/api/reports/orders/export')
+            ->get('/api/v1/reports/orders/export')
             ->assertOk()
             ->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     }
@@ -444,7 +443,7 @@ class ReportControllerTest extends TenantFeatureTestCase
     public function test_clients_report_returns_expected_structure(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/clients')
+            ->getJson('/api/v1/reports/clients')
             ->assertOk()
             ->assertJsonStructure([
                 'meta' => ['date_from', 'date_to', 'total'],
@@ -460,7 +459,7 @@ class ReportControllerTest extends TenantFeatureTestCase
         Client::factory()->count(4)->create();
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/clients')
+            ->getJson('/api/v1/reports/clients')
             ->assertOk();
 
         $this->assertGreaterThanOrEqual(4, $response->json('kpis.total_clients'));
@@ -473,7 +472,7 @@ class ReportControllerTest extends TenantFeatureTestCase
         Sale::factory()->count(2)->create(['client_id' => $client->id, 'point_of_sale_id' => $pos->id, 'total' => 300]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/clients')
+            ->getJson('/api/v1/reports/clients')
             ->assertOk();
 
         $found = collect($response->json('table'))->firstWhere('name', $client->name);
@@ -491,7 +490,7 @@ class ReportControllerTest extends TenantFeatureTestCase
         Sale::factory()->create(['client_id' => $client->id, 'point_of_sale_id' => $pos->id]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/clients')
+            ->getJson('/api/v1/reports/clients')
             ->assertOk();
 
         $this->assertGreaterThanOrEqual(1, $response->json('kpis.active_clients'));
@@ -500,7 +499,7 @@ class ReportControllerTest extends TenantFeatureTestCase
     public function test_clients_export_returns_xlsx(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->get('/api/reports/clients/export')
+            ->get('/api/v1/reports/clients/export')
             ->assertOk()
             ->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     }
@@ -510,7 +509,7 @@ class ReportControllerTest extends TenantFeatureTestCase
     public function test_purchases_report_returns_expected_structure(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/purchases')
+            ->getJson('/api/v1/reports/purchases')
             ->assertOk()
             ->assertJsonStructure([
                 'meta' => ['date_from', 'date_to', 'total'],
@@ -531,7 +530,7 @@ class ReportControllerTest extends TenantFeatureTestCase
         ]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/purchases')
+            ->getJson('/api/v1/reports/purchases')
             ->assertOk();
 
         $this->assertGreaterThanOrEqual(3, $response->json('kpis.count'));
@@ -548,7 +547,7 @@ class ReportControllerTest extends TenantFeatureTestCase
         ]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/purchases')
+            ->getJson('/api/v1/reports/purchases')
             ->assertOk();
 
         $found = collect($response->json('by_supplier'))->firstWhere('name', $supplier->name);
@@ -577,7 +576,7 @@ class ReportControllerTest extends TenantFeatureTestCase
         Reception::factory()->create(['total' => 9999, 'received_at' => '2020-06-01']);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/reports/purchases?date_from=2026-01-01&date_to=2026-12-31')
+            ->getJson('/api/v1/reports/purchases?date_from=2026-01-01&date_to=2026-12-31')
             ->assertOk();
 
         $totals = collect($response->json('table'))->pluck('total');
@@ -587,7 +586,7 @@ class ReportControllerTest extends TenantFeatureTestCase
     public function test_purchases_export_returns_xlsx(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->get('/api/reports/purchases/export')
+            ->get('/api/v1/reports/purchases/export')
             ->assertOk()
             ->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     }

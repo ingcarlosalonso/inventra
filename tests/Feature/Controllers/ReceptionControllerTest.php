@@ -16,7 +16,7 @@ class ReceptionControllerTest extends TenantFeatureTestCase
         Reception::factory()->count(3)->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/receptions')
+            ->getJson('/api/v1/receptions')
             ->assertOk()
             ->assertJsonStructure(['data', 'meta', 'links']);
     }
@@ -27,14 +27,14 @@ class ReceptionControllerTest extends TenantFeatureTestCase
         Reception::factory()->create(['supplier_invoice' => 'FAC-0002']);
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/receptions?search=FAC-0001')
+            ->getJson('/api/v1/receptions?search=FAC-0001')
             ->assertOk()
             ->assertJsonCount(1, 'data');
     }
 
     public function test_index_requires_auth(): void
     {
-        $this->getJson('/api/receptions')->assertUnauthorized();
+        $this->getJson('/api/v1/receptions')->assertUnauthorized();
     }
 
     // ─── SHOW ────────────────────────────────────────────────────────────────
@@ -52,7 +52,7 @@ class ReceptionControllerTest extends TenantFeatureTestCase
     public function test_show_returns_404_for_unknown(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/receptions/non-existent-uuid')
+            ->getJson('/api/v1/receptions/non-existent-uuid')
             ->assertNotFound();
     }
 
@@ -84,7 +84,7 @@ class ReceptionControllerTest extends TenantFeatureTestCase
         ];
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/receptions', $payload)
+            ->postJson('/api/v1/receptions', $payload)
             ->assertCreated()
             ->assertJsonPath('data.supplier_invoice', 'FAC-0042')
             ->assertJsonPath('data.total', 1000);
@@ -108,7 +108,7 @@ class ReceptionControllerTest extends TenantFeatureTestCase
         ];
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/receptions', $payload)
+            ->postJson('/api/v1/receptions', $payload)
             ->assertCreated()
             ->assertJsonPath('data.total', 350);
     }
@@ -118,7 +118,7 @@ class ReceptionControllerTest extends TenantFeatureTestCase
         $pp = ProductPresentation::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/receptions', [
+            ->postJson('/api/v1/receptions', [
                 'items' => [['product_presentation_id' => $pp->uuid, 'quantity' => 1, 'unit_cost' => 50]],
             ])
             ->assertUnprocessable()
@@ -128,7 +128,7 @@ class ReceptionControllerTest extends TenantFeatureTestCase
     public function test_store_requires_items(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/receptions', [
+            ->postJson('/api/v1/receptions', [
                 'received_at' => '2026-04-13',
                 'items' => [],
             ])
@@ -138,7 +138,7 @@ class ReceptionControllerTest extends TenantFeatureTestCase
 
     public function test_store_requires_auth(): void
     {
-        $this->postJson('/api/receptions', [])->assertUnauthorized();
+        $this->postJson('/api/v1/receptions', [])->assertUnauthorized();
     }
 
     // ─── DESTROY ─────────────────────────────────────────────────────────────
@@ -157,7 +157,7 @@ class ReceptionControllerTest extends TenantFeatureTestCase
     public function test_destroy_returns_404_for_unknown(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->deleteJson('/api/receptions/non-existent-uuid')
+            ->deleteJson('/api/v1/receptions/non-existent-uuid')
             ->assertNotFound();
     }
 

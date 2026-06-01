@@ -278,12 +278,12 @@ function isSelected(item) {
 async function fetchPending() {
   const params = { type: typeFilter.value }
   if (search.value) params.search = search.value
-  const { data } = await getList('/api/payments/pending', params)
+  const { data } = await getList('/api/v1/sales/payments/pending', params)
   if (data) pendingItems.value = data.data
 }
 
 async function fetchPaymentMethods() {
-  const { data } = await getList('/api/payment-methods')
+  const { data } = await getList('/api/v1/sales/payment-methods')
   if (data) paymentMethods.value = data.data
 }
 
@@ -299,7 +299,7 @@ function selectItem(item) {
 
 async function submitPayment() {
   successMessage.value = ''
-  const { data } = await post('/api/payments', {
+  const { data } = await post('/api/v1/sales/payments', {
     payable_type: selected.value.type,
     payable_id: selected.value.id,
     payment_method_id: form.value.payment_method_id,

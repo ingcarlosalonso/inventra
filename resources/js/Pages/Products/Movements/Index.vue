@@ -197,12 +197,12 @@ function formatDate(iso) {
 async function fetchItems(url = null) {
   const params = {}
   if (search.value) params.search = search.value
-  const { data } = await get(url ?? '/api/product-movements', url ? {} : params)
+  const { data } = await get(url ?? '/api/v1/products/movements', url ? {} : params)
   if (data) { items.value = data.data; meta.value = data.meta }
 }
 
 async function fetchMovementTypes() {
-  const { data } = await get('/api/product-movement-types', { per_page: 100 })
+  const { data } = await get('/api/v1/products/movement-types', { per_page: 100 })
   if (data) movementTypes.value = data.data.map(t => ({ ...t, internal_id: t.id }))
 }
 
@@ -212,7 +212,7 @@ async function searchProducts() {
   clearTimeout(productDebounce)
   if (!productSearch.value) { productResults.value = []; return }
   productDebounce = setTimeout(async () => {
-    const { data } = await getProducts('/api/products', { search: productSearch.value, per_page: 10 })
+    const { data } = await getProducts('/api/v1/products', { search: productSearch.value, per_page: 10 })
     if (data) productResults.value = data.data
   }, 300)
 }
@@ -237,7 +237,7 @@ async function save() {
     quantity: form.value.quantity,
     notes: form.value.notes,
   }
-  const result = await postForm('/api/product-movements', payload)
+  const result = await postForm('/api/v1/products/movements', payload)
   if (result.error) { if (!Object.keys(formErrors.value).length) formError.value = result.error; return }
   slideOverOpen.value = false; await fetchItems()
 }

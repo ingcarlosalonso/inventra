@@ -243,12 +243,12 @@ async function fetchItems(url = null) {
   const params = {}
   if (search.value) params.search = search.value
   if (statusFilter.value !== null) params.is_closed = statusFilter.value ? 1 : 0
-  const { data } = await get(url ?? '/api/daily-cashes', url ? {} : params)
+  const { data } = await get(url ?? '/api/v1/daily-cashes', url ? {} : params)
   if (data) { items.value = data.data; meta.value = data.meta }
 }
 
 async function fetchPointsOfSale() {
-  const { data } = await get('/api/points-of-sale', { per_page: 100 })
+  const { data } = await get('/api/v1/sales/points-of-sale', { per_page: 100 })
   if (data) pointsOfSale.value = data.data
 }
 
@@ -260,7 +260,7 @@ function openCreate() {
 
 async function save() {
   formError.value = null
-  const result = await postForm('/api/daily-cashes', form.value)
+  const result = await postForm('/api/v1/daily-cashes', form.value)
   if (result.error) {
     if (!Object.keys(formErrors.value).length) formError.value = result.error
     return

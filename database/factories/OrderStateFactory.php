@@ -13,12 +13,12 @@ class OrderStateFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'           => fake()->unique()->word(),
-            'color'          => fake()->hexColor(),
-            'is_default'     => false,
+            'name' => fake()->unique()->word(),
+            'color' => fake()->hexColor(),
+            'is_default' => false,
             'is_final_state' => false,
-            'is_active'      => true,
-            'sort_order'     => fake()->numberBetween(0, 100),
+            'is_active' => true,
+            'sort_order' => fake()->numberBetween(0, 100),
         ];
     }
 

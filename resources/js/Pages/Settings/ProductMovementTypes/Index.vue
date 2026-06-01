@@ -184,7 +184,7 @@ const directionOptions = computed(() => [
 async function fetchItems(url = null) {
     const params = {}
     if (search.value) params.search = search.value
-    const endpoint = url ?? '/api/product-movement-types'
+    const endpoint = url ?? '/api/v1/products/movement-types'
     const { data } = await get(endpoint, url ? {} : params)
     if (data) {
         items.value = data.data
@@ -212,7 +212,7 @@ async function save() {
 
     const result = editing.value
         ? await putForm(`/api/product-movement-types/${editing.value.id}`, payload)
-        : await postForm('/api/product-movement-types', payload)
+        : await postForm('/api/v1/products/movement-types', payload)
 
     if (result.error) {
         if (!Object.keys(formErrors.value).length) formError.value = result.error

@@ -10,6 +10,6 @@ class RelationsTest extends ModelTestCase
 {
     public function test_it_has_many_presentations(): void
     {
-        $this->assertInstanceOf(HasMany::class, (new PresentationType())->presentations());
+        $this->assertInstanceOf(HasMany::class, (new PresentationType)->presentations());
     }
 }

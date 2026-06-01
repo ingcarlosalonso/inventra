@@ -13,7 +13,7 @@ class ProductTypeFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'      => fake()->unique()->word(),
+            'name' => fake()->unique()->word(),
             'parent_id' => null,
             'is_active' => true,
         ];

@@ -187,7 +187,7 @@ const form = ref(emptyForm())
 async function fetchItems() {
     const params = {}
     if (search.value) params.search = search.value
-    const { data } = await get('/api/sale-states', params)
+    const { data } = await get('/api/v1/sales/states', params)
     if (data) items.value = data.data
 }
 
@@ -216,7 +216,7 @@ async function save() {
     formError.value = null
     const result = editing.value
         ? await putForm(`/api/sale-states/${editing.value.id}`, form.value)
-        : await postForm('/api/sale-states', form.value)
+        : await postForm('/api/v1/sales/states', form.value)
     if (result.error) {
         if (!Object.keys(formErrors.value).length) formError.value = result.error
         return

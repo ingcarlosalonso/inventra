@@ -564,7 +564,7 @@ async function save() {
       .filter(p => p.payment_method_id && p.amount)
       .map(p => ({ payment_method_id: p.payment_method_id, amount: p.amount })),
   }
-  const result = await postForm('/api/orders', payload)
+  const result = await postForm('/api/v1/orders', payload)
   if (result.error) {
     if (!Object.keys(formErrors.value).length) formError.value = result.error
     return
@@ -585,8 +585,8 @@ function handleClickOutside(e) {
 // ── Init ───────────────────────────────────────────────────────────────────
 async function fetchOptions() {
   const [clientsRes, couriersRes, statesRes, pmRes, productsRes] = await Promise.all([
-    get('/api/clients'), get('/api/couriers'), get('/api/order-states'),
-    get('/api/payment-methods'), get('/api/products?per_page=500'),
+    get('/api/v1/clients'), get('/api/v1/orders/couriers'), get('/api/v1/orders/states'),
+    get('/api/v1/sales/payment-methods'), get('/api/v1/products?per_page=500'),
   ])
   if (clientsRes.data) clients.value = clientsRes.data.data ?? clientsRes.data
   if (couriersRes.data) couriers.value = couriersRes.data.data ?? couriersRes.data

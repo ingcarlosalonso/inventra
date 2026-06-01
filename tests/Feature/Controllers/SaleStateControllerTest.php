@@ -12,14 +12,14 @@ class SaleStateControllerTest extends TenantFeatureTestCase
         SaleState::factory()->count(3)->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/sale-states')
+            ->getJson('/api/v1/v1/sales/states')
             ->assertOk()
             ->assertJsonStructure(['data']);
     }
 
     public function test_index_requires_auth(): void
     {
-        $this->getJson('/api/sale-states')->assertUnauthorized();
+        $this->getJson('/api/v1/v1/sales/states')->assertUnauthorized();
     }
 
     public function test_index_filters_by_search(): void
@@ -28,7 +28,7 @@ class SaleStateControllerTest extends TenantFeatureTestCase
         SaleState::factory()->create(['name' => 'Entregado Test']);
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/sale-states?search=Pendiente')
+            ->getJson('/api/v1/v1/sales/states?search=Pendiente')
             ->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.name', $match->name);
@@ -37,7 +37,7 @@ class SaleStateControllerTest extends TenantFeatureTestCase
     public function test_store_creates_sale_state(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/sale-states', [
+            ->postJson('/api/v1/v1/sales/states', [
                 'name' => 'En Proceso Test',
                 'color' => '#ff5500',
                 'is_default' => false,
@@ -54,7 +54,7 @@ class SaleStateControllerTest extends TenantFeatureTestCase
     public function test_store_validates_required_fields(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/sale-states', [])
+            ->postJson('/api/v1/v1/sales/states', [])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['name']);
     }
@@ -64,7 +64,7 @@ class SaleStateControllerTest extends TenantFeatureTestCase
         $existing = SaleState::factory()->default()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/sale-states', [
+            ->postJson('/api/v1/v1/sales/states', [
                 'name' => 'Nuevo Default Test',
                 'is_default' => true,
             ])

@@ -119,7 +119,7 @@ const successMessage = ref('')
 const filters = ref({ product_type_id: '', search: '' })
 
 async function fetchProductTypes() {
-  const { data } = await getTypes('/api/product-types', { per_page: 200 })
+  const { data } = await getTypes('/api/v1/products/types', { per_page: 200 })
   if (data) productTypes.value = data.data.map(t => ({ ...t, internal_id: t.id }))
 }
 
@@ -128,7 +128,7 @@ async function fetchPreview() {
   const params = {}
   if (filters.value.product_type_id) params.product_type_id = filters.value.product_type_id
   if (filters.value.search) params.search = filters.value.search
-  const { data } = await get('/api/bulk-price/preview', params)
+  const { data } = await get('/api/v1/products/bulk-price/preview', params)
   if (data) previewItems.value = data.data
 }
 
@@ -147,7 +147,7 @@ async function applyUpdate() {
     product_type_id: filters.value.product_type_id || null,
     only_active: true,
   }
-  const { data } = await post('/api/bulk-price', payload)
+  const { data } = await post('/api/v1/products/bulk-price', payload)
   if (data) {
     successMessage.value = `${data.updated} presentaciones actualizadas.`
     adjustValue.value = ''

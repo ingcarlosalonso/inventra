@@ -13,11 +13,11 @@ class CurrencyFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'       => fake()->unique()->currencyCode(),
-            'symbol'     => fake()->currencyCode(),
-            'iso_code'   => fake()->unique()->lexify('???'),
+            'name' => fake()->unique()->currencyCode(),
+            'symbol' => fake()->currencyCode(),
+            'iso_code' => fake()->unique()->lexify('???'),
             'is_default' => false,
-            'is_active'  => true,
+            'is_active' => true,
         ];
     }
 

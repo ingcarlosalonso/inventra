@@ -289,15 +289,15 @@ const form = ref(emptyForm())
 async function fetchItems(url = null) {
   const params = {}
   if (search.value) params.search = search.value
-  const { data } = await get(url ?? '/api/products', url ? {} : params)
+  const { data } = await get(url ?? '/api/v1/products', url ? {} : params)
   if (data) { items.value = data.data; meta.value = data.meta }
 }
 
 async function fetchOptions() {
   const [ptRes, pRes, cRes] = await Promise.all([
-    get('/api/product-types'),
-    get('/api/presentations'),
-    get('/api/currencies'),
+    get('/api/v1/products/types'),
+    get('/api/v1/products/presentations'),
+    get('/api/v1/settings/currencies'),
   ])
   if (ptRes.data) productTypes.value = ptRes.data.data ?? ptRes.data
   if (pRes.data) presentations.value = pRes.data.data ?? pRes.data
@@ -340,7 +340,7 @@ async function save() {
   }
   const result = editing.value
     ? await putForm(`/api/products/${editing.value.id}`, payload)
-    : await postForm('/api/products', payload)
+    : await postForm('/api/v1/products', payload)
   if (result.error) { if (!Object.keys(formErrors.value).length) formError.value = result.error; return }
   slideOverOpen.value = false; await fetchItems()
 }

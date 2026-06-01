@@ -191,7 +191,7 @@ const form = ref(emptyForm())
 async function fetchItems() {
     const params = {}
     if (search.value) params.search = search.value
-    const { data } = await get('/api/currencies', params)
+    const { data } = await get('/api/v1/settings/currencies', params)
     if (data) items.value = data.data
 }
 
@@ -219,7 +219,7 @@ async function save() {
     formError.value = null
     const result = editing.value
         ? await putForm(`/api/currencies/${editing.value.id}`, form.value)
-        : await postForm('/api/currencies', form.value)
+        : await postForm('/api/v1/settings/currencies', form.value)
     if (result.error) {
         if (!Object.keys(formErrors.value).length) formError.value = result.error
         return

@@ -12,20 +12,20 @@ class ClientControllerTest extends TenantFeatureTestCase
         Client::factory()->count(3)->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/clients')
+            ->getJson('/api/v1/clients')
             ->assertOk()
             ->assertJsonStructure(['data', 'meta', 'links']);
     }
 
     public function test_index_requires_auth(): void
     {
-        $this->getJson('/api/clients')->assertUnauthorized();
+        $this->getJson('/api/v1/clients')->assertUnauthorized();
     }
 
     public function test_store_creates_client(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/clients', ['first_name' => 'Pedro', 'last_name' => 'García', 'email' => 'pedro@email.com'])
+            ->postJson('/api/v1/clients', ['first_name' => 'Pedro', 'last_name' => 'García', 'email' => 'pedro@email.com'])
             ->assertCreated()
             ->assertJsonPath('data.first_name', 'Pedro')
             ->assertJsonPath('data.last_name', 'García')
@@ -37,7 +37,7 @@ class ClientControllerTest extends TenantFeatureTestCase
     public function test_store_validates_first_name_required(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/clients', ['last_name' => 'García'])
+            ->postJson('/api/v1/clients', ['last_name' => 'García'])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['first_name']);
     }
@@ -45,7 +45,7 @@ class ClientControllerTest extends TenantFeatureTestCase
     public function test_store_validates_last_name_required(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/clients', ['first_name' => 'Pedro'])
+            ->postJson('/api/v1/clients', ['first_name' => 'Pedro'])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['last_name']);
     }

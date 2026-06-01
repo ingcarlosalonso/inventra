@@ -356,7 +356,7 @@ async function fetchDailyCash() {
 }
 
 async function fetchMovementTypes() {
-  const { data } = await get('/api/cash-movement-types', { per_page: 100 })
+  const { data } = await get('/api/v1/cash-movement-types', { per_page: 100 })
   if (data) movementTypes.value = data.data
 }
 

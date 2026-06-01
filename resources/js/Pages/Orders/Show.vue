@@ -281,8 +281,8 @@ const paymentMethodOptions = computed(() =>
 async function fetchOrder() {
   const [orderRes, statesRes, methodsRes] = await Promise.all([
     get(`/api/orders/${props.uuid}`),
-    get('/api/order-states'),
-    get('/api/payment-methods'),
+    get('/api/v1/orders/states'),
+    get('/api/v1/sales/payment-methods'),
   ])
   if (orderRes.data) {
     order.value = orderRes.data.data
@@ -294,7 +294,7 @@ async function fetchOrder() {
 }
 
 async function submitPayment() {
-  const { data } = await post('/api/payments', {
+  const { data } = await post('/api/v1/sales/payments', {
     payable_type: 'order',
     payable_id: props.uuid,
     payment_method_id: payForm.value.payment_method_id,

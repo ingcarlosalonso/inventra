@@ -16,7 +16,7 @@ class PresentationControllerTest extends TenantFeatureTestCase
         Presentation::factory()->count(3)->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/presentations')
+            ->getJson('/api/v1/v1/products/presentations')
             ->assertOk()
             ->assertJsonCount($before + 3, 'data');
     }
@@ -27,14 +27,14 @@ class PresentationControllerTest extends TenantFeatureTestCase
         Presentation::factory()->create(['presentation_type_id' => $type->id, 'quantity' => 1]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/presentations?search=__TIPO_KG__')
+            ->getJson('/api/v1/v1/products/presentations?search=__TIPO_KG__')
             ->assertOk()
             ->assertJsonCount(1, 'data');
     }
 
     public function test_index_requires_auth(): void
     {
-        $this->getJson('/api/presentations')->assertUnauthorized();
+        $this->getJson('/api/v1/v1/products/presentations')->assertUnauthorized();
     }
 
     // ── store ─────────────────────────────────────────────────────────────────
@@ -44,7 +44,7 @@ class PresentationControllerTest extends TenantFeatureTestCase
         $type = PresentationType::factory()->create(['abbreviation' => 'kg']);
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/presentations', [
+            ->postJson('/api/v1/v1/products/presentations', [
                 'presentation_type_id' => $type->uuid,
                 'quantity' => 1,
                 'is_active' => true,
@@ -59,7 +59,7 @@ class PresentationControllerTest extends TenantFeatureTestCase
     public function test_store_validates_required_fields(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/presentations', [])
+            ->postJson('/api/v1/v1/products/presentations', [])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['presentation_type_id', 'quantity']);
     }
@@ -67,7 +67,7 @@ class PresentationControllerTest extends TenantFeatureTestCase
     public function test_store_validates_presentation_type_exists(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/presentations', [
+            ->postJson('/api/v1/v1/products/presentations', [
                 'presentation_type_id' => 'uuid-inexistente',
                 'quantity' => 1,
             ])
@@ -80,7 +80,7 @@ class PresentationControllerTest extends TenantFeatureTestCase
         $type = PresentationType::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/presentations', [
+            ->postJson('/api/v1/v1/products/presentations', [
                 'presentation_type_id' => $type->uuid,
                 'quantity' => 0,
             ])

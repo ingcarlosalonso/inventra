@@ -326,7 +326,7 @@ async function save() {
         unit_cost: it.unit_cost,
       })),
   }
-  const result = await postForm('/api/receptions', payload)
+  const result = await postForm('/api/v1/receptions', payload)
   if (result.error) {
     if (!Object.keys(formErrors.value).length) formError.value = result.error
     return
@@ -342,8 +342,8 @@ function formatNumber(value) {
 
 async function fetchOptions() {
   const [supRes, prodRes] = await Promise.all([
-    get('/api/suppliers'),
-    get('/api/products?per_page=500'),
+    get('/api/v1/suppliers'),
+    get('/api/v1/products?per_page=500'),
   ])
   if (supRes.data) suppliers.value = supRes.data.data ?? supRes.data
 

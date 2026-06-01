@@ -16,7 +16,7 @@ class PresentationTypeControllerTest extends TenantFeatureTestCase
         PresentationType::factory()->count(3)->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/presentation-types')
+            ->getJson('/api/v1/v1/products/presentation-types')
             ->assertOk()
             ->assertJsonCount($before + 3, 'data');
     }
@@ -27,7 +27,7 @@ class PresentationTypeControllerTest extends TenantFeatureTestCase
         PresentationType::factory()->create(['name' => '__TIPO_PESO__', 'abbreviation' => '__tp__']);
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/presentation-types?search=__TIPO_VOLUMEN__')
+            ->getJson('/api/v1/v1/products/presentation-types?search=__TIPO_VOLUMEN__')
             ->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.name', '__TIPO_VOLUMEN__');
@@ -35,7 +35,7 @@ class PresentationTypeControllerTest extends TenantFeatureTestCase
 
     public function test_index_requires_auth(): void
     {
-        $this->getJson('/api/presentation-types')->assertUnauthorized();
+        $this->getJson('/api/v1/v1/products/presentation-types')->assertUnauthorized();
     }
 
     // ── store ─────────────────────────────────────────────────────────────────
@@ -43,7 +43,7 @@ class PresentationTypeControllerTest extends TenantFeatureTestCase
     public function test_store_creates_presentation_type(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/presentation-types', ['name' => '__STORE_TIPO__', 'abbreviation' => '__st__', 'is_active' => true])
+            ->postJson('/api/v1/v1/products/presentation-types', ['name' => '__STORE_TIPO__', 'abbreviation' => '__st__', 'is_active' => true])
             ->assertCreated()
             ->assertJsonPath('data.name', '__STORE_TIPO__')
             ->assertJsonPath('data.abbreviation', '__st__')
@@ -55,7 +55,7 @@ class PresentationTypeControllerTest extends TenantFeatureTestCase
     public function test_store_validates_required_fields(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/presentation-types', [])
+            ->postJson('/api/v1/v1/products/presentation-types', [])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['name', 'abbreviation']);
     }
@@ -65,7 +65,7 @@ class PresentationTypeControllerTest extends TenantFeatureTestCase
         PresentationType::factory()->create(['name' => '__UNIQUE_NAME__', 'abbreviation' => '__un1__']);
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/presentation-types', ['name' => '__UNIQUE_NAME__', 'abbreviation' => '__un2__'])
+            ->postJson('/api/v1/v1/products/presentation-types', ['name' => '__UNIQUE_NAME__', 'abbreviation' => '__un2__'])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['name']);
     }

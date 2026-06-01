@@ -261,7 +261,7 @@ async function fetchQuote() {
 }
 
 async function fetchConvertOptions() {
-  const [posRes, pmRes] = await Promise.all([get('/api/points-of-sale'), get('/api/payment-methods')])
+  const [posRes, pmRes] = await Promise.all([get('/api/v1/sales/points-of-sale'), get('/api/v1/sales/payment-methods')])
   if (posRes.data) pointsOfSale.value = posRes.data.data ?? posRes.data
   if (pmRes.data) paymentMethods.value = pmRes.data.data ?? pmRes.data
 }

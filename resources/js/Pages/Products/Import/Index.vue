@@ -132,7 +132,7 @@ async function doImport() {
   importError.value = null; result.value = null
   const formData = new FormData()
   formData.append('file', selectedFile.value)
-  const res = await post('/api/products/import', formData)
+  const res = await post('/api/v1/products/import', formData)
   if (res.error) { importError.value = res.error; return }
   if (res.data) result.value = res.data
 }

@@ -54,14 +54,14 @@ class SaleControllerTest extends TenantFeatureTestCase
         Sale::factory()->count(3)->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/sales')
+            ->getJson('/api/v1/sales')
             ->assertOk()
             ->assertJsonStructure(['data', 'meta', 'links']);
     }
 
     public function test_index_requires_auth(): void
     {
-        $this->getJson('/api/sales')->assertUnauthorized();
+        $this->getJson('/api/v1/sales')->assertUnauthorized();
     }
 
     // ─── SHOW ────────────────────────────────────────────────────────────────
@@ -79,7 +79,7 @@ class SaleControllerTest extends TenantFeatureTestCase
     public function test_show_returns_404_for_unknown(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/sales/non-existent-uuid')
+            ->getJson('/api/v1/sales/non-existent-uuid')
             ->assertNotFound();
     }
 
@@ -107,7 +107,7 @@ class SaleControllerTest extends TenantFeatureTestCase
         ];
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/sales', $payload)
+            ->postJson('/api/v1/sales', $payload)
             ->assertCreated()
             ->assertJsonPath('data.total', 300)
             ->assertJsonPath('data.subtotal', 300);
@@ -125,7 +125,7 @@ class SaleControllerTest extends TenantFeatureTestCase
         SaleState::factory()->create(['is_default' => true]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/sales', [
+            ->postJson('/api/v1/sales', [
                 'point_of_sale_id' => $pos->uuid,
                 'items' => [$this->productItem($pp, ['quantity' => 1, 'unit_price' => 100])],
             ])
@@ -147,7 +147,7 @@ class SaleControllerTest extends TenantFeatureTestCase
         $state = SaleState::factory()->create(['is_default' => true]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/sales', [
+            ->postJson('/api/v1/sales', [
                 'point_of_sale_id' => $pos->uuid,
                 'sale_state_id' => $state->uuid,
                 'discount_type' => 'percentage',
@@ -169,7 +169,7 @@ class SaleControllerTest extends TenantFeatureTestCase
         $defaultState = SaleState::factory()->create(['is_default' => true]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/sales', [
+            ->postJson('/api/v1/sales', [
                 'point_of_sale_id' => $pos->uuid,
                 'items' => [$this->productItem($pp, ['quantity' => 1, 'unit_price' => 100])],
                 'payments' => [['payment_method_id' => $pm->uuid, 'amount' => 100]],
@@ -188,7 +188,7 @@ class SaleControllerTest extends TenantFeatureTestCase
         $state = SaleState::factory()->create(['is_default' => true]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/sales', [
+            ->postJson('/api/v1/sales', [
                 'point_of_sale_id' => $pos->uuid,
                 'sale_state_id' => $state->uuid,
                 'items' => [$this->productItem($pp, ['quantity' => 5, 'unit_price' => 100])],
@@ -203,7 +203,7 @@ class SaleControllerTest extends TenantFeatureTestCase
         $pp = ProductPresentation::factory()->create(['stock' => 10]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/sales', [
+            ->postJson('/api/v1/sales', [
                 'items' => [$this->productItem($pp)],
             ])
             ->assertUnprocessable()
@@ -215,7 +215,7 @@ class SaleControllerTest extends TenantFeatureTestCase
         $pos = PointOfSale::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/sales', [
+            ->postJson('/api/v1/sales', [
                 'point_of_sale_id' => $pos->uuid,
                 'items' => [],
             ])
@@ -230,7 +230,7 @@ class SaleControllerTest extends TenantFeatureTestCase
         SaleState::factory()->create(['is_default' => true]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/sales', [
+            ->postJson('/api/v1/sales', [
                 'point_of_sale_id' => $pos->uuid,
                 'items' => [$this->productItem($pp, ['quantity' => 1, 'unit_price' => 100])],
             ])
@@ -241,7 +241,7 @@ class SaleControllerTest extends TenantFeatureTestCase
 
     public function test_store_requires_auth(): void
     {
-        $this->postJson('/api/sales', [])->assertUnauthorized();
+        $this->postJson('/api/v1/sales', [])->assertUnauthorized();
     }
 
     // ─── STORE — composite items ──────────────────────────────────────────────
@@ -261,7 +261,7 @@ class SaleControllerTest extends TenantFeatureTestCase
         SaleState::factory()->create(['is_default' => true]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/sales', [
+            ->postJson('/api/v1/sales', [
                 'point_of_sale_id' => $pos->uuid,
                 'items' => [[
                     'item_type' => SaleItemType::Composite->value,
@@ -285,7 +285,7 @@ class SaleControllerTest extends TenantFeatureTestCase
         SaleState::factory()->create(['is_default' => true]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/sales', [
+            ->postJson('/api/v1/sales', [
                 'point_of_sale_id' => $pos->uuid,
                 'items' => [[
                     'item_type' => SaleItemType::Composite->value,
@@ -319,7 +319,7 @@ class SaleControllerTest extends TenantFeatureTestCase
         SaleState::factory()->create(['is_default' => true]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/sales', [
+            ->postJson('/api/v1/sales', [
                 'point_of_sale_id' => $pos->uuid,
                 'items' => [[
                     'item_type' => SaleItemType::Composite->value,
@@ -350,7 +350,7 @@ class SaleControllerTest extends TenantFeatureTestCase
         SaleState::factory()->create(['is_default' => true]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/sales', [
+            ->postJson('/api/v1/sales', [
                 'point_of_sale_id' => $pos->uuid,
                 'items' => [[
                     'item_type' => SaleItemType::Promotion->value,
@@ -374,7 +374,7 @@ class SaleControllerTest extends TenantFeatureTestCase
         SaleState::factory()->create(['is_default' => true]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/sales', [
+            ->postJson('/api/v1/sales', [
                 'point_of_sale_id' => $pos->uuid,
                 'items' => [[
                     'item_type' => SaleItemType::Promotion->value,
@@ -400,7 +400,7 @@ class SaleControllerTest extends TenantFeatureTestCase
         $pos = PointOfSale::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/sales', [
+            ->postJson('/api/v1/sales', [
                 'point_of_sale_id' => $pos->uuid,
                 'items' => [[
                     'item_type' => 'invalid_type',
@@ -419,7 +419,7 @@ class SaleControllerTest extends TenantFeatureTestCase
         $pos = PointOfSale::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/sales', [
+            ->postJson('/api/v1/sales', [
                 'point_of_sale_id' => $pos->uuid,
                 'items' => [[
                     'item_type' => SaleItemType::Product->value,
@@ -439,7 +439,7 @@ class SaleControllerTest extends TenantFeatureTestCase
         $pos = PointOfSale::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/sales', [
+            ->postJson('/api/v1/sales', [
                 'point_of_sale_id' => $pos->uuid,
                 'items' => [
                     $this->productItem($pp),
@@ -466,7 +466,7 @@ class SaleControllerTest extends TenantFeatureTestCase
     public function test_destroy_returns_404_for_unknown(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->deleteJson('/api/sales/non-existent-uuid')
+            ->deleteJson('/api/v1/sales/non-existent-uuid')
             ->assertNotFound();
     }
 
@@ -487,7 +487,7 @@ class SaleControllerTest extends TenantFeatureTestCase
         $state = SaleState::factory()->create(['is_default' => true]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/sales', [
+            ->postJson('/api/v1/sales', [
                 'point_of_sale_id' => $pos->uuid,
                 'sale_state_id' => $state->uuid,
                 'items' => [$this->productItem($pp, ['quantity' => 1, 'unit_price' => 100])],
@@ -498,7 +498,7 @@ class SaleControllerTest extends TenantFeatureTestCase
         $sale = Sale::latest('id')->first();
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/sales')
+            ->getJson('/api/v1/sales')
             ->assertOk();
 
         $item = collect($response->json('data'))->firstWhere('id', $sale->uuid);
@@ -520,7 +520,7 @@ class SaleControllerTest extends TenantFeatureTestCase
         $state = SaleState::factory()->create(['is_default' => true]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/sales', [
+            ->postJson('/api/v1/sales', [
                 'point_of_sale_id' => $pos->uuid,
                 'sale_state_id' => $state->uuid,
                 'items' => [$this->productItem($pp, ['quantity' => 1, 'unit_price' => 100])],

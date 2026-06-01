@@ -29,6 +29,6 @@ class SaleStateTest extends ModelTestCase
 
     public function test_it_extends_from_custom_model(): void
     {
-        $this->assertInstanceOf(Model::class, new SaleState());
+        $this->assertInstanceOf(Model::class, new SaleState);
     }
 }

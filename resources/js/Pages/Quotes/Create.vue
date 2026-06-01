@@ -394,7 +394,7 @@ async function save() {
       discount_value: it.discount_value || null,
     })),
   }
-  const result = await postForm('/api/quotes', payload)
+  const result = await postForm('/api/v1/quotes', payload)
   if (result.error) {
     if (!Object.keys(formErrors.value).length) formError.value = result.error
     return
@@ -415,7 +415,7 @@ function handleClickOutside(e) {
 // ── Init ───────────────────────────────────────────────────────────────────
 async function fetchOptions() {
   const [clientsRes, productsRes] = await Promise.all([
-    get('/api/clients'), get('/api/products?per_page=500'),
+    get('/api/v1/clients'), get('/api/v1/products?per_page=500'),
   ])
   if (clientsRes.data) clients.value = clientsRes.data.data ?? clientsRes.data
   const products = productsRes.data?.data ?? []

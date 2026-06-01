@@ -35,14 +35,14 @@ class OrderControllerTest extends TenantFeatureTestCase
         Order::factory()->count(3)->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/orders')
+            ->getJson('/api/v1/orders')
             ->assertOk()
             ->assertJsonStructure(['data', 'meta', 'links']);
     }
 
     public function test_index_requires_auth(): void
     {
-        $this->getJson('/api/orders')->assertUnauthorized();
+        $this->getJson('/api/v1/orders')->assertUnauthorized();
     }
 
     // ─── SHOW ────────────────────────────────────────────────────────────────
@@ -60,7 +60,7 @@ class OrderControllerTest extends TenantFeatureTestCase
     public function test_show_returns_404_for_unknown(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/orders/non-existent-uuid')
+            ->getJson('/api/v1/orders/non-existent-uuid')
             ->assertNotFound();
     }
 
@@ -89,7 +89,7 @@ class OrderControllerTest extends TenantFeatureTestCase
         ];
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/orders', $payload)
+            ->postJson('/api/v1/orders', $payload)
             ->assertCreated()
             ->assertJsonPath('data.total', 300)
             ->assertJsonPath('data.subtotal', 300);
@@ -118,7 +118,7 @@ class OrderControllerTest extends TenantFeatureTestCase
         ];
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/orders', $payload)
+            ->postJson('/api/v1/orders', $payload)
             ->assertCreated()
             ->assertJsonPath('data.requires_delivery', true)
             ->assertJsonPath('data.delivery_date', '2026-05-01')
@@ -146,7 +146,7 @@ class OrderControllerTest extends TenantFeatureTestCase
         ];
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/orders', $payload)
+            ->postJson('/api/v1/orders', $payload)
             ->assertCreated();
 
         $this->assertDatabaseHas('payments', ['amount' => 100], 'tenant');
@@ -167,7 +167,7 @@ class OrderControllerTest extends TenantFeatureTestCase
         ];
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/orders', $payload)
+            ->postJson('/api/v1/orders', $payload)
             ->assertCreated();
 
         $order = Order::latest('id')->first();
@@ -190,7 +190,7 @@ class OrderControllerTest extends TenantFeatureTestCase
         ];
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/orders', $payload)
+            ->postJson('/api/v1/orders', $payload)
             ->assertUnprocessable()
             ->assertJsonStructure(['message']);
     }
@@ -198,14 +198,14 @@ class OrderControllerTest extends TenantFeatureTestCase
     public function test_store_requires_items(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/orders', ['items' => []])
+            ->postJson('/api/v1/orders', ['items' => []])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['items']);
     }
 
     public function test_store_requires_auth(): void
     {
-        $this->postJson('/api/orders', [])->assertUnauthorized();
+        $this->postJson('/api/v1/orders', [])->assertUnauthorized();
     }
 
     // ─── UPDATE STATE ────────────────────────────────────────────────────────
@@ -249,7 +249,7 @@ class OrderControllerTest extends TenantFeatureTestCase
     public function test_destroy_returns_404_for_unknown(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->deleteJson('/api/orders/non-existent-uuid')
+            ->deleteJson('/api/v1/orders/non-existent-uuid')
             ->assertNotFound();
     }
 
@@ -269,7 +269,7 @@ class OrderControllerTest extends TenantFeatureTestCase
         $pm = PaymentMethod::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/orders', [
+            ->postJson('/api/v1/orders', [
                 'order_state_id' => $state->uuid,
                 'items' => [[
                     'item_type' => 'product', 'saleable_id' => $pp->uuid,
@@ -287,7 +287,7 @@ class OrderControllerTest extends TenantFeatureTestCase
         $order = Order::latest('id')->first();
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/orders')
+            ->getJson('/api/v1/orders')
             ->assertOk();
 
         $item = collect($response->json('data'))->firstWhere('id', $order->uuid);
@@ -309,7 +309,7 @@ class OrderControllerTest extends TenantFeatureTestCase
         $pm = PaymentMethod::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/orders', [
+            ->postJson('/api/v1/orders', [
                 'order_state_id' => $state->uuid,
                 'point_of_sale_id' => $pos->uuid,
                 'items' => [[

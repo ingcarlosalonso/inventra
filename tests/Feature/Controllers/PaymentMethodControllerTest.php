@@ -12,14 +12,14 @@ class PaymentMethodControllerTest extends TenantFeatureTestCase
         PaymentMethod::factory()->count(3)->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/payment-methods')
+            ->getJson('/api/v1/v1/sales/payment-methods')
             ->assertOk()
             ->assertJsonStructure(['data']);
     }
 
     public function test_index_requires_auth(): void
     {
-        $this->getJson('/api/payment-methods')->assertUnauthorized();
+        $this->getJson('/api/v1/v1/sales/payment-methods')->assertUnauthorized();
     }
 
     public function test_index_filters_by_search(): void
@@ -28,7 +28,7 @@ class PaymentMethodControllerTest extends TenantFeatureTestCase
         PaymentMethod::factory()->create(['name' => 'Tarjeta Test']);
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/payment-methods?search=Efectivo')
+            ->getJson('/api/v1/v1/sales/payment-methods?search=Efectivo')
             ->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.name', $match->name);
@@ -37,7 +37,7 @@ class PaymentMethodControllerTest extends TenantFeatureTestCase
     public function test_store_creates_payment_method(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/payment-methods', [
+            ->postJson('/api/v1/v1/sales/payment-methods', [
                 'name' => 'Transferencia Test',
                 'is_active' => true,
             ])
@@ -50,14 +50,14 @@ class PaymentMethodControllerTest extends TenantFeatureTestCase
     public function test_store_validates_required_fields(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/payment-methods', [])
+            ->postJson('/api/v1/v1/sales/payment-methods', [])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['name']);
     }
 
     public function test_store_requires_auth(): void
     {
-        $this->postJson('/api/payment-methods', ['name' => 'Test'])
+        $this->postJson('/api/v1/v1/sales/payment-methods', ['name' => 'Test'])
             ->assertUnauthorized();
     }
 
@@ -86,7 +86,7 @@ class PaymentMethodControllerTest extends TenantFeatureTestCase
     public function test_update_returns_404_for_missing(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->putJson('/api/payment-methods/non-existent-uuid', ['name' => 'X'])
+            ->putJson('/api/v1/v1/sales/payment-methods/non-existent-uuid', ['name' => 'X'])
             ->assertNotFound();
     }
 

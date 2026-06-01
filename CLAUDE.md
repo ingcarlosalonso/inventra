@@ -6,6 +6,7 @@
 - Para módulos nuevos: leer máximo 5 archivos de referencia y codear directamente.
 - Limitar outputs de bash a las últimas líneas (`| tail -10`).
 - El `CLAUDE.md` ya documenta toda la arquitectura y patrones — confiar en él sin re-explorar el codebase.
+- **Sección de ayuda obligatoria:** Cada vez que se agregue, modifique o elimine cualquier funcionalidad visible para el usuario (rutas, pantallas, permisos, flujos), actualizar la sección de ayuda correspondiente en `resources/js/Pages/Help/` y el controlador `HelpController`. Sin excepciones.
 
 ## Project Description
 

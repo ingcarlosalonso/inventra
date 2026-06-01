@@ -203,7 +203,7 @@ const parentOptions = computed(() =>
 async function fetchItems() {
     const params = {}
     if (search.value) params.search = search.value
-    const { data } = await get('/api/product-types', params)
+    const { data } = await get('/api/v1/products/types', params)
     if (data) items.value = data.data
 }
 
@@ -233,7 +233,7 @@ async function save() {
     if (editing.value) {
         result = await putForm(`/api/product-types/${editing.value.id}`, payload)
     } else {
-        result = await postForm('/api/product-types', payload)
+        result = await postForm('/api/v1/products/types', payload)
     }
 
     if (result.error) {

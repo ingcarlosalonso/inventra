@@ -145,7 +145,7 @@ const form = ref(emptyForm())
 async function fetchItems(url = null) {
     const params = {}
     if (search.value) params.search = search.value
-    const { data } = await get(url ?? '/api/suppliers', url ? {} : params)
+    const { data } = await get(url ?? '/api/v1/suppliers', url ? {} : params)
     if (data) { items.value = data.data; meta.value = data.meta }
 }
 
@@ -163,7 +163,7 @@ async function save() {
     formError.value = null
     const result = editing.value
         ? await putForm(`/api/suppliers/${editing.value.id}`, form.value)
-        : await postForm('/api/suppliers', form.value)
+        : await postForm('/api/v1/suppliers', form.value)
     if (result.error) { if (!Object.keys(formErrors.value).length) formError.value = result.error; return }
     slideOverOpen.value = false; await fetchItems()
 }

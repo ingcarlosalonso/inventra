@@ -14,14 +14,14 @@ class OrderStateControllerTest extends TenantFeatureTestCase
         OrderState::factory()->count(3)->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/order-states')
+            ->getJson('/api/v1/v1/orders/states')
             ->assertOk()
             ->assertJsonStructure(['data']);
     }
 
     public function test_index_requires_auth(): void
     {
-        $this->getJson('/api/order-states')->assertUnauthorized();
+        $this->getJson('/api/v1/v1/orders/states')->assertUnauthorized();
     }
 
     public function test_index_filters_by_search(): void
@@ -30,7 +30,7 @@ class OrderStateControllerTest extends TenantFeatureTestCase
         OrderState::factory()->create(['name' => 'Entregado']);
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/order-states?search=Pend')
+            ->getJson('/api/v1/v1/orders/states?search=Pend')
             ->assertOk()
             ->assertJsonCount(1, 'data');
     }
@@ -40,7 +40,7 @@ class OrderStateControllerTest extends TenantFeatureTestCase
     public function test_store_creates_order_state(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/order-states', ['name' => 'Nuevo Estado'])
+            ->postJson('/api/v1/v1/orders/states', ['name' => 'Nuevo Estado'])
             ->assertCreated()
             ->assertJsonPath('data.name', 'Nuevo Estado');
 
@@ -50,14 +50,14 @@ class OrderStateControllerTest extends TenantFeatureTestCase
     public function test_store_requires_name(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/order-states', [])
+            ->postJson('/api/v1/v1/orders/states', [])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['name']);
     }
 
     public function test_store_requires_auth(): void
     {
-        $this->postJson('/api/order-states', ['name' => 'Test'])->assertUnauthorized();
+        $this->postJson('/api/v1/v1/orders/states', ['name' => 'Test'])->assertUnauthorized();
     }
 
     public function test_store_unsets_previous_default_when_setting_new_default(): void
@@ -65,7 +65,7 @@ class OrderStateControllerTest extends TenantFeatureTestCase
         $first = OrderState::factory()->create(['is_default' => true]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/order-states', ['name' => 'Default 2', 'is_default' => true])
+            ->postJson('/api/v1/v1/orders/states', ['name' => 'Default 2', 'is_default' => true])
             ->assertCreated();
 
         $this->assertFalse((bool) $first->fresh()->is_default);

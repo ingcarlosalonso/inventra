@@ -18,6 +18,6 @@ class CurrencyTest extends ModelTestCase
 
     public function test_it_extends_from_custom_model(): void
     {
-        $this->assertInstanceOf(Model::class, new Currency());
+        $this->assertInstanceOf(Model::class, new Currency);
     }
 }

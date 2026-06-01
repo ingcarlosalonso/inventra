@@ -12,14 +12,14 @@ class PointOfSaleControllerTest extends TenantFeatureTestCase
         PointOfSale::factory()->count(3)->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/points-of-sale')
+            ->getJson('/api/v1/v1/sales/points-of-sale')
             ->assertOk()
             ->assertJsonStructure(['data']);
     }
 
     public function test_index_requires_auth(): void
     {
-        $this->getJson('/api/points-of-sale')->assertUnauthorized();
+        $this->getJson('/api/v1/v1/sales/points-of-sale')->assertUnauthorized();
     }
 
     public function test_index_filters_by_search(): void
@@ -28,7 +28,7 @@ class PointOfSaleControllerTest extends TenantFeatureTestCase
         PointOfSale::factory()->create(['name' => 'Sucursal Sur Test', 'number' => 11]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/points-of-sale?search=Norte')
+            ->getJson('/api/v1/v1/sales/points-of-sale?search=Norte')
             ->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.name', $match->name);
@@ -37,7 +37,7 @@ class PointOfSaleControllerTest extends TenantFeatureTestCase
     public function test_store_creates_point_of_sale(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/points-of-sale', [
+            ->postJson('/api/v1/v1/sales/points-of-sale', [
                 'number' => 42,
                 'name' => 'Casa Central Test',
             ])
@@ -51,7 +51,7 @@ class PointOfSaleControllerTest extends TenantFeatureTestCase
     public function test_store_validates_required_fields(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/points-of-sale', [])
+            ->postJson('/api/v1/v1/sales/points-of-sale', [])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['number', 'name']);
     }
@@ -61,7 +61,7 @@ class PointOfSaleControllerTest extends TenantFeatureTestCase
         PointOfSale::factory()->create(['number' => 99]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/points-of-sale', ['number' => 99, 'name' => 'Duplicado Test'])
+            ->postJson('/api/v1/v1/sales/points-of-sale', ['number' => 99, 'name' => 'Duplicado Test'])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['number']);
     }
@@ -92,7 +92,7 @@ class PointOfSaleControllerTest extends TenantFeatureTestCase
     public function test_update_returns_404_for_missing(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->putJson('/api/points-of-sale/non-existent-uuid', ['number' => 1, 'name' => 'X'])
+            ->putJson('/api/v1/v1/sales/points-of-sale/non-existent-uuid', ['number' => 1, 'name' => 'X'])
             ->assertNotFound();
     }
 

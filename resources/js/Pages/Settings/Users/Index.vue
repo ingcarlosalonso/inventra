@@ -170,12 +170,12 @@ function initials(name) {
 async function fetchItems(url = null) {
   const params = {}
   if (search.value) params.search = search.value
-  const { data } = await get(url ?? '/api/users', url ? {} : params)
+  const { data } = await get(url ?? '/api/v1/settings/users', url ? {} : params)
   if (data) { items.value = data.data; meta.value = data.meta }
 }
 
 async function fetchRoles() {
-  const { data } = await get('/api/roles')
+  const { data } = await get('/api/v1/settings/roles')
   if (data) availableRoles.value = data.data
 }
 
@@ -201,7 +201,7 @@ async function save() {
   if (editing.value && !payload.password) delete payload.password
   const result = editing.value
     ? await putForm(`/api/users/${editing.value.id}`, payload)
-    : await postForm('/api/users', payload)
+    : await postForm('/api/v1/settings/users', payload)
   if (result.error) { if (!Object.keys(formErrors.value).length) formError.value = result.error; return }
   slideOverOpen.value = false; await fetchItems()
 }

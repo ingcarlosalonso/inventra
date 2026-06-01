@@ -183,7 +183,7 @@ const form = ref({ name: '', abbreviation: '', is_active: true })
 async function fetchItems() {
   const params = {}
   if (search.value) params.search = search.value
-  const { data } = await get('/api/presentation-types', params)
+  const { data } = await get('/api/v1/products/presentation-types', params)
   if (data) items.value = data.data
 }
 
@@ -209,7 +209,7 @@ async function save() {
   if (editing.value) {
     result = await putForm(`/api/presentation-types/${editing.value.id}`, payload)
   } else {
-    result = await postForm('/api/presentation-types', payload)
+    result = await postForm('/api/v1/products/presentation-types', payload)
   }
 
   if (result.error) {

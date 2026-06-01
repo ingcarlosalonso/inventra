@@ -21,7 +21,7 @@ function stopPolling() {
 
 async function fetchUnreadCount() {
     try {
-        const { data } = await axios.get('/api/notifications/unread-count')
+        const { data } = await axios.get('/api/v1/notifications/unread-count')
         unreadCount.value = data.count
     } catch {
         // silently ignore — network errors shouldn't break the UI
@@ -31,7 +31,7 @@ async function fetchUnreadCount() {
 async function fetchAll() {
     loading.value = true
     try {
-        const { data } = await axios.get('/api/notifications')
+        const { data } = await axios.get('/api/v1/notifications')
         notifications.value = data.data
         unreadCount.value = notifications.value.filter(n => !n.read).length
     } finally {
@@ -50,7 +50,7 @@ async function markRead(id) {
 
 async function markAllRead() {
     try {
-        await axios.post('/api/notifications/read-all')
+        await axios.post('/api/v1/notifications/read-all')
         unreadCount.value = 0
         notifications.value.forEach(n => { n.read = true })
     } catch { /* ignore */ }

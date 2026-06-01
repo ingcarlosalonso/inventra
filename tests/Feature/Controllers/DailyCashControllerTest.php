@@ -19,14 +19,14 @@ class DailyCashControllerTest extends TenantFeatureTestCase
         DailyCash::factory()->count(3)->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/daily-cashes')
+            ->getJson('/api/v1/daily-cashes')
             ->assertOk()
             ->assertJsonStructure(['data', 'meta', 'links']);
     }
 
     public function test_index_requires_auth(): void
     {
-        $this->getJson('/api/daily-cashes')->assertUnauthorized();
+        $this->getJson('/api/v1/daily-cashes')->assertUnauthorized();
     }
 
     public function test_it_lists_daily_cashes_with_current_balance(): void
@@ -47,7 +47,7 @@ class DailyCashControllerTest extends TenantFeatureTestCase
         ]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/daily-cashes')
+            ->getJson('/api/v1/daily-cashes')
             ->assertOk();
 
         // Find the specific daily cash in the paginated response and assert its balance
@@ -73,7 +73,7 @@ class DailyCashControllerTest extends TenantFeatureTestCase
     public function test_show_returns_404_for_unknown(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/daily-cashes/non-existent-uuid')
+            ->getJson('/api/v1/daily-cashes/non-existent-uuid')
             ->assertNotFound();
     }
 
@@ -147,7 +147,7 @@ class DailyCashControllerTest extends TenantFeatureTestCase
         $pos = PointOfSale::factory()->create();
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/daily-cashes', [
+            ->postJson('/api/v1/daily-cashes', [
                 'point_of_sale_id' => $pos->uuid,
                 'opening_balance' => 1000.00,
             ])
@@ -159,7 +159,7 @@ class DailyCashControllerTest extends TenantFeatureTestCase
 
     public function test_store_requires_auth(): void
     {
-        $this->postJson('/api/daily-cashes', [])->assertUnauthorized();
+        $this->postJson('/api/v1/daily-cashes', [])->assertUnauthorized();
     }
 
     // ─── DESTROY ─────────────────────────────────────────────────────────────

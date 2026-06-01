@@ -166,12 +166,12 @@ const groupedPermissions = computed(() => {
 })
 
 async function fetchItems() {
-  const { data } = await get('/api/roles')
+  const { data } = await get('/api/v1/settings/roles')
   if (data) items.value = data.data
 }
 
 async function fetchPermissions() {
-  const { data } = await getPerms('/api/permissions')
+  const { data } = await getPerms('/api/v1/settings/permissions')
   if (data) allPermissions.value = data.data
 }
 
@@ -191,7 +191,7 @@ async function save() {
   formError.value = null
   const result = editing.value
     ? await putForm(`/api/roles/${editing.value.id}`, form.value)
-    : await postForm('/api/roles', form.value)
+    : await postForm('/api/v1/settings/roles', form.value)
   if (result.error) { if (!Object.keys(formErrors.value).length) formError.value = result.error; return }
   slideOverOpen.value = false; await fetchItems()
 }

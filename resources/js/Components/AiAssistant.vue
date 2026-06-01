@@ -178,7 +178,7 @@ async function sendMessage() {
   loading.value = true
 
   try {
-    const { data } = await axios.post('/api/assistant/chat', { messages: messages.value })
+    const { data } = await axios.post('/api/v1/assistant/chat', { messages: messages.value })
     messages.value.push({ role: 'assistant', content: data.message })
   } catch (err) {
     const status = err.response?.status

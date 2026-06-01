@@ -500,7 +500,7 @@ function orderStateWidth(count) {
 // ── Data Fetch ────────────────────────────────────────────────────────────────
 async function fetchAll() {
   loading.value = true
-  const { data: res } = await get('/api/dashboard')
+  const { data: res } = await get('/api/v1/dashboard')
   if (res) data.value = res
   loading.value = false
 }

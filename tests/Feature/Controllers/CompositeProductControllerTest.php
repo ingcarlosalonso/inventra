@@ -16,7 +16,7 @@ class CompositeProductControllerTest extends TenantFeatureTestCase
         CompositeProduct::factory()->count(3)->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/composite-products')
+            ->getJson('/api/v1/v1/products/composite')
             ->assertOk()
             ->assertJsonStructure(['data', 'meta', 'links']);
     }
@@ -27,7 +27,7 @@ class CompositeProductControllerTest extends TenantFeatureTestCase
         CompositeProduct::factory()->create(['name' => 'Pack Invierno']);
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/composite-products?search=UNIQUE_KITVERANO_XYZ')
+            ->getJson('/api/v1/v1/products/composite?search=UNIQUE_KITVERANO_XYZ')
             ->assertOk()
             ->assertJsonCount(1, 'data');
     }
@@ -38,14 +38,14 @@ class CompositeProductControllerTest extends TenantFeatureTestCase
         CompositeProduct::factory()->create(['name' => 'Kit B', 'code' => 'UNIQUEKIT-002-ABC']);
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/composite-products?search=UNIQUEKIT-001-ABC')
+            ->getJson('/api/v1/v1/products/composite?search=UNIQUEKIT-001-ABC')
             ->assertOk()
             ->assertJsonCount(1, 'data');
     }
 
     public function test_index_requires_auth(): void
     {
-        $this->getJson('/api/composite-products')->assertUnauthorized();
+        $this->getJson('/api/v1/v1/products/composite')->assertUnauthorized();
     }
 
     // ─── STORE ───────────────────────────────────────────────────────────────
@@ -55,7 +55,7 @@ class CompositeProductControllerTest extends TenantFeatureTestCase
         $product = Product::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/composite-products', [
+            ->postJson('/api/v1/v1/products/composite', [
                 'name' => 'Kit Test',
                 'items' => [
                     ['product_id' => $product->uuid, 'quantity' => 2],
@@ -73,7 +73,7 @@ class CompositeProductControllerTest extends TenantFeatureTestCase
         $product2 = Product::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/composite-products', [
+            ->postJson('/api/v1/v1/products/composite', [
                 'name' => 'Kit Multi',
                 'items' => [
                     ['product_id' => $product1->uuid, 'quantity' => 1],
@@ -87,7 +87,7 @@ class CompositeProductControllerTest extends TenantFeatureTestCase
     public function test_store_validates_required_fields(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/composite-products', [])
+            ->postJson('/api/v1/v1/products/composite', [])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['name', 'items']);
     }
@@ -95,7 +95,7 @@ class CompositeProductControllerTest extends TenantFeatureTestCase
     public function test_store_validates_items_not_empty(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/composite-products', [
+            ->postJson('/api/v1/v1/products/composite', [
                 'name' => 'Kit Vacío',
                 'items' => [],
             ])
@@ -108,7 +108,7 @@ class CompositeProductControllerTest extends TenantFeatureTestCase
         $product = Product::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/composite-products', [
+            ->postJson('/api/v1/v1/products/composite', [
                 'name' => 'Kit Inválido',
                 'items' => [
                     ['product_id' => $product->uuid, 'quantity' => 0],
@@ -120,7 +120,7 @@ class CompositeProductControllerTest extends TenantFeatureTestCase
 
     public function test_store_requires_auth(): void
     {
-        $this->postJson('/api/composite-products', [])->assertUnauthorized();
+        $this->postJson('/api/v1/v1/products/composite', [])->assertUnauthorized();
     }
 
     // ─── UPDATE ──────────────────────────────────────────────────────────────
@@ -166,7 +166,7 @@ class CompositeProductControllerTest extends TenantFeatureTestCase
     public function test_update_returns_404_for_missing(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->putJson('/api/composite-products/non-existent-uuid', [])
+            ->putJson('/api/v1/v1/products/composite/non-existent-uuid', [])
             ->assertNotFound();
     }
 
@@ -198,7 +198,7 @@ class CompositeProductControllerTest extends TenantFeatureTestCase
     public function test_destroy_returns_404_for_missing(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->deleteJson('/api/composite-products/non-existent-uuid')
+            ->deleteJson('/api/v1/v1/products/composite/non-existent-uuid')
             ->assertNotFound();
     }
 }

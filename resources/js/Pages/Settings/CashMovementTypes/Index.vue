@@ -142,7 +142,7 @@ const directionOptions = computed(() => [
 async function fetchItems(url = null) {
     const params = {}
     if (search.value) params.search = search.value
-    const { data } = await get(url ?? '/api/cash-movement-types', url ? {} : params)
+    const { data } = await get(url ?? '/api/v1/cash-movement-types', url ? {} : params)
     if (data) { items.value = data.data; meta.value = data.meta }
 }
 
@@ -159,7 +159,7 @@ async function save() {
     const payload = { name: form.value.name, is_income: form.value.is_income, is_active: form.value.is_active }
     const result = editing.value
         ? await putForm(`/api/cash-movement-types/${editing.value.id}`, payload)
-        : await postForm('/api/cash-movement-types', payload)
+        : await postForm('/api/v1/cash-movement-types', payload)
     if (result.error) { if (!Object.keys(formErrors.value).length) formError.value = result.error; return }
     slideOverOpen.value = false; await fetchItems()
 }

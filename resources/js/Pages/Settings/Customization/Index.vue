@@ -130,7 +130,7 @@ const form = reactive({
 })
 
 onMounted(async () => {
-  const { data } = await axios.get('/api/customization')
+  const { data } = await axios.get('/api/v1/settings/customization')
   form.primary_color = data.data.primary_color
   form.secondary_color = data.data.secondary_color
   form.accent_color = data.data.accent_color
@@ -197,7 +197,7 @@ async function submit() {
       payload.append('remove_logo', '1')
     }
 
-    const { data } = await axios.post('/api/customization', payload)
+    const { data } = await axios.post('/api/v1/settings/customization', payload)
 
     logoPreview.value = data.data.logo_url ?? null
     logoFile.value = null

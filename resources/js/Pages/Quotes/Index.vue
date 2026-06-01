@@ -144,7 +144,7 @@ const deleteTarget = ref(null)
 async function fetchItems(url = null) {
   const params = {}
   if (search.value) params.search = search.value
-  const { data } = await get(url ?? '/api/quotes', url ? {} : params)
+  const { data } = await get(url ?? '/api/v1/quotes', url ? {} : params)
   if (data) { items.value = data.data; meta.value = data.meta }
 }
 

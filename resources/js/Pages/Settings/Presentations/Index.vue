@@ -197,12 +197,12 @@ const presentationTypeOptions = computed(() =>
 async function fetchItems() {
   const params = {}
   if (search.value) params.search = search.value
-  const { data } = await get('/api/presentations', params)
+  const { data } = await get('/api/v1/products/presentations', params)
   if (data) items.value = data.data
 }
 
 async function fetchPresentationTypes() {
-  const { data } = await get('/api/presentation-types')
+  const { data } = await get('/api/v1/products/presentation-types')
   if (data) presentationTypes.value = data.data
 }
 
@@ -236,7 +236,7 @@ async function save() {
   if (editing.value) {
     result = await putForm(`/api/presentations/${editing.value.id}`, payload)
   } else {
-    result = await postForm('/api/presentations', payload)
+    result = await postForm('/api/v1/products/presentations', payload)
   }
 
   if (result.error) {

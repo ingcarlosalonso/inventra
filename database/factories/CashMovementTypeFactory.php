@@ -13,7 +13,7 @@ class CashMovementTypeFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'      => fake()->unique()->word(),
+            'name' => fake()->unique()->word(),
             'is_income' => true,
             'is_active' => true,
         ];

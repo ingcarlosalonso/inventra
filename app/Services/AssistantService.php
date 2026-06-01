@@ -28,6 +28,7 @@ use App\Models\Sale\Scopes\BySearch as SaleBySearch;
 use App\Models\Scopes\Active;
 use App\Models\Supplier;
 use App\Models\Supplier\Scopes\BySearch as SupplierBySearch;
+use App\Models\Tenant;
 use App\Models\User;
 use App\Models\User\Scopes\BySearch as UserBySearch;
 use Illuminate\Support\Carbon;
@@ -41,18 +42,29 @@ class AssistantService
 {
     private const MODEL = 'meta-llama/llama-4-scout-17b-16e-instruct';
 
-    private const SYSTEM_PROMPT = <<<'PROMPT'
-        You are In-ventra Assistant, an AI helper embedded in the In-ventra inventory and sales management system.
+    private function buildSystemPrompt(): string
+    {
+        $tenantName = Tenant::current()?->name ?? 'this company';
+        $today = now()->toDateString();
+
+        return <<<PROMPT
+        You are In-ventra Assistant for **{$tenantName}**.
+
+        TENANT ISOLATION — NON-NEGOTIABLE:
+        - You ONLY have access to data belonging to **{$tenantName}**.
+        - NEVER discuss, reference, infer, or fabricate data about any other company, tenant, or organisation.
+        - If asked about another company or tenant, respond exactly: "I only have access to {$tenantName} data."
 
         CRITICAL RULES — follow without exception:
-        1. NEVER say you don't have access to data or that information is unavailable. You ALWAYS have access via tools.
-        2. ALWAYS call the appropriate tool FIRST before answering ANY question about products, stock, sales, orders, clients, suppliers, cash, quotes, receptions, promotions, movements, or trends.
+        1. ALWAYS call the appropriate tool FIRST before answering ANY question about products, stock, sales, orders, clients, suppliers, cash, quotes, receptions, promotions, movements, or trends.
            For trend/prediction questions: use get_top_selling_products with the relevant date range, then reason about the data.
-        3. If a tool returns empty results, report that clearly. Never skip the tool call.
+        2. If a tool returns empty results, report that clearly. NEVER invent or hallucinate data.
+        3. Only answer questions related to {$tenantName}'s business data. Politely decline anything outside that scope.
 
         Be concise, friendly, and helpful. Format numbers nicely. Respond in the same language as the user.
-        Today's date: %s
+        Today's date: {$today}
         PROMPT;
+    }
 
     /**
      * @param  array<int, array{role: string, content: string}>  $messages
@@ -66,7 +78,7 @@ class AssistantService
 
         $response = Prism::text()
             ->using(Provider::Groq, self::MODEL)
-            ->withSystemPrompt(sprintf(self::SYSTEM_PROMPT, now()->toDateString()))
+            ->withSystemPrompt($this->buildSystemPrompt())
             ->withMessages($prismMessages)
             ->withTools($this->tools())
             ->withMaxSteps(5)

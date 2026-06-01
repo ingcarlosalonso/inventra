@@ -33,14 +33,14 @@ class QuoteControllerTest extends TenantFeatureTestCase
         Quote::factory()->count(3)->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/quotes')
+            ->getJson('/api/v1/quotes')
             ->assertOk()
             ->assertJsonStructure(['data', 'meta', 'links']);
     }
 
     public function test_index_requires_auth(): void
     {
-        $this->getJson('/api/quotes')->assertUnauthorized();
+        $this->getJson('/api/v1/quotes')->assertUnauthorized();
     }
 
     // ─── SHOW ────────────────────────────────────────────────────────────────
@@ -58,7 +58,7 @@ class QuoteControllerTest extends TenantFeatureTestCase
     public function test_show_returns_404_for_unknown(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/quotes/non-existent-uuid')
+            ->getJson('/api/v1/quotes/non-existent-uuid')
             ->assertNotFound();
     }
 
@@ -86,7 +86,7 @@ class QuoteControllerTest extends TenantFeatureTestCase
         ];
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/quotes', $payload)
+            ->postJson('/api/v1/quotes', $payload)
             ->assertCreated()
             ->assertJsonPath('data.total', 500)
             ->assertJsonPath('data.is_converted', false);
@@ -112,7 +112,7 @@ class QuoteControllerTest extends TenantFeatureTestCase
         ];
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/quotes', $payload)
+            ->postJson('/api/v1/quotes', $payload)
             ->assertCreated()
             ->assertJsonPath('data.subtotal', 200)
             ->assertJsonPath('data.discount_amount', 20)
@@ -122,7 +122,7 @@ class QuoteControllerTest extends TenantFeatureTestCase
     public function test_store_requires_items(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/quotes', ['items' => []])
+            ->postJson('/api/v1/quotes', ['items' => []])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['items']);
     }
@@ -132,7 +132,7 @@ class QuoteControllerTest extends TenantFeatureTestCase
         $pp = ProductPresentation::factory()->create(['stock' => 10]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/quotes', [
+            ->postJson('/api/v1/quotes', [
                 'starts_at' => '2026-04-30',
                 'expires_at' => '2026-04-01',
                 'items' => [[
@@ -148,7 +148,7 @@ class QuoteControllerTest extends TenantFeatureTestCase
 
     public function test_store_requires_auth(): void
     {
-        $this->postJson('/api/quotes', [])->assertUnauthorized();
+        $this->postJson('/api/v1/quotes', [])->assertUnauthorized();
     }
 
     // ─── CONVERT ─────────────────────────────────────────────────────────────
@@ -223,7 +223,7 @@ class QuoteControllerTest extends TenantFeatureTestCase
     public function test_destroy_returns_404_for_unknown(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->deleteJson('/api/quotes/non-existent-uuid')
+            ->deleteJson('/api/v1/quotes/non-existent-uuid')
             ->assertNotFound();
     }
 

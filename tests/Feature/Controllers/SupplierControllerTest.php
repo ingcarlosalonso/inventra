@@ -12,7 +12,7 @@ class SupplierControllerTest extends TenantFeatureTestCase
         Supplier::factory()->count(5)->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/suppliers')
+            ->getJson('/api/v1/suppliers')
             ->assertOk()
             ->assertJsonStructure(['data', 'meta', 'links']);
     }
@@ -23,20 +23,20 @@ class SupplierControllerTest extends TenantFeatureTestCase
         Supplier::factory()->create(['name' => 'Distribuidora XYZ', 'email' => 'xyz@xyz.com']);
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/suppliers?search=ABC')
+            ->getJson('/api/v1/suppliers?search=ABC')
             ->assertOk()
             ->assertJsonCount(1, 'data');
     }
 
     public function test_index_requires_auth(): void
     {
-        $this->getJson('/api/suppliers')->assertUnauthorized();
+        $this->getJson('/api/v1/suppliers')->assertUnauthorized();
     }
 
     public function test_store_creates_supplier(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/suppliers', [
+            ->postJson('/api/v1/suppliers', [
                 'name' => 'ACME Corp',
                 'email' => 'acme@corp.com',
             ])
@@ -49,7 +49,7 @@ class SupplierControllerTest extends TenantFeatureTestCase
     public function test_store_validates_name_required(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/suppliers', [])
+            ->postJson('/api/v1/suppliers', [])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['name']);
     }
@@ -57,7 +57,7 @@ class SupplierControllerTest extends TenantFeatureTestCase
     public function test_store_validates_email_format(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/suppliers', ['name' => 'Test', 'email' => 'not-email'])
+            ->postJson('/api/v1/suppliers', ['name' => 'Test', 'email' => 'not-email'])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['email']);
     }

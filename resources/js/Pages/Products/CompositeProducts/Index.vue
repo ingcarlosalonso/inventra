@@ -213,12 +213,12 @@ const form = ref(emptyForm())
 async function fetchItems(url = null) {
   const params = {}
   if (search.value) params.search = search.value
-  const { data } = await get(url ?? '/api/composite-products', url ? {} : params)
+  const { data } = await get(url ?? '/api/v1/products/composite', url ? {} : params)
   if (data) { items.value = data.data; meta.value = data.meta }
 }
 
 async function fetchProducts() {
-  const { data } = await get('/api/products', { per_page: 500 })
+  const { data } = await get('/api/v1/products', { per_page: 500 })
   if (data) products.value = data.data ?? data
 }
 
@@ -248,7 +248,7 @@ async function save() {
   formError.value = null
   const result = editing.value
     ? await putForm(`/api/composite-products/${editing.value.id}`, form.value)
-    : await postForm('/api/composite-products', form.value)
+    : await postForm('/api/v1/products/composite', form.value)
   if (result.error) { if (!Object.keys(formErrors.value).length) formError.value = result.error; return }
   slideOverOpen.value = false; await fetchItems()
 }

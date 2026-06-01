@@ -17,13 +17,13 @@ class DashboardControllerTest extends TenantFeatureTestCase
 {
     public function test_it_requires_authentication(): void
     {
-        $this->getJson('/api/dashboard')->assertUnauthorized();
+        $this->getJson('/api/v1/dashboard')->assertUnauthorized();
     }
 
     public function test_it_returns_expected_structure(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/dashboard')
+            ->getJson('/api/v1/dashboard')
             ->assertOk()
             ->assertJsonStructure([
                 'kpis' => [
@@ -54,7 +54,7 @@ class DashboardControllerTest extends TenantFeatureTestCase
         Sale::factory()->count(3)->create();
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/dashboard')
+            ->getJson('/api/v1/dashboard')
             ->assertOk();
 
         $this->assertGreaterThanOrEqual(3, $response->json('kpis.today_sales_count'));
@@ -65,7 +65,7 @@ class DashboardControllerTest extends TenantFeatureTestCase
         Client::factory()->count(2)->create();
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/dashboard')
+            ->getJson('/api/v1/dashboard')
             ->assertOk();
 
         $this->assertGreaterThanOrEqual(2, $response->json('kpis.total_clients'));
@@ -76,7 +76,7 @@ class DashboardControllerTest extends TenantFeatureTestCase
         Quote::factory()->count(2)->create(['sale_id' => null]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/dashboard')
+            ->getJson('/api/v1/dashboard')
             ->assertOk();
 
         $this->assertGreaterThanOrEqual(2, $response->json('kpis.pending_quotes'));
@@ -88,7 +88,7 @@ class DashboardControllerTest extends TenantFeatureTestCase
         Order::factory()->count(2)->create(['order_state_id' => $activeState->id]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/dashboard')
+            ->getJson('/api/v1/dashboard')
             ->assertOk();
 
         $this->assertGreaterThanOrEqual(2, $response->json('kpis.active_orders'));
@@ -99,7 +99,7 @@ class DashboardControllerTest extends TenantFeatureTestCase
         ProductPresentation::factory()->create(['stock' => 2, 'min_stock' => 10, 'is_active' => true]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/dashboard')
+            ->getJson('/api/v1/dashboard')
             ->assertOk();
 
         $this->assertGreaterThanOrEqual(1, $response->json('kpis.low_stock_count'));
@@ -108,7 +108,7 @@ class DashboardControllerTest extends TenantFeatureTestCase
     public function test_sales_chart_returns_30_days(): void
     {
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/dashboard')
+            ->getJson('/api/v1/dashboard')
             ->assertOk();
 
         $chart = $response->json('sales_chart');
@@ -123,7 +123,7 @@ class DashboardControllerTest extends TenantFeatureTestCase
         Sale::factory()->count(12)->create();
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/dashboard')
+            ->getJson('/api/v1/dashboard')
             ->assertOk();
 
         $this->assertLessThanOrEqual(8, count($response->json('recent_sales')));
@@ -134,7 +134,7 @@ class DashboardControllerTest extends TenantFeatureTestCase
         ProductPresentation::factory()->count(10)->create(['stock' => 0, 'min_stock' => 5, 'is_active' => true]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/dashboard')
+            ->getJson('/api/v1/dashboard')
             ->assertOk();
 
         $this->assertLessThanOrEqual(5, count($response->json('low_stock')));
@@ -148,7 +148,7 @@ class DashboardControllerTest extends TenantFeatureTestCase
         $pp = ProductPresentation::factory()->create(['stock' => 100]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/sales', [
+            ->postJson('/api/v1/sales', [
                 'point_of_sale_id' => $pos->uuid,
                 'sale_state_id' => $state->uuid,
                 'items' => [[
@@ -162,7 +162,7 @@ class DashboardControllerTest extends TenantFeatureTestCase
             ])->assertCreated();
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/dashboard')
+            ->getJson('/api/v1/dashboard')
             ->assertOk();
 
         $methods = collect($response->json('payment_methods'));

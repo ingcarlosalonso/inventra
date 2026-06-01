@@ -8,6 +8,6 @@ abstract class Model extends BaseModel
 {
     public static function tableName(): string
     {
-        return (new static())->getTable();
+        return (new static)->getTable();
     }
 }
