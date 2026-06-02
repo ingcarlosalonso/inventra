@@ -189,7 +189,7 @@ const lineChartOptions = {
   plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' $' + ctx.raw.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) } } },
   scales: {
     x: { grid: { display: false }, ticks: { font: { size: 10 }, maxTicksLimit: 15 } },
-    y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { size: 10 }, callback: v => '$' + v.toLocaleString() } },
+    y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { size: 10 }, callback: v => '$' + v.toLocaleString('es-AR') } },
   },
 }
 

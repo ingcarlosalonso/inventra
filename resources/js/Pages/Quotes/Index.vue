@@ -158,7 +158,7 @@ function navigateTo(url) { fetchItems(url) }
 
 function formatDate(str) {
   if (!str) return ''
-  return new Date(str.includes('T') ? str : str + 'T00:00:00').toLocaleDateString()
+  return new Date(str.includes('T') ? str : str + 'T00:00:00').toLocaleDateString('es-AR')
 }
 function formatNumber(value) {
   const num = parseFloat(value) || 0

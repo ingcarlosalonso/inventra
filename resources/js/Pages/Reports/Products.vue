@@ -162,7 +162,7 @@ const chartOptions = {
     tooltip: { callbacks: { label: ctx => ' $' + ctx.raw.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) } },
   },
   scales: {
-    x: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { size: 10 }, callback: v => '$' + v.toLocaleString() } },
+    x: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { size: 10 }, callback: v => '$' + v.toLocaleString('es-AR') } },
     y: { grid: { display: false }, ticks: { font: { size: 11 } } },
   },
 }

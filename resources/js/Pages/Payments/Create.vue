@@ -316,7 +316,7 @@ async function submitPayment() {
 
 function formatDate(iso) {
   if (!iso) return ''
-  return new Date(iso).toLocaleDateString()
+  return new Date(iso).toLocaleDateString('es-AR')
 }
 
 function formatNumber(value) {

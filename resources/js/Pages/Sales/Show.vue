@@ -269,7 +269,7 @@ function stateStyle(state) {
 
 function formatDate(iso) {
   if (!iso) return ''
-  return new Date(iso).toLocaleString()
+  return new Date(iso).toLocaleString('es-AR')
 }
 
 function formatNumber(value) {

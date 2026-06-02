@@ -173,11 +173,11 @@ async function doDelete() {
 
 function formatDate(dateStr) {
   if (!dateStr) return ''
-  return new Date(dateStr + 'T00:00:00').toLocaleDateString()
+  return new Date(dateStr + 'T00:00:00').toLocaleDateString('es-AR')
 }
 function formatDateTime(isoStr) {
   if (!isoStr) return ''
-  return new Date(isoStr).toLocaleString()
+  return new Date(isoStr).toLocaleString('es-AR')
 }
 function formatNumber(value) {
   const num = parseFloat(value) || 0

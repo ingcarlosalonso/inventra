@@ -283,7 +283,7 @@ function navigateTo(url) { fetchItems(url) }
 
 function formatDateTime(iso) {
   if (!iso) return ''
-  return new Date(iso).toLocaleString()
+  return new Date(iso).toLocaleString('es-AR')
 }
 
 function formatNumber(value) {

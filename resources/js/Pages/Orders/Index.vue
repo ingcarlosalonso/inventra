@@ -183,7 +183,7 @@ function stateStyle(state) {
 
 function formatDate(str) {
   if (!str) return ''
-  return new Date(str).toLocaleDateString()
+  return new Date(str).toLocaleDateString('es-AR')
 }
 
 function formatNumber(value) {

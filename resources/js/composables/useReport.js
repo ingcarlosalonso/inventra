@@ -70,12 +70,12 @@ export function useReport(endpoint, extraFilters = {}) {
 
     function fmtDate(iso) {
         if (!iso) return '—'
-        return new Date(iso).toLocaleDateString(undefined, { day: '2-digit', month: '2-digit', year: '2-digit' })
+        return new Date(iso).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: '2-digit' })
     }
 
     function fmtDateTime(iso) {
         if (!iso) return '—'
-        return new Date(iso).toLocaleDateString(undefined, {
+        return new Date(iso).toLocaleDateString('es-AR', {
             day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit',
         })
     }
