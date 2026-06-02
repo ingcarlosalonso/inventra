@@ -16,7 +16,7 @@ class PromotionControllerTest extends TenantFeatureTestCase
         Promotion::factory()->count(3)->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/v1/v1/products/promotions')
+            ->getJson('/api/v1/products/promotions')
             ->assertOk()
             ->assertJsonStructure(['data', 'meta', 'links']);
     }
@@ -27,7 +27,7 @@ class PromotionControllerTest extends TenantFeatureTestCase
         Promotion::factory()->create(['name' => 'Descuento Invierno']);
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/v1/v1/products/promotions?search=UNIQUE_PROMOVERANO_XYZ')
+            ->getJson('/api/v1/products/promotions?search=UNIQUE_PROMOVERANO_XYZ')
             ->assertOk()
             ->assertJsonCount(1, 'data');
     }
@@ -38,14 +38,14 @@ class PromotionControllerTest extends TenantFeatureTestCase
         Promotion::factory()->create(['name' => 'Promo B', 'code' => 'UNIQUEPROMO-002-ABC']);
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/v1/v1/products/promotions?search=UNIQUEPROMO-001-ABC')
+            ->getJson('/api/v1/products/promotions?search=UNIQUEPROMO-001-ABC')
             ->assertOk()
             ->assertJsonCount(1, 'data');
     }
 
     public function test_index_requires_auth(): void
     {
-        $this->getJson('/api/v1/v1/products/promotions')->assertUnauthorized();
+        $this->getJson('/api/v1/products/promotions')->assertUnauthorized();
     }
 
     // ─── STORE ───────────────────────────────────────────────────────────────
@@ -55,7 +55,7 @@ class PromotionControllerTest extends TenantFeatureTestCase
         $product = Product::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/v1/v1/products/promotions', [
+            ->postJson('/api/v1/products/promotions', [
                 'name' => '2x1 Test',
                 'items' => [
                     ['product_id' => $product->uuid, 'quantity' => 2],
@@ -72,7 +72,7 @@ class PromotionControllerTest extends TenantFeatureTestCase
         $product = Product::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/v1/v1/products/promotions', [
+            ->postJson('/api/v1/products/promotions', [
                 'name' => 'Promo con Precio',
                 'sale_price' => 199.99,
                 'items' => [
@@ -89,7 +89,7 @@ class PromotionControllerTest extends TenantFeatureTestCase
         $product2 = Product::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/v1/v1/products/promotions', [
+            ->postJson('/api/v1/products/promotions', [
                 'name' => 'Promo Multi',
                 'items' => [
                     ['product_id' => $product1->uuid, 'quantity' => 1],
@@ -103,7 +103,7 @@ class PromotionControllerTest extends TenantFeatureTestCase
     public function test_store_validates_required_fields(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/v1/v1/products/promotions', [])
+            ->postJson('/api/v1/products/promotions', [])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['name', 'items']);
     }
@@ -111,7 +111,7 @@ class PromotionControllerTest extends TenantFeatureTestCase
     public function test_store_validates_items_not_empty(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/v1/v1/products/promotions', [
+            ->postJson('/api/v1/products/promotions', [
                 'name' => 'Promo Vacía',
                 'items' => [],
             ])
@@ -124,7 +124,7 @@ class PromotionControllerTest extends TenantFeatureTestCase
         $product = Product::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/v1/v1/products/promotions', [
+            ->postJson('/api/v1/products/promotions', [
                 'name' => 'Promo Inválida',
                 'items' => [
                     ['product_id' => $product->uuid, 'quantity' => 0],
@@ -136,7 +136,7 @@ class PromotionControllerTest extends TenantFeatureTestCase
 
     public function test_store_requires_auth(): void
     {
-        $this->postJson('/api/v1/v1/products/promotions', [])->assertUnauthorized();
+        $this->postJson('/api/v1/products/promotions', [])->assertUnauthorized();
     }
 
     // ─── UPDATE ──────────────────────────────────────────────────────────────
@@ -182,7 +182,7 @@ class PromotionControllerTest extends TenantFeatureTestCase
     public function test_update_returns_404_for_missing(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->putJson('/api/v1/v1/products/promotions/non-existent-uuid', [])
+            ->putJson('/api/v1/products/promotions/non-existent-uuid', [])
             ->assertNotFound();
     }
 
@@ -214,7 +214,7 @@ class PromotionControllerTest extends TenantFeatureTestCase
     public function test_destroy_returns_404_for_missing(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->deleteJson('/api/v1/v1/products/promotions/non-existent-uuid')
+            ->deleteJson('/api/v1/products/promotions/non-existent-uuid')
             ->assertNotFound();
     }
 }

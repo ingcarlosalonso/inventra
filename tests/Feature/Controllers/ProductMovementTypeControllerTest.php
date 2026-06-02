@@ -12,7 +12,7 @@ class ProductMovementTypeControllerTest extends TenantFeatureTestCase
         ProductMovementType::factory()->count(3)->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/v1/v1/products/movement-types')
+            ->getJson('/api/v1/products/movement-types')
             ->assertOk()
             ->assertJsonStructure(['data', 'meta', 'links']);
     }
@@ -23,20 +23,20 @@ class ProductMovementTypeControllerTest extends TenantFeatureTestCase
         ProductMovementType::factory()->create(['name' => 'Ajuste Pérdida']);
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/v1/v1/products/movement-types?search=Ingreso')
+            ->getJson('/api/v1/products/movement-types?search=Ingreso')
             ->assertOk()
             ->assertJsonCount(1, 'data');
     }
 
     public function test_index_requires_auth(): void
     {
-        $this->getJson('/api/v1/v1/products/movement-types')->assertUnauthorized();
+        $this->getJson('/api/v1/products/movement-types')->assertUnauthorized();
     }
 
     public function test_store_creates_movement_type(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/v1/v1/products/movement-types', [
+            ->postJson('/api/v1/products/movement-types', [
                 'name' => 'Entrada Stock',
                 'is_income' => true,
             ])
@@ -50,7 +50,7 @@ class ProductMovementTypeControllerTest extends TenantFeatureTestCase
     public function test_store_validates_name_required(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/v1/v1/products/movement-types', ['is_income' => true])
+            ->postJson('/api/v1/products/movement-types', ['is_income' => true])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['name']);
     }
@@ -58,7 +58,7 @@ class ProductMovementTypeControllerTest extends TenantFeatureTestCase
     public function test_store_validates_is_income_required(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/v1/v1/products/movement-types', ['name' => 'Test'])
+            ->postJson('/api/v1/products/movement-types', ['name' => 'Test'])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['is_income']);
     }
@@ -68,7 +68,7 @@ class ProductMovementTypeControllerTest extends TenantFeatureTestCase
         ProductMovementType::factory()->create(['name' => 'Duplicado']);
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/v1/v1/products/movement-types', ['name' => 'Duplicado', 'is_income' => true])
+            ->postJson('/api/v1/products/movement-types', ['name' => 'Duplicado', 'is_income' => true])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['name']);
     }
@@ -78,7 +78,7 @@ class ProductMovementTypeControllerTest extends TenantFeatureTestCase
         $type = ProductMovementType::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->putJson("/api/product-movement-types/{$type->uuid}", [
+            ->putJson("/api/v1/products/movement-types/{$type->uuid}", [
                 'name' => 'Nombre Actualizado',
                 'is_income' => false,
             ])
@@ -92,7 +92,7 @@ class ProductMovementTypeControllerTest extends TenantFeatureTestCase
         $type = ProductMovementType::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->deleteJson("/api/product-movement-types/{$type->uuid}")
+            ->deleteJson("/api/v1/products/movement-types/{$type->uuid}")
             ->assertNoContent();
 
         $this->assertSoftDeleted('product_movement_types', ['id' => $type->id], 'tenant');

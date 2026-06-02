@@ -12,14 +12,14 @@ class CurrencyControllerTest extends TenantFeatureTestCase
         Currency::factory()->count(3)->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/v1/v1/settings/currencies')
+            ->getJson('/api/v1/settings/currencies')
             ->assertOk()
             ->assertJsonStructure(['data']);
     }
 
     public function test_index_requires_auth(): void
     {
-        $this->getJson('/api/v1/v1/settings/currencies')->assertUnauthorized();
+        $this->getJson('/api/v1/settings/currencies')->assertUnauthorized();
     }
 
     public function test_index_filters_by_search(): void
@@ -28,7 +28,7 @@ class CurrencyControllerTest extends TenantFeatureTestCase
         Currency::factory()->create(['name' => 'Dólar Test', 'iso_code' => 'XDT']);
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/v1/v1/settings/currencies?search=Especial')
+            ->getJson('/api/v1/settings/currencies?search=Especial')
             ->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.name', $match->name);
@@ -37,7 +37,7 @@ class CurrencyControllerTest extends TenantFeatureTestCase
     public function test_store_creates_currency(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/v1/v1/settings/currencies', [
+            ->postJson('/api/v1/settings/currencies', [
                 'name' => 'Guaraní Test',
                 'symbol' => '₲',
                 'iso_code' => 'XGT',
@@ -51,7 +51,7 @@ class CurrencyControllerTest extends TenantFeatureTestCase
     public function test_store_validates_required_fields(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/v1/v1/settings/currencies', [])
+            ->postJson('/api/v1/settings/currencies', [])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['name', 'symbol', 'iso_code']);
     }
@@ -61,7 +61,7 @@ class CurrencyControllerTest extends TenantFeatureTestCase
         $existing = Currency::factory()->create(['is_default' => true]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/v1/v1/settings/currencies', [
+            ->postJson('/api/v1/settings/currencies', [
                 'name' => 'Dólar Test Default',
                 'symbol' => 'T$',
                 'iso_code' => 'XDD',

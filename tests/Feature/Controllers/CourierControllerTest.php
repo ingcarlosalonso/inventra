@@ -14,14 +14,14 @@ class CourierControllerTest extends TenantFeatureTestCase
         Courier::factory()->count(3)->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/v1/v1/orders/couriers')
+            ->getJson('/api/v1/orders/couriers')
             ->assertOk()
             ->assertJsonStructure(['data']);
     }
 
     public function test_index_requires_auth(): void
     {
-        $this->getJson('/api/v1/v1/orders/couriers')->assertUnauthorized();
+        $this->getJson('/api/v1/orders/couriers')->assertUnauthorized();
     }
 
     public function test_index_filters_by_search(): void
@@ -30,7 +30,7 @@ class CourierControllerTest extends TenantFeatureTestCase
         Courier::factory()->create(['name' => 'Pedro López']);
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/v1/v1/orders/couriers?search=Juan')
+            ->getJson('/api/v1/orders/couriers?search=Juan')
             ->assertOk()
             ->assertJsonCount(1, 'data');
     }
@@ -40,7 +40,7 @@ class CourierControllerTest extends TenantFeatureTestCase
     public function test_store_creates_courier(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/v1/v1/orders/couriers', [
+            ->postJson('/api/v1/orders/couriers', [
                 'name' => 'Carlos Romero',
                 'phone' => '1234567890',
             ])
@@ -53,14 +53,14 @@ class CourierControllerTest extends TenantFeatureTestCase
     public function test_store_requires_name(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/v1/v1/orders/couriers', [])
+            ->postJson('/api/v1/orders/couriers', [])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['name']);
     }
 
     public function test_store_requires_auth(): void
     {
-        $this->postJson('/api/v1/v1/orders/couriers', ['name' => 'Test'])->assertUnauthorized();
+        $this->postJson('/api/v1/orders/couriers', ['name' => 'Test'])->assertUnauthorized();
     }
 
     // ─── UPDATE ──────────────────────────────────────────────────────────────

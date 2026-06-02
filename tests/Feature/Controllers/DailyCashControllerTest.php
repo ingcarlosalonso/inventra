@@ -65,7 +65,7 @@ class DailyCashControllerTest extends TenantFeatureTestCase
         $dailyCash = DailyCash::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson("/api/daily-cashes/{$dailyCash->uuid}")
+            ->getJson("/api/v1/daily-cashes/{$dailyCash->uuid}")
             ->assertOk()
             ->assertJsonPath('data.id', $dailyCash->uuid);
     }
@@ -81,7 +81,7 @@ class DailyCashControllerTest extends TenantFeatureTestCase
     {
         $dailyCash = DailyCash::factory()->create();
 
-        $this->getJson("/api/daily-cashes/{$dailyCash->uuid}")->assertUnauthorized();
+        $this->getJson("/api/v1/daily-cashes/{$dailyCash->uuid}")->assertUnauthorized();
     }
 
     public function test_it_shows_daily_cash_with_current_balance(): void
@@ -89,7 +89,7 @@ class DailyCashControllerTest extends TenantFeatureTestCase
         $dailyCash = DailyCash::factory()->create(['opening_balance' => 500.00]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson("/api/daily-cashes/{$dailyCash->uuid}")
+            ->getJson("/api/v1/daily-cashes/{$dailyCash->uuid}")
             ->assertOk();
 
         $this->assertEquals(500.00, (float) $response->json('data.current_balance'));
@@ -108,7 +108,7 @@ class DailyCashControllerTest extends TenantFeatureTestCase
         ]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson("/api/daily-cashes/{$dailyCash->uuid}")
+            ->getJson("/api/v1/daily-cashes/{$dailyCash->uuid}")
             ->assertOk();
 
         $this->assertEquals(500.00, (float) $response->json('data.current_balance'));
@@ -134,7 +134,7 @@ class DailyCashControllerTest extends TenantFeatureTestCase
 
         // Expected: 200 + 150 - 50 = 300
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson("/api/daily-cashes/{$dailyCash->uuid}")
+            ->getJson("/api/v1/daily-cashes/{$dailyCash->uuid}")
             ->assertOk();
 
         $this->assertEquals(300.00, (float) $response->json('data.current_balance'));
@@ -169,7 +169,7 @@ class DailyCashControllerTest extends TenantFeatureTestCase
         $dailyCash = DailyCash::factory()->create(['is_closed' => false]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->deleteJson("/api/daily-cashes/{$dailyCash->uuid}")
+            ->deleteJson("/api/v1/daily-cashes/{$dailyCash->uuid}")
             ->assertNoContent();
 
         $this->assertSoftDeleted($dailyCash);
@@ -180,7 +180,7 @@ class DailyCashControllerTest extends TenantFeatureTestCase
         $dailyCash = DailyCash::factory()->closed()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->deleteJson("/api/daily-cashes/{$dailyCash->uuid}")
+            ->deleteJson("/api/v1/daily-cashes/{$dailyCash->uuid}")
             ->assertUnprocessable();
     }
 
@@ -188,6 +188,6 @@ class DailyCashControllerTest extends TenantFeatureTestCase
     {
         $dailyCash = DailyCash::factory()->create();
 
-        $this->deleteJson("/api/daily-cashes/{$dailyCash->uuid}")->assertUnauthorized();
+        $this->deleteJson("/api/v1/daily-cashes/{$dailyCash->uuid}")->assertUnauthorized();
     }
 }

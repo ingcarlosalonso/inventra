@@ -63,6 +63,15 @@ class SaleController extends Controller
 
     public function destroy(Sale $sale): JsonResponse
     {
+        if ($sale->saleState?->is_final_state) {
+            return response()->json(['message' => __('sales.cannot_delete_final_state')], 422);
+        }
+
+        $sale->load('items.productPresentation');
+        $sale->items()->withTrashed()->each(function ($item): void {
+            $item->productPresentation()->increment('stock', (float) $item->quantity);
+        });
+
         $sale->delete();
 
         return response()->json([], 204);

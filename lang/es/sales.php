@@ -49,4 +49,5 @@ return [
     'paid' => 'Pagado',
     'partial' => 'Parcial',
     'unpaid' => 'Sin pagar',
+    'cannot_delete_final_state' => 'No se puede eliminar una venta en estado final.',
 ];

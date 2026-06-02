@@ -9,6 +9,7 @@ use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use App\Models\User\Scopes\BySearch;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class UserController extends Controller
@@ -52,8 +53,12 @@ class UserController extends Controller
         return UserResource::make($user->fresh()->load('roles'));
     }
 
-    public function destroy(User $user): JsonResponse
+    public function destroy(Request $request, User $user): JsonResponse
     {
+        if ($request->user()->id === $user->id) {
+            return response()->json(['message' => __('users.cannot_delete_self')], 422);
+        }
+
         $user->delete();
 
         return response()->json([], 204);

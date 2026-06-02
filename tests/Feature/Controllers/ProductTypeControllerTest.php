@@ -15,7 +15,7 @@ class ProductTypeControllerTest extends TenantFeatureTestCase
         ProductType::factory()->count(3)->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/v1/v1/products/types')
+            ->getJson('/api/v1/products/types')
             ->assertOk()
             ->assertJsonCount($before + 3, 'data');
     }
@@ -26,7 +26,7 @@ class ProductTypeControllerTest extends TenantFeatureTestCase
         ProductType::factory()->create(['name' => 'Ropa']);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/v1/v1/products/types?search=Electr');
+            ->getJson('/api/v1/products/types?search=Electr');
 
         $response->assertOk()
             ->assertJsonCount(1, 'data')
@@ -35,7 +35,7 @@ class ProductTypeControllerTest extends TenantFeatureTestCase
 
     public function test_index_requires_auth(): void
     {
-        $this->getJson('/api/v1/v1/products/types')->assertUnauthorized();
+        $this->getJson('/api/v1/products/types')->assertUnauthorized();
     }
 
     // ── store ─────────────────────────────────────────────────────────────────
@@ -43,7 +43,7 @@ class ProductTypeControllerTest extends TenantFeatureTestCase
     public function test_store_creates_product_type(): void
     {
         $response = $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/v1/v1/products/types', ['name' => 'Nuevo Tipo', 'is_active' => true]);
+            ->postJson('/api/v1/products/types', ['name' => 'Nuevo Tipo', 'is_active' => true]);
 
         $response->assertCreated()
             ->assertJsonPath('data.name', 'Nuevo Tipo')
@@ -55,7 +55,7 @@ class ProductTypeControllerTest extends TenantFeatureTestCase
     public function test_store_validates_name_required(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/v1/v1/products/types', [])
+            ->postJson('/api/v1/products/types', [])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['name']);
     }
@@ -65,7 +65,7 @@ class ProductTypeControllerTest extends TenantFeatureTestCase
         ProductType::factory()->create(['name' => 'Duplicado']);
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/v1/v1/products/types', ['name' => 'Duplicado'])
+            ->postJson('/api/v1/products/types', ['name' => 'Duplicado'])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['name']);
     }

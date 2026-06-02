@@ -56,6 +56,10 @@ return [
 
     'central_domain' => env('CENTRAL_DOMAIN', 'localhost'),
 
+    'subdomain_prefix' => env('SUBDOMAIN_URL', 'development.'),
+
+    'subdomain_suffix' => env('EXT_SUBDOMAIN_URL', '.com'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

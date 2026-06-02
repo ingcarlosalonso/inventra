@@ -49,4 +49,5 @@ return [
     'paid' => 'Paid',
     'partial' => 'Partial',
     'unpaid' => 'Unpaid',
+    'cannot_delete_final_state' => 'Cannot delete a sale in a final state.',
 ];

@@ -3,10 +3,6 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HelpController;
 use App\Http\Controllers\LocaleController;
-use App\Models\Client;
-use App\Models\Currency;
-use App\Models\ProductType;
-use App\Models\Supplier;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -19,16 +15,7 @@ Route::middleware(['tenant', 'tenant.active'])->group(function () {
 
     Route::middleware('auth')->group(function () {
         Route::get('/', fn () => redirect()->route('dashboard'));
-        Route::get('/dashboard', function () {
-            return Inertia::render('Dashboard', [
-                'counts' => [
-                    'suppliers' => Supplier::count(),
-                    'clients' => Client::count(),
-                    'product_types' => ProductType::count(),
-                    'currencies' => Currency::count(),
-                ],
-            ]);
-        })->name('dashboard');
+        Route::get('/dashboard', fn () => Inertia::render('Dashboard'))->name('dashboard');
 
         // Settings / parametrization
         Route::get('/settings/product-types', fn () => Inertia::render('Settings/ProductTypes/Index'))->name('settings.product-types');
