@@ -1,0 +1,33 @@
+# =============================================================================
+# In-Ventra — Configuración de instalación
+# Copiá este archivo a install.conf y completá los valores
+# =============================================================================
+
+# ─── Dominio principal ────────────────────────────────────────────────────────
+DOMAIN="in-ventra.com"
+CENTRAL_SUBDOMAIN="central"                   # central.in-ventra.com
+ADMIN_EMAIL="admin@in-ventra.com"             # Para notificaciones SSL
+
+# ─── Rutas del servidor ───────────────────────────────────────────────────────
+DEPLOY_PATH="/var/www/inventra"
+APP_USER="www-data"
+
+# ─── Base de datos ────────────────────────────────────────────────────────────
+DB_ROOT_PASSWORD="CAMBIAR_password_root_segura"
+DB_APP_USER="inventra"
+DB_APP_PASSWORD="CAMBIAR_password_app_segura"
+DB_APP_DATABASE="inventra"
+
+# ─── Redis ────────────────────────────────────────────────────────────────────
+REDIS_PASSWORD="CAMBIAR_password_redis_segura"
+
+# ─── SSL — Cloudflare DNS challenge ──────────────────────────────────────────
+# Obtené el token en: https://dash.cloudflare.com/profile/api-tokens
+# Permisos necesarios: Zone:DNS:Edit (para la zona in-ventra.com)
+CF_API_TOKEN="CAMBIAR_cloudflare_api_token"
+
+# ─── Queue workers ────────────────────────────────────────────────────────────
+QUEUE_WORKERS=2                               # Número de procesos queue:work
+
+# ─── Backup ───────────────────────────────────────────────────────────────────
+BACKUP_RETENTION_DAYS=14
