@@ -78,7 +78,7 @@ Route::middleware(['api', 'tenant', 'tenant.active'])->prefix('v1')->group(funct
             Route::apiResource('couriers', CourierController::class)->except(['show']);
             Route::patch('couriers/{courier}/toggle', [CourierController::class, 'toggle']);
 
-            Route::apiResource('states', OrderStateController::class)->except(['show']);
+            Route::apiResource('states', OrderStateController::class)->except(['show'])->names('order-states');
             Route::patch('states/{orderState}/toggle', [OrderStateController::class, 'toggle']);
         });
 
@@ -179,7 +179,7 @@ Route::middleware(['api', 'tenant', 'tenant.active'])->prefix('v1')->group(funct
                 ->parameters(['points-of-sale' => 'pointOfSale']);
             Route::patch('points-of-sale/{pointOfSale}/toggle', [PointOfSaleController::class, 'toggle']);
 
-            Route::apiResource('states', SaleStateController::class)->except(['show']);
+            Route::apiResource('states', SaleStateController::class)->except(['show'])->names('sale-states');
             Route::patch('states/{saleState}/toggle', [SaleStateController::class, 'toggle']);
         });
 

@@ -78,9 +78,9 @@ fi
 if ! $FIRST_RUN; then
     info "Actualizando código desde git..."
     cd "$DEPLOY_PATH"
-    sudo -u www-data git fetch origin
-    sudo -u www-data git checkout "$GIT_BRANCH"
-    sudo -u www-data git pull origin "$GIT_BRANCH"
+    git fetch origin
+    git checkout "$GIT_BRANCH"
+    git pull origin "$GIT_BRANCH"
 fi
 
 cd "$DEPLOY_PATH"
@@ -118,6 +118,9 @@ npm run build --silent
 rm -rf node_modules
 
 # ─── Migraciones ──────────────────────────────────────────────────────────────
+info "Ejecutando migraciones landlord (tenants, domains)..."
+sudo -u www-data php artisan migrate --path=database/migrations/landlord --force
+
 info "Ejecutando migraciones de la base de datos central..."
 sudo -u www-data php artisan migrate --force
 
