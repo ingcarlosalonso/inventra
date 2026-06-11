@@ -21,9 +21,14 @@ DB_APP_DATABASE="inventra"
 # ─── Redis ────────────────────────────────────────────────────────────────────
 REDIS_PASSWORD="CAMBIAR_password_redis_segura"
 
-# ─── SSL — Cloudflare DNS challenge ──────────────────────────────────────────
-# Obtené el token en: https://dash.cloudflare.com/profile/api-tokens
-# Permisos necesarios: Zone:DNS:Edit (para la zona in-ventra.com)
+# ─── SSL — Cloudflare DNS (solo para wildcard cert, plan free) ───────────────
+# Don Web gestiona el dominio como registrar, pero los nameservers apuntan a Cloudflare.
+# Cloudflare se usa SOLO para DNS (nube gris, sin proxy). No tiene costo.
+#
+# Cómo obtener el token:
+#   1. cloudflare.com → avatar → My Profile → API Tokens → Create Token
+#   2. Plantilla "Edit zone DNS" → Zone: in-ventra.com (Specific zone)
+#   3. Crear y copiar el token (se muestra una sola vez)
 CF_API_TOKEN="CAMBIAR_cloudflare_api_token"
 
 # ─── Queue workers ────────────────────────────────────────────────────────────
