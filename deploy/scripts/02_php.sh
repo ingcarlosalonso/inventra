@@ -35,17 +35,7 @@ apt-get install -y -qq \
     php8.3-intl \
     php8.3-redis \
     php8.3-igbinary \
-    php8.3-tokenizer \
-    php8.3-ctype \
-    php8.3-fileinfo \
-    php8.3-iconv \
-    php8.3-dom \
-    php8.3-simplexml \
-    php8.3-xmlreader \
-    php8.3-xmlwriter \
     php8.3-opcache \
-    php8.3-pcntl \
-    php8.3-posix \
     php8.3-readline
 
 info "Configurando PHP para producción..."
