@@ -13,6 +13,7 @@
     </div>
 
     <AiAssistant />
+    <ReleasePopup />
   </div>
 </template>
 
@@ -20,6 +21,7 @@
 import { computed, ref, watch } from 'vue'
 import { usePage } from '@inertiajs/vue3'
 import AiAssistant from '@/Components/AiAssistant.vue'
+import ReleasePopup from '@/Components/ReleasePopup.vue'
 import Sidebar from '@/Components/Sidebar.vue'
 import TopBar from '@/Components/TopBar.vue'
 import { applyTheme } from '@/composables/useTheme.js'

@@ -20,6 +20,7 @@ return [
         'daily-cashes' => 'Caja Diaria',
         'reports' => 'Reportes',
         'configuration' => 'Configuración',
+        'release-notes' => 'Novedades del sistema',
     ],
     'groups' => [
         'main' => 'Principal',
