@@ -1,5 +1,11 @@
 # In-Ventra — Guía de Deployment
 
+> El servidor de producción ya está provisionado y la app está corriendo. Esta guía cubre
+> **operación continua** (deploys de nuevas versiones, mantenimiento, monitoreo, backups).
+> La instalación inicial desde cero (DNS, Apache, PHP, MySQL, Redis, Certbot, etc.) ya no es
+> necesaria y no forma parte de este repo — si en el futuro hay que levantar un server nuevo
+> (ej. staging), recrear esos scripts de provisión en base a esta arquitectura.
+
 ## Arquitectura del servidor
 
 | Componente | Versión   | Rol                                      |
@@ -25,149 +31,45 @@ central.in-ventra.com  → Panel admin central (guard: central, modelo: Admin)
 Un único VirtualHost Apache con `ServerAlias *.in-ventra.com` maneja todos los subdominios. Laravel identifica el tenant
 vía `DomainTenantFinder` de spatie/laravel-multitenancy.
 
-## Configuración DNS (hacer ANTES de instalar el servidor)
-
-El sistema usa subdominios por tenant (`empresa.in-ventra.com`), lo que requiere un **certificado SSL wildcard**
-(`*.in-ventra.com`). Let's Encrypt solo emite wildcards via DNS-01 challenge, que necesita una API DNS.
-
-**Don Web no tiene API DNS pública**, así que se usa Cloudflare únicamente como gestor de DNS
-(plan free, sin proxy, sin CDN). Don Web sigue siendo el registrar del dominio.
-
-### Paso 1 — Crear cuenta Cloudflare y agregar el dominio
-
-1. Ir a [cloudflare.com](https://cloudflare.com) → crear cuenta gratuita
-2. "Add a site" → ingresar `in-ventra.com` → elegir plan **Free**
-3. Cloudflare escanea los DNS actuales e importa los registros existentes
-4. Al final te da **dos nameservers**, algo como:
-   ```
-   aria.ns.cloudflare.com
-   bob.ns.cloudflare.com
-   ```
-   (los nombres exactos los asigna Cloudflare, anotalos)
-
-### Paso 2 — Cambiar nameservers en Don Web
-
-1. Entrar al panel de Don Web → **Dominios** → seleccionar `in-ventra.com`
-2. Ir a **Servidores de nombres (DNS)** o similar
-3. Reemplazar los nameservers actuales por los dos que te dio Cloudflare
-4. Guardar — la propagación tarda entre 15 minutos y 2 horas
-
-### Paso 3 — Configurar los registros DNS en Cloudflare
-
-En el panel de Cloudflare → DNS → agregar estos registros (reemplazar `1.2.3.4` con la IP del VPS):
-
-| Tipo | Nombre | Valor   | Proxy         |
-|------|--------|---------|---------------|
-| A    | `@`    | `1.2.3.4` | **DNS only** (nube gris) |
-| A    | `*`    | `1.2.3.4` | **DNS only** (nube gris) |
-| A    | `www`  | `1.2.3.4` | **DNS only** (nube gris) |
-
-> **Importante**: El ícono de nube debe quedar **gris** (DNS only), NO naranja. El proxy de Cloudflare
-> interfiere con el SSL del servidor. Si lo dejás naranja, HTTPS va a fallar.
-
-### Paso 4 — Crear el API Token de Cloudflare
-
-Este token lo usa certbot para obtener y renovar el certificado wildcard automáticamente.
-
-1. En Cloudflare → click en tu avatar (arriba derecha) → **My Profile**
-2. Ir a **API Tokens** → **Create Token**
-3. Usar la plantilla **"Edit zone DNS"**
-4. En "Zone Resources" → seleccionar **Specific zone** → `in-ventra.com`
-5. Crear el token y **copiarlo** (solo se muestra una vez)
-6. Guardarlo en `install.conf` como `CF_API_TOKEN`
-
-### Paso 5 — Verificar que el DNS propagó
-
-```bash
-# Desde tu máquina local, verificar que resuelve al VPS:
-dig in-ventra.com +short
-dig central.in-ventra.com +short
-dig cualquiercosa.in-ventra.com +short
-# Los tres deben devolver la IP del VPS
-```
-
----
-
-## Pre-requisitos antes de instalar
-
-1. **VPS Ubuntu 24.04** con acceso root por SSH
-2. **DNS configurado en Cloudflare** apuntando al VPS (ver sección anterior)
-3. **API Token de Cloudflare** con permiso `Zone:DNS:Edit` para `in-ventra.com`
-4. **Repositorio Git** accesible desde el VPS (SSH key o HTTPS)
-
-## Instalación desde cero
-
-```bash
-# 1. Subir la carpeta deploy/ al servidor
-scp -r deploy/ root@IP_DEL_VPS:/root/inventra-deploy/
-
-# 2. En el servidor
-cd /root/inventra-deploy
-
-# 3. Crear configuración
-cp install.conf.example install.conf
-nano install.conf    # Completar con tus valores reales
-
-# 4. Agregar repo Git al config
-echo 'GIT_REPO="git@github.com:tuusuario/inventra.git"' >> install.conf
-echo 'GIT_BRANCH="main"' >> install.conf
-
-# 5. Ejecutar instalación
-chmod +x install.sh scripts/*.sh
-bash install.sh
-
-# 6. Agregar SSH key del servidor a GitHub (si usás SSH)
-cat ~/.ssh/id_rsa.pub   # Agregar en GitHub → Settings → Deploy Keys
-
-# 7. Deploy de la aplicación
-bash deploy_project.sh --first-run
-
-# 8. Verificar todo
-bash verify_installation.sh
-```
-
-## Primer deploy paso a paso
-
-```bash
-# Después de install.sh, ejecutar:
-bash deploy_project.sh --first-run
-
-# El script hace:
-# 1. git clone del repo
-# 2. Copia .env.example → .env y llena valores desde install.conf
-# 3. composer install --no-dev
-# 4. npm ci && npm run build
-# 5. php artisan key:generate
-# 6. php artisan migrate (DB central)
-# 7. php artisan migrate (tenants — ninguno aún, OK)
-# 8. php artisan storage:link
-# 9. Caches de config/routes/views
-
-# Crear el admin central:
-cd /var/www/inventra
-php artisan create:central-admin
-```
-
 ## Deploy de nuevas versiones
 
 ```bash
 # Desde el servidor, como root o con sudo:
 bash /root/inventra-deploy/deploy_project.sh
 
-# El script hace (sin --first-run):
+# El script hace:
 # 1. php artisan down (modo mantenimiento con bypass secret)
 # 2. git pull origin main
 # 3. composer install --no-dev
 # 4. npm ci && npm run build
 # 5. php artisan migrate --force (central)
 # 6. php artisan tenants:artisan "migrate ..." (todos los tenants)
-# 7. Caches Laravel
-# 8. Reinicio de queue workers
-# 9. php artisan up
+# 7. deploy/release_tasks.sh (tareas puntuales de la versión que se está deployando)
+# 8. Caches Laravel
+# 9. Reinicio de queue workers
+# 10. php artisan up
 
 # Para acceder durante mantenimiento como admin:
 # Visitar: https://in-ventra.com?secret=inventra-deploy-secret
 ```
+
+## Tareas puntuales por release (`release_tasks.sh`)
+
+Las migraciones estándar (central + todos los tenants) ya corren solas en cada deploy — no hace falta
+declararlas. `deploy/release_tasks.sh` es para lo que una versión necesita **además** de eso: un
+seeder puntual, un comando artisan ad-hoc, una limpieza de caché específica, etc.
+
+**Flujo de trabajo:**
+
+1. Al armar el release, agregás un bloque al final de `deploy/release_tasks.sh` bajo un heading con la
+   versión (ej. `## v1.1`), llamando a la función `run_once "v1.1-nombre-tarea" -- comando...`.
+2. `run_once` chequea contra `storage/app/release_tasks_done` (en el server) si esa tarea ya corrió; si
+   ya corrió, la saltea — así el archivo queda en el repo para siempre sin repetir trabajo en deploys futuros.
+3. `deploy_project.sh` ejecuta `release_tasks.sh` automáticamente en cada deploy, después de las migraciones.
+4. No hay que borrar ni resetear nada después del deploy — simplemente seguís agregando bloques nuevos
+   para la próxima versión.
+
+Ver comentarios dentro de `deploy/release_tasks.sh` para el detalle de la función `run_once`.
 
 ## Renovación de SSL
 

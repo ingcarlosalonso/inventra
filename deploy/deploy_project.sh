@@ -137,6 +137,17 @@ sudo -u www-data php artisan tenants:artisan \
     "migrate --path=database/migrations/tenant --database=tenant --force" \
     2>/dev/null || warn "Ningún tenant existe aún (normal en primer deploy)"
 
+# ─── Tareas puntuales del release ─────────────────────────────────────────────
+# release_tasks.sh vive DENTRO del repo (DEPLOY_PATH/deploy/), no en este directorio
+# de orquestación, para que viaje versionado con cada release vía git pull.
+if ! $FIRST_RUN; then
+    RELEASE_TASKS="$DEPLOY_PATH/deploy/release_tasks.sh"
+    if [[ -f "$RELEASE_TASKS" ]]; then
+        info "Ejecutando tareas puntuales del release (deploy/release_tasks.sh)..."
+        DEPLOY_PATH="$DEPLOY_PATH" bash "$RELEASE_TASKS"
+    fi
+fi
+
 # ─── Storage link ─────────────────────────────────────────────────────────────
 if $FIRST_RUN; then
     info "Creando enlace simbólico de storage..."
