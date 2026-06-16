@@ -4,10 +4,10 @@ All notable changes to In-ventra are documented here.
 
 ---
 
-## [Unreleased]
-> Changes currently in development with no assigned version yet.
+## [1.1.0] - xxxx-xx-xx
 
----
+### Added
+- Release notes system: central admin can draft, edit, and publish release notes parsed from CHANGELOG.md; users see a "What's New" popup on first login after each new release
 
 ## [1.0.0] - 2026-06-11
 

@@ -20,6 +20,7 @@ return [
         'daily-cashes' => 'Daily Cash',
         'reports' => 'Reports',
         'configuration' => 'Configuration',
+        'release-notes' => "What's new",
     ],
     'groups' => [
         'main' => 'Main',

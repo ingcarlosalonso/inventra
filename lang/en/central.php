@@ -9,6 +9,7 @@ return [
     'logout' => 'Sign out',
 
     'tenants' => 'Clients',
+    'releases' => 'Releases',
     'tenant' => 'Client',
     'new_tenant' => 'New client',
     'edit_tenant' => 'Edit client',

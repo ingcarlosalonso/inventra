@@ -26,13 +26,14 @@ class HelpController extends Controller
         'daily-cashes',
         'reports',
         'configuration',
+        'release-notes',
     ];
 
     private const TOPIC_GROUPS = [
         'main' => ['dashboard'],
         'inventory' => ['products', 'composite-products', 'promotions', 'product-types', 'presentations', 'suppliers', 'receptions'],
         'commercial' => ['clients', 'sales', 'quotes', 'orders', 'daily-cashes', 'reports'],
-        'configuration' => ['configuration'],
+        'configuration' => ['configuration', 'release-notes'],
     ];
 
     public function show(string $topic = 'dashboard'): Response

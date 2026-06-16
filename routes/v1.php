@@ -29,6 +29,7 @@ use App\Http\Controllers\ProductTypeController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\ReceptionController;
+use App\Http\Controllers\ReleaseReadController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SaleController;
@@ -206,5 +207,8 @@ Route::middleware(['api', 'tenant', 'tenant.active'])->prefix('v1')->group(funct
 
         // ── Suppliers ─────────────────────────────────────────────────────────
         Route::apiResource('suppliers', SupplierController::class)->except(['show']);
+
+        // ── Releases ──────────────────────────────────────────────────────────
+        Route::post('releases/{uuid}/read', [ReleaseReadController::class, 'store']);
     });
 });
