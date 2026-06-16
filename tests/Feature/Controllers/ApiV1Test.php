@@ -81,6 +81,19 @@ class ApiV1Test extends TenantFeatureTestCase
             ->assertUnauthorized();
     }
 
+    public function test_profile_page_requires_authentication(): void
+    {
+        $this->get('/profile')
+            ->assertRedirect('/login');
+    }
+
+    public function test_profile_page_returns_ok_when_authenticated(): void
+    {
+        $this->actingAs($this->user, 'sanctum')
+            ->get('/profile')
+            ->assertOk();
+    }
+
     public function test_unknown_v1_route_returns_not_found(): void
     {
         $this->actingAs($this->user, 'sanctum')
