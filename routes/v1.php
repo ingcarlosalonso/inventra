@@ -26,6 +26,7 @@ use App\Http\Controllers\ProductImportController;
 use App\Http\Controllers\ProductMovementController;
 use App\Http\Controllers\ProductMovementTypeController;
 use App\Http\Controllers\ProductTypeController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\ReceptionController;
@@ -45,6 +46,7 @@ Route::middleware(['api', 'tenant', 'tenant.active'])->prefix('v1')->group(funct
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('auth/logout', [AuthController::class, 'logout']);
+        Route::put('profile/password', [ProfileController::class, 'updatePassword']);
 
         // ── Assistant ─────────────────────────────────────────────────────────
         Route::post('assistant/chat', [AssistantController::class, 'chat'])->middleware('throttle:20,1');

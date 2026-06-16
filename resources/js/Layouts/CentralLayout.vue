@@ -59,6 +59,6 @@ function isActive(path) {
 }
 
 function logout() {
-  router.post('/central-admin/logout')
+  router.post('/logout')
 }
 </script>

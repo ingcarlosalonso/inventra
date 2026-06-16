@@ -8,6 +8,11 @@ All notable changes to In-ventra are documented here.
 
 ### Added
 - Release notes system: central admin can draft, edit, and publish release notes parsed from CHANGELOG.md; users see a "What's New" popup on first login after each new release
+- Profile page: authenticated users can change their password from a dedicated profile section accessible via the top bar user menu
+
+### Fixed
+- Logout broken in tenant app: now calls the Sanctum API endpoint, clears the local token, and redirects to login
+- Logout broken in central admin: was posting to wrong route `/central-admin/logout`, corrected to `/logout`
 
 ## [1.0.0] - 2026-06-11
 
