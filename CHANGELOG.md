@@ -8,6 +8,8 @@ All notable changes to In-ventra are documented here.
 
 ### Added
 - Release notes system: central admin can draft, edit, and publish release notes parsed from CHANGELOG.md; users see a "What's New" popup on first login after each new release
+- Per-release deploy task automation (`deploy/release_tasks.sh`): version-specific one-off commands (seeders, ad-hoc artisan commands) declared per release and run idempotently by `deploy_project.sh` after migrations
+- Removed one-time server provisioning scripts from `deploy/` now that production is already set up and running; `DEPLOYMENT_GUIDE.md` trimmed to cover only ongoing operations
 
 ## [1.0.0] - 2026-06-11
 
