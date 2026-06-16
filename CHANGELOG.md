@@ -9,12 +9,6 @@ All notable changes to In-ventra are documented here.
 ### Added
 - Release notes system: central admin can draft, edit, and publish release notes parsed from CHANGELOG.md; users see a "What's New" popup on first login after each new release
 
-### Fixed
-- Release notes save form: replaced Ziggy `route()` calls (which throw silently for domain-constrained routes) with hardcoded relative paths so save/publish/unpublish actions work correctly
-- Release notes controller: version lookup now uses the parsed CHANGELOG version instead of `config('app.version')`, so the "saved" state persists correctly after the first save
-
----
-
 ## [1.0.0] - 2026-06-11
 
 First production release. Full multi-tenant platform ready to operate.

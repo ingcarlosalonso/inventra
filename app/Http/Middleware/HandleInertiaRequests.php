@@ -5,8 +5,10 @@ namespace App\Http\Middleware;
 use App\Models\Customization;
 use App\Models\Release;
 use App\Models\Release\Scopes\Published;
+use App\Models\UserReleaseRead;
+use App\Models\UserReleaseRead\Scopes\ByReleaseUuid;
+use App\Models\UserReleaseRead\Scopes\ByUser;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Inertia\Middleware;
 use Spatie\Multitenancy\Models\Tenant;
@@ -61,11 +63,10 @@ class HandleInertiaRequests extends Middleware
                 return null;
             }
 
-            $alreadyRead = DB::connection('tenant')
-                ->table('user_release_reads')
-                ->where('user_id', $request->user()->id)
-                ->where('release_uuid', $latest->uuid)
-                ->exists();
+            $alreadyRead = UserReleaseRead::withScopes([
+                new ByUser($request->user()->id),
+                new ByReleaseUuid($latest->uuid),
+            ])->exists();
 
             if ($alreadyRead) {
                 return null;

@@ -22,10 +22,12 @@ Route::domain(config('app.central_domain'))->name('central.')->group(function ()
         Route::post('/tenants/{tenant}/activate', [TenantController::class, 'activate'])->name('tenants.activate');
 
         // Releases
-        Route::get('/releases', [ReleaseController::class, 'index'])->name('releases.index');
-        Route::post('/releases', [ReleaseController::class, 'store'])->name('releases.store');
-        Route::put('/releases/{release}', [ReleaseController::class, 'update'])->name('releases.update');
-        Route::post('/releases/{release}/publish', [ReleaseController::class, 'publish'])->name('releases.publish');
-        Route::post('/releases/{release}/unpublish', [ReleaseController::class, 'unpublish'])->name('releases.unpublish');
+        Route::prefix('releases')->name('releases.')->group(function () {
+            Route::get('/', [ReleaseController::class, 'index'])->name('index');
+            Route::post('/', [ReleaseController::class, 'store'])->name('store');
+            Route::put('/{release}', [ReleaseController::class, 'update'])->name('update');
+            Route::post('/{release}/publish', [ReleaseController::class, 'publish'])->name('publish');
+            Route::post('/{release}/unpublish', [ReleaseController::class, 'unpublish'])->name('unpublish');
+        });
     });
 });

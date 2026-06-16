@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Central;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Release\StoreReleaseRequest;
+use App\Http\Requests\Release\UpdateReleaseRequest;
 use App\Jobs\ClearReleaseReadsJob;
 use App\Models\Release;
 use App\Models\Release\Scopes\ByVersion;
 use App\Services\ChangelogParser;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -68,17 +68,9 @@ class ReleaseController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreReleaseRequest $request): RedirectResponse
     {
-        $data = $request->validate([
-            'version' => ['required', 'string', 'max:20', Rule::unique('releases', 'version')],
-            'title' => ['required', 'string', 'max:255'],
-            'summary' => ['nullable', 'string'],
-            'items' => ['required', 'array'],
-            'items.*.type' => ['required', 'in:feature,fix,improvement,security,removal,deprecation'],
-            'items.*.title' => ['required', 'string'],
-            'items.*.order' => ['required', 'integer', 'min:0'],
-        ]);
+        $data = $request->validated();
 
         DB::transaction(function () use ($data) {
             $release = Release::create([
@@ -100,16 +92,9 @@ class ReleaseController extends Controller
         return back()->with('success', __('releases.saved'));
     }
 
-    public function update(Request $request, Release $release): RedirectResponse
+    public function update(UpdateReleaseRequest $request, Release $release): RedirectResponse
     {
-        $data = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'summary' => ['nullable', 'string'],
-            'items' => ['required', 'array'],
-            'items.*.type' => ['required', 'in:feature,fix,improvement,security,removal,deprecation'],
-            'items.*.title' => ['required', 'string'],
-            'items.*.order' => ['required', 'integer', 'min:0'],
-        ]);
+        $data = $request->validated();
 
         DB::transaction(function () use ($data, $release) {
             $release->update([

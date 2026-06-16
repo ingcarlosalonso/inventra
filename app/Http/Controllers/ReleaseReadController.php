@@ -2,26 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Release;
+use App\Http\Requests\ReleaseRead\StoreReleaseReadRequest;
+use App\Models\UserReleaseRead;
+use App\Models\UserReleaseRead\Scopes\ByReleaseUuid;
+use App\Models\UserReleaseRead\Scopes\ByUser;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 
 class ReleaseReadController extends Controller
 {
-    public function store(Request $request, string $uuid): JsonResponse
+    public function store(StoreReleaseReadRequest $request, string $uuid): JsonResponse
     {
-        $request->merge(['uuid' => $uuid]);
+        $userId = $request->user()->id;
 
-        $request->validate([
-            'uuid' => ['required', 'uuid', Rule::exists(Release::class, 'uuid')],
-        ]);
+        $read = UserReleaseRead::withScopes([new ByUser($userId), new ByReleaseUuid($uuid)])->first();
 
-        DB::connection('tenant')->table('user_release_reads')->updateOrInsert(
-            ['user_id' => $request->user()->id, 'release_uuid' => $uuid],
-            ['read_at' => now()]
-        );
+        if ($read) {
+            $read->update(['read_at' => now()]);
+        } else {
+            UserReleaseRead::create([
+                'user_id' => $userId,
+                'release_uuid' => $uuid,
+                'read_at' => now(),
+            ]);
+        }
 
         return response()->json([], 204);
     }
