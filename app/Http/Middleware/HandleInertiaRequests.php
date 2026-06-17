@@ -3,9 +3,15 @@
 namespace App\Http\Middleware;
 
 use App\Models\Customization;
+use App\Models\Release;
+use App\Models\Release\Scopes\Published;
+use App\Models\UserReleaseRead;
+use App\Models\UserReleaseRead\Scopes\ByReleaseUuid;
+use App\Models\UserReleaseRead\Scopes\ByUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Inertia\Middleware;
+use Spatie\Multitenancy\Models\Tenant;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -37,7 +43,50 @@ class HandleInertiaRequests extends Middleware
                 'error' => $request->session()->get('error'),
             ],
             'customization' => $this->loadCustomization(),
+            'unread_release' => $this->loadUnreadRelease($request),
+            'app_version' => config('app.version'),
         ]);
+    }
+
+    private function loadUnreadRelease(Request $request): ?array
+    {
+        if (! $request->user() || ! Tenant::current()) {
+            return null;
+        }
+
+        try {
+            $latest = Release::withScopes(new Published)
+                ->with('items')
+                ->latest('published_at')
+                ->first();
+
+            if (! $latest) {
+                return null;
+            }
+
+            $alreadyRead = UserReleaseRead::withScopes([
+                new ByUser($request->user()->id),
+                new ByReleaseUuid($latest->uuid),
+            ])->exists();
+
+            if ($alreadyRead) {
+                return null;
+            }
+
+            return [
+                'uuid' => $latest->uuid,
+                'version' => $latest->version,
+                'title' => $latest->title,
+                'summary' => $latest->summary,
+                'published_at' => $latest->published_at?->toISOString(),
+                'items' => $latest->items->map(fn ($item) => [
+                    'type' => $item->type,
+                    'title' => $item->title,
+                ])->values()->toArray(),
+            ];
+        } catch (\Throwable) {
+            return null;
+        }
     }
 
     private function loadCustomization(): array

@@ -264,6 +264,17 @@ const filterStatus = ref('')
 const slideOver = ref(false)
 const editing = ref(null)
 
+const form = useForm({
+  name: '',
+  subdomain: '',
+  email: '',
+  contact_name: '',
+  status: 'trial',
+  plan: '',
+  expires_at: '',
+  notes: '',
+})
+
 const provisioningSteps = [
   'central.step_creating_db',
   'central.step_running_migrations',
@@ -305,17 +316,6 @@ function statusClass(status) {
     suspended: 'bg-red-900/50 text-red-300',
   }[status]
 }
-
-const form = useForm({
-  name: '',
-  subdomain: '',
-  email: '',
-  contact_name: '',
-  status: 'trial',
-  plan: '',
-  expires_at: '',
-  notes: '',
-})
 
 function openCreate() {
   editing.value = null

@@ -21,7 +21,7 @@ export function useReport(endpoint, extraFilters = {}) {
     async function fetchData() {
         loading.value = true
         error.value = null
-        const { data: res, error: err } = await get(`/api/reports/${endpoint}`, { ...filters })
+        const { data: res, error: err } = await get(`/api/v1/reports/${endpoint}`, { ...filters })
         if (res) {
             data.value = res
         } else {
@@ -40,7 +40,7 @@ export function useReport(endpoint, extraFilters = {}) {
 
         try {
             const response = await axios.get(
-                `/api/reports/${endpoint}/export${params ? '?' + params : ''}`,
+                `/api/v1/reports/${endpoint}/export${params ? '?' + params : ''}`,
                 { responseType: 'blob' },
             )
             const url = window.URL.createObjectURL(new Blob([response.data]))

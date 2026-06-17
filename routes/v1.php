@@ -26,9 +26,11 @@ use App\Http\Controllers\ProductImportController;
 use App\Http\Controllers\ProductMovementController;
 use App\Http\Controllers\ProductMovementTypeController;
 use App\Http\Controllers\ProductTypeController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\ReceptionController;
+use App\Http\Controllers\ReleaseReadController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SaleController;
@@ -44,6 +46,7 @@ Route::middleware(['api', 'tenant', 'tenant.active'])->prefix('v1')->group(funct
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('auth/logout', [AuthController::class, 'logout']);
+        Route::put('profile/password', [ProfileController::class, 'updatePassword']);
 
         // ── Assistant ─────────────────────────────────────────────────────────
         Route::post('assistant/chat', [AssistantController::class, 'chat'])->middleware('throttle:20,1');
@@ -206,5 +209,8 @@ Route::middleware(['api', 'tenant', 'tenant.active'])->prefix('v1')->group(funct
 
         // ── Suppliers ─────────────────────────────────────────────────────────
         Route::apiResource('suppliers', SupplierController::class)->except(['show']);
+
+        // ── Releases ──────────────────────────────────────────────────────────
+        Route::post('releases/{uuid}/read', [ReleaseReadController::class, 'store']);
     });
 });

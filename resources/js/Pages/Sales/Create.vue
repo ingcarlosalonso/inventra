@@ -159,7 +159,7 @@
                   </td>
                   <td class="px-3 py-3 text-right font-medium text-gray-900 tabular-nums">${{ formatNumber(computeItemTotal(item)) }}</td>
                   <td class="px-3 py-3">
-                    <button type="button" class="rounded-md p-1 text-gray-300 hover:bg-gray-100 hover:text-red-500 opacity-0 group-hover:opacity-100 transition" @click="removeItem(index)">
+                    <button type="button" class="rounded-md p-1 text-gray-300 hover:bg-gray-100 hover:text-red-500 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition" @click="removeItem(index)">
                       <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
                   </td>
@@ -225,7 +225,7 @@
             <div
               v-for="(payment, index) in form.payments"
               :key="payment._key"
-              class="group flex items-center gap-4 px-5 py-3.5"
+              class="group flex flex-wrap items-center gap-3 px-4 py-3.5 sm:flex-nowrap sm:gap-4 sm:px-5"
             >
               <SelectField
                 v-model="payment.payment_method_id"
@@ -233,7 +233,7 @@
                 :options="paymentMethodOptions"
                 :placeholder="$t('common.select')"
                 :error="formErrors[`payments.${index}.payment_method_id`]?.[0]"
-                class="w-56"
+                class="w-full sm:w-56"
               />
               <div class="flex-1">
                 <label v-if="index === 0" class="mb-1.5 block text-sm font-medium text-gray-700">{{ $t('sales.amount') }}</label>
@@ -250,7 +250,7 @@
               </div>
               <button
                 type="button"
-                :class="['rounded-md p-1.5 text-gray-300 hover:bg-gray-100 hover:text-red-500 opacity-0 group-hover:opacity-100 transition', index === 0 ? 'mt-5' : '']"
+                :class="['rounded-md p-1.5 text-gray-300 hover:bg-gray-100 hover:text-red-500 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition', index === 0 ? 'mt-5' : '']"
                 @click="removePayment(index)"
               >
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>

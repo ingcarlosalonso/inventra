@@ -58,6 +58,7 @@
         <div class="px-5 py-4 border-b border-gray-200">
           <h2 class="text-sm font-semibold text-gray-700">{{ $t('sales.items_section') }}</h2>
         </div>
+        <div class="overflow-x-auto">
         <table class="w-full text-sm">
           <thead>
             <tr class="bg-gray-50 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
@@ -99,6 +100,7 @@
             </tr>
           </tfoot>
         </table>
+        </div>
       </div>
 
       <!-- Payments card -->
@@ -111,7 +113,8 @@
             <span v-else class="text-green-600 font-semibold">✓ {{ $t('sales.paid') }}</span>
           </div>
         </div>
-        <table v-if="sale.payments?.length > 0" class="w-full text-sm">
+        <div v-if="sale.payments?.length > 0" class="overflow-x-auto">
+        <table class="w-full text-sm">
           <thead>
             <tr class="bg-gray-50 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
               <th class="px-5 py-3">{{ $t('sales.payment_method') }}</th>
@@ -125,6 +128,7 @@
             </tr>
           </tbody>
         </table>
+        </div>
         <p v-else class="px-5 py-4 text-sm text-gray-400">{{ $t('sales.no_payments') }}</p>
       </div>
 

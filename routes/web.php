@@ -84,6 +84,9 @@ Route::middleware(['tenant', 'tenant.active'])->group(function () {
         // Bulk Price
         Route::get('/products/bulk-price', fn () => Inertia::render('Products/BulkPrice/Index'))->name('products.bulk-price');
 
+        // Profile
+        Route::get('/profile', fn () => Inertia::render('Profile/Index'))->name('profile');
+
         // Help
         Route::get('/help', fn () => app(HelpController::class)->show('dashboard'))->name('help');
         Route::get('/help/{topic}', [HelpController::class, 'show'])->name('help.topic');

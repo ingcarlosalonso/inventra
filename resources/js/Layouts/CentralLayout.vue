@@ -12,6 +12,23 @@
         <span class="rounded bg-indigo-900/60 px-1.5 py-0.5 text-xs font-medium text-indigo-300">Super Admin</span>
       </div>
 
+      <nav class="flex items-center gap-1">
+        <a
+          href="/tenants"
+          :class="isActive('/tenants') ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800'"
+          class="rounded px-3 py-1.5 text-xs font-medium transition"
+        >
+          {{ $t('central.tenants') }}
+        </a>
+        <a
+          href="/releases"
+          :class="isActive('/releases') ? 'bg-gray-800 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800'"
+          class="rounded px-3 py-1.5 text-xs font-medium transition"
+        >
+          {{ $t('central.releases') }}
+        </a>
+      </nav>
+
       <form @submit.prevent="logout" class="flex items-center gap-2">
         <span class="text-xs text-gray-400">{{ auth.user?.name }}</span>
         <button
@@ -37,7 +54,11 @@ import { computed } from 'vue'
 const page = usePage()
 const auth = computed(() => page.props.auth)
 
+function isActive(path) {
+  return window.location.pathname.startsWith(path)
+}
+
 function logout() {
-  router.post('/central-admin/logout')
+  router.post('/logout')
 }
 </script>
