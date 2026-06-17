@@ -44,6 +44,7 @@ class HandleInertiaRequests extends Middleware
             ],
             'customization' => $this->loadCustomization(),
             'unread_release' => $this->loadUnreadRelease($request),
+            'app_version' => config('app.version'),
         ]);
     }
 

@@ -8,6 +8,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Support\Facades\Route;
+use Spatie\Multitenancy\Exceptions\NoCurrentTenant;
 use Spatie\Multitenancy\Http\Middleware\EnsureValidTenantSession;
 use Spatie\Multitenancy\Http\Middleware\NeedsTenant;
 use Spatie\Permission\Middleware\PermissionMiddleware;
@@ -45,6 +46,10 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        $exceptions->render(function (NoCurrentTenant $e) {
+            return response()->view('errors.tenant-not-found', [], 404);
+        });
+
         $exceptions->render(function (InsufficientStockException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         });
