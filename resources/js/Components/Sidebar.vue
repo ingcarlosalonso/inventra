@@ -27,7 +27,7 @@
         </svg>
       </div>
       <span class="text-lg font-bold text-white">In-ventra</span>
-      <span class="text-xs font-medium text-indigo-400">v2.0</span>
+      <span class="text-xs font-medium text-indigo-400">v{{ appVersion }}</span>
     </div>
 
     <!-- Navigation -->
@@ -114,6 +114,7 @@ defineEmits(['close'])
 const page = usePage()
 const user = computed(() => page.props.auth?.user)
 const customization = computed(() => page.props.customization ?? {})
+const appVersion = computed(() => page.props.app_version ?? '')
 const userInitials = computed(() => {
   const name = user.value?.name ?? ''
   return name.split(' ').map(w => w[0]).slice(0, 2).join('')
