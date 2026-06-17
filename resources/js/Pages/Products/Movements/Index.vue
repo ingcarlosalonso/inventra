@@ -33,36 +33,21 @@
       <EmptyState v-else-if="items.length === 0" :title="search ? $t('common.no_results') : $t('common.empty')" :subtitle="search ? $t('common.try_different_search') : null" />
 
       <ul v-else class="divide-y divide-gray-100">
-        <li
-          v-for="item in items"
-          :key="item.id"
-          class="group flex items-center gap-4 px-5 py-3.5 hover:bg-gray-50 transition"
-        >
-          <div
-            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold"
-            :class="item.type?.is_income ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'"
-          >
-            {{ item.type?.is_income ? '+' : '−' }}
-          </div>
-
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-gray-900 truncate">{{ item.product?.name }}</p>
-            <p class="text-xs text-gray-400">{{ item.presentation?.name }} · {{ item.type?.name }}</p>
-          </div>
-
-          <div class="text-right">
-            <p class="text-sm font-semibold" :class="item.type?.is_income ? 'text-green-600' : 'text-red-600'">
-              {{ item.type?.is_income ? '+' : '−' }}{{ item.quantity }}
-            </p>
-            <p class="text-xs text-gray-400">{{ item.user?.name }}</p>
-          </div>
-
-          <p class="text-xs text-gray-400 w-28 text-right shrink-0">{{ formatDate(item.created_at) }}</p>
-
-          <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
-            <button type="button" class="rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-red-600" :title="$t('common.delete')" @click="confirmDelete(item)">
-              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
-            </button>
+        <li v-for="item in items" :key="item.id" class="group px-4 py-3 hover:bg-gray-50 transition">
+          <div class="flex items-center gap-3">
+            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold" :class="item.type?.is_income ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'">{{ item.type?.is_income ? '+' : '−' }}</div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between gap-2">
+                <p class="truncate text-sm font-medium text-gray-900">{{ item.product?.name }}</p>
+                <span class="shrink-0 text-sm font-semibold tabular-nums" :class="item.type?.is_income ? 'text-green-600' : 'text-red-600'">{{ item.type?.is_income ? '+' : '−' }}{{ item.quantity }}</span>
+              </div>
+              <div class="mt-0.5 flex items-center justify-between gap-2">
+                <p class="truncate text-xs text-gray-400 min-w-0">{{ [item.presentation?.name, item.type?.name, item.user?.name, formatDate(item.created_at)].filter(Boolean).join(' · ') }}</p>
+                <div class="flex items-center gap-0.5 shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition">
+                  <button type="button" class="rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-red-600" :title="$t('common.delete')" @click="confirmDelete(item)"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg></button>
+                </div>
+              </div>
+            </div>
           </div>
         </li>
       </ul>

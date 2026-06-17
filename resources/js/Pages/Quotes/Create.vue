@@ -156,7 +156,7 @@
                   </td>
                   <td class="px-3 py-3 text-right font-medium text-gray-900 tabular-nums">${{ formatNumber(computeItemTotal(item)) }}</td>
                   <td class="px-3 py-3">
-                    <button type="button" class="rounded-md p-1 text-gray-300 hover:bg-gray-100 hover:text-red-500 opacity-0 group-hover:opacity-100 transition" @click="removeItem(index)">
+                    <button type="button" class="rounded-md p-1 text-gray-300 hover:bg-gray-100 hover:text-red-500 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition" @click="removeItem(index)">
                       <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
                   </td>

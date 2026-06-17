@@ -11,8 +11,15 @@ All notable changes to In-ventra are documented here.
 - Profile page: authenticated users can change their password from a dedicated profile section accessible via the top bar user menu
 
 ### Fixed
+- List rows across all modules (Sales, Orders, Quotes, Receptions, Daily Cashes, Products, Clients, Suppliers, and Settings catalogs) redesigned with a 2-row card layout for mobile; edit/delete buttons are always visible on touch devices instead of hidden behind hover
+- AI Assistant panel redesigned as a bottom sheet on mobile with backdrop, drag handle, and top-aligned welcome state with suggestion buttons
+- Sales and Orders creation forms: payment method selector and remove-payment button now usable on small screens
+- Sales and Orders detail pages: item and payment tables now scroll horizontally instead of overflowing on mobile
 - Logout broken in tenant app: now calls the Sanctum API endpoint, clears the local token, and redirects to login
 - Logout broken in central admin: was posting to wrong route `/central-admin/logout`, corrected to `/logout`
+- Reports section failing to load: frontend was calling `/api/reports/*` instead of the versioned `/api/v1/reports/*` endpoints
+- 500 error on every `permission:*` protected route (reports, bulk price update, roles/users management): the `permission` middleware alias was never registered in `bootstrap/app.php`
+- Orders report 500 error: `OrdersReport` queried a non-existent `name` column on `clients` instead of `first_name`/`last_name`
 
 ## [1.0.0] - 2026-06-11
 

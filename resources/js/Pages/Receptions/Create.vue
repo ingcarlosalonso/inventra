@@ -170,7 +170,7 @@
               <td class="px-3 py-3">
                 <button
                   type="button"
-                  class="rounded-md p-1 text-gray-300 hover:bg-gray-100 hover:text-red-500 opacity-0 group-hover:opacity-100 transition"
+                  class="rounded-md p-1 text-gray-300 hover:bg-gray-100 hover:text-red-500 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition"
                   @click="removeItem(index)"
                 >
                   <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">

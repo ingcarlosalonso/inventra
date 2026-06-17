@@ -50,7 +50,7 @@ class OrdersReport
                 'created_at' => $o->created_at->toISOString(),
             ])->values(),
             'filters' => [
-                'clients' => Client::orderBy('name')->get(['uuid', 'name'])->map(fn ($c) => ['id' => $c->uuid, 'name' => $c->name]),
+                'clients' => Client::orderBy('first_name')->orderBy('last_name')->get(['uuid', 'first_name', 'last_name'])->map(fn ($c) => ['id' => $c->uuid, 'name' => $c->name]),
                 'orderStates' => OrderState::orderBy('name')->get(['uuid', 'name'])->map(fn ($s) => ['id' => $s->uuid, 'name' => $s->name]),
                 'couriers' => Courier::orderBy('name')->get(['uuid', 'name'])->map(fn ($c) => ['id' => $c->uuid, 'name' => $c->name]),
             ],
