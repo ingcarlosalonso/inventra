@@ -13,7 +13,7 @@ class UpdateSaleStateRequest extends FormRequest
 
     public function rules(): array
     {
-        $id = $this->route('sale_state')?->id;
+        $id = $this->route('saleState')?->id;
 
         return [
             'name' => ['required', 'string', 'max:255', "unique:tenant.sale_states,name,{$id}"],

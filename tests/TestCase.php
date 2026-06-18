@@ -11,8 +11,6 @@ abstract class TestCase extends BaseTestCase
 {
     private static bool $tenantDbMigrated = false;
 
-    private static bool $releasesTableCreated = false;
-
     protected static function createReleaseTables(): void
     {
         if (! Schema::hasTable('admins')) {
@@ -26,14 +24,9 @@ abstract class TestCase extends BaseTestCase
             });
         }
 
-        if (self::$releasesTableCreated) {
+        if (Schema::hasTable('releases')) {
             return;
         }
-
-        self::$releasesTableCreated = true;
-
-        Schema::dropIfExists('release_items');
-        Schema::dropIfExists('releases');
 
         Schema::create('releases', function (Blueprint $table) {
             $table->id();
