@@ -20,6 +20,8 @@ return [
         'daily-cashes' => 'Daily Cash',
         'reports' => 'Reports',
         'configuration' => 'Configuration',
+        'roles-permissions' => 'Roles & Permissions',
+        'users' => 'Users & Profile',
         'release-notes' => "What's new",
     ],
     'groups' => [

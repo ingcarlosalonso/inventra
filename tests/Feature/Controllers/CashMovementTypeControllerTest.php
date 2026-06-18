@@ -78,7 +78,7 @@ class CashMovementTypeControllerTest extends TenantFeatureTestCase
         $type = CashMovementType::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->putJson("/api/cash-movement-types/{$type->uuid}", [
+            ->putJson("/api/v1/cash-movement-types/{$type->uuid}", [
                 'name' => 'Nombre Actualizado',
                 'is_income' => true,
             ])
@@ -91,7 +91,7 @@ class CashMovementTypeControllerTest extends TenantFeatureTestCase
         $type = CashMovementType::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->deleteJson("/api/cash-movement-types/{$type->uuid}")
+            ->deleteJson("/api/v1/cash-movement-types/{$type->uuid}")
             ->assertNoContent();
 
         $this->assertSoftDeleted('cash_movement_types', ['id' => $type->id], 'tenant');

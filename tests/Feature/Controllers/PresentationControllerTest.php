@@ -96,7 +96,7 @@ class PresentationControllerTest extends TenantFeatureTestCase
         $type = $presentation->presentationType;
 
         $this->actingAs($this->user, 'sanctum')
-            ->putJson("/api/presentations/{$presentation->uuid}", [
+            ->putJson("/api/v1/products/presentations/{$presentation->uuid}", [
                 'presentation_type_id' => $type->uuid,
                 'quantity' => 500,
                 'is_active' => true,
@@ -110,7 +110,7 @@ class PresentationControllerTest extends TenantFeatureTestCase
         $presentation = Presentation::factory()->create();
         $type = $presentation->presentationType;
 
-        $this->putJson("/api/presentations/{$presentation->uuid}", [
+        $this->putJson("/api/v1/products/presentations/{$presentation->uuid}", [
             'presentation_type_id' => $type->uuid,
             'quantity' => 1,
         ])->assertUnauthorized();
@@ -123,7 +123,7 @@ class PresentationControllerTest extends TenantFeatureTestCase
         $presentation = Presentation::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->deleteJson("/api/presentations/{$presentation->uuid}")
+            ->deleteJson("/api/v1/products/presentations/{$presentation->uuid}")
             ->assertNoContent();
 
         $this->assertSoftDeleted('presentations', ['id' => $presentation->id], 'tenant');
@@ -136,7 +136,7 @@ class PresentationControllerTest extends TenantFeatureTestCase
         $presentation = Presentation::factory()->create(['is_active' => true]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->patchJson("/api/presentations/{$presentation->uuid}/toggle")
+            ->patchJson("/api/v1/products/presentations/{$presentation->uuid}/toggle")
             ->assertOk()
             ->assertJsonPath('data.is_active', false);
     }

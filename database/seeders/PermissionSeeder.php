@@ -58,7 +58,6 @@ class PermissionSeeder extends Seeder
             'create_edit_delete_cash_movement_types',
 
             // Reports
-            'list_reports',
             'list_report_sales',
             'list_report_products',
             'list_report_payments',
@@ -70,6 +69,7 @@ class PermissionSeeder extends Seeder
 
             // Settings
             'create_edit_delete_currencies',
+            'manage_customization',
         ];
 
         foreach ($permissions as $permission) {

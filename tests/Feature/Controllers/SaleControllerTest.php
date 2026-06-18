@@ -71,7 +71,7 @@ class SaleControllerTest extends TenantFeatureTestCase
         $sale = Sale::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson("/api/sales/{$sale->uuid}")
+            ->getJson("/api/v1/sales/{$sale->uuid}")
             ->assertOk()
             ->assertJsonPath('data.id', $sale->uuid);
     }
@@ -87,7 +87,7 @@ class SaleControllerTest extends TenantFeatureTestCase
     {
         $sale = Sale::factory()->create();
 
-        $this->getJson("/api/sales/{$sale->uuid}")->assertUnauthorized();
+        $this->getJson("/api/v1/sales/{$sale->uuid}")->assertUnauthorized();
     }
 
     // ─── STORE — product items ────────────────────────────────────────────────
@@ -457,7 +457,7 @@ class SaleControllerTest extends TenantFeatureTestCase
         $sale = Sale::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->deleteJson("/api/sales/{$sale->uuid}")
+            ->deleteJson("/api/v1/sales/{$sale->uuid}")
             ->assertNoContent();
 
         $this->assertSoftDeleted($sale);
@@ -474,7 +474,7 @@ class SaleControllerTest extends TenantFeatureTestCase
     {
         $sale = Sale::factory()->create();
 
-        $this->deleteJson("/api/sales/{$sale->uuid}")->assertUnauthorized();
+        $this->deleteJson("/api/v1/sales/{$sale->uuid}")->assertUnauthorized();
     }
 
     // ─── PAID AMOUNT ─────────────────────────────────────────────────────────

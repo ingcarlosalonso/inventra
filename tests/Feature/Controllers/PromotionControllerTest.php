@@ -147,7 +147,7 @@ class PromotionControllerTest extends TenantFeatureTestCase
         $product = Product::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->putJson("/api/promotions/{$promotion->uuid}", [
+            ->putJson("/api/v1/products/promotions/{$promotion->uuid}", [
                 'name' => 'Nombre Actualizado',
                 'items' => [
                     ['product_id' => $product->uuid, 'quantity' => 1],
@@ -169,7 +169,7 @@ class PromotionControllerTest extends TenantFeatureTestCase
         $newProduct = Product::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->putJson("/api/promotions/{$promotion->uuid}", [
+            ->putJson("/api/v1/products/promotions/{$promotion->uuid}", [
                 'name' => $promotion->name,
                 'items' => [
                     ['product_id' => $newProduct->uuid, 'quantity' => 3],
@@ -193,7 +193,7 @@ class PromotionControllerTest extends TenantFeatureTestCase
         $promotion = Promotion::factory()->create(['is_active' => true]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->patchJson("/api/promotions/{$promotion->uuid}/toggle")
+            ->patchJson("/api/v1/products/promotions/{$promotion->uuid}/toggle")
             ->assertOk()
             ->assertJsonPath('data.is_active', false);
     }
@@ -205,7 +205,7 @@ class PromotionControllerTest extends TenantFeatureTestCase
         $promotion = Promotion::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->deleteJson("/api/promotions/{$promotion->uuid}")
+            ->deleteJson("/api/v1/products/promotions/{$promotion->uuid}")
             ->assertNoContent();
 
         $this->assertSoftDeleted('promotions', ['id' => $promotion->id], 'tenant');

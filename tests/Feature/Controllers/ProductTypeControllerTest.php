@@ -77,7 +77,7 @@ class ProductTypeControllerTest extends TenantFeatureTestCase
         $type = ProductType::factory()->create(['name' => 'Original']);
 
         $this->actingAs($this->user, 'sanctum')
-            ->putJson("/api/product-types/{$type->uuid}", ['name' => 'Modificado', 'is_active' => true])
+            ->putJson("/api/v1/products/types/{$type->uuid}", ['name' => 'Modificado', 'is_active' => true])
             ->assertOk()
             ->assertJsonPath('data.name', 'Modificado');
     }
@@ -87,7 +87,7 @@ class ProductTypeControllerTest extends TenantFeatureTestCase
         $type = ProductType::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->putJson("/api/product-types/{$type->uuid}", [
+            ->putJson("/api/v1/products/types/{$type->uuid}", [
                 'name' => $type->name,
                 'is_active' => true,
                 'parent_id' => $type->id,
@@ -102,7 +102,7 @@ class ProductTypeControllerTest extends TenantFeatureTestCase
         $type = ProductType::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->deleteJson("/api/product-types/{$type->uuid}")
+            ->deleteJson("/api/v1/products/types/{$type->uuid}")
             ->assertNoContent();
 
         $this->assertSoftDeleted('product_types', ['id' => $type->id], 'tenant');
@@ -114,7 +114,7 @@ class ProductTypeControllerTest extends TenantFeatureTestCase
         ProductType::factory()->childOf($parent)->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->deleteJson("/api/product-types/{$parent->uuid}")
+            ->deleteJson("/api/v1/products/types/{$parent->uuid}")
             ->assertStatus(422);
     }
 
@@ -125,7 +125,7 @@ class ProductTypeControllerTest extends TenantFeatureTestCase
         $type = ProductType::factory()->create(['is_active' => true]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->patchJson("/api/product-types/{$type->uuid}/toggle")
+            ->patchJson("/api/v1/products/types/{$type->uuid}/toggle")
             ->assertOk()
             ->assertJsonPath('data.is_active', false);
     }

@@ -55,7 +55,7 @@ class ClientControllerTest extends TenantFeatureTestCase
         $client = Client::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->putJson("/api/clients/{$client->uuid}", ['first_name' => 'Nuevo', 'last_name' => 'Nombre', 'is_active' => false])
+            ->putJson("/api/v1/clients/{$client->uuid}", ['first_name' => 'Nuevo', 'last_name' => 'Nombre', 'is_active' => false])
             ->assertOk()
             ->assertJsonPath('data.is_active', false)
             ->assertJsonPath('data.full_name', 'Nuevo Nombre');
@@ -66,7 +66,7 @@ class ClientControllerTest extends TenantFeatureTestCase
         $client = Client::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->deleteJson("/api/clients/{$client->uuid}")
+            ->deleteJson("/api/v1/clients/{$client->uuid}")
             ->assertNoContent();
 
         $this->assertSoftDeleted('clients', ['id' => $client->id], 'tenant');
