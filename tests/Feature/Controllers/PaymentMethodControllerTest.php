@@ -66,7 +66,7 @@ class PaymentMethodControllerTest extends TenantFeatureTestCase
         $method = PaymentMethod::factory()->create(['name' => 'Original Test']);
 
         $this->actingAs($this->user, 'sanctum')
-            ->putJson("/api/payment-methods/{$method->uuid}", [
+            ->putJson("/api/v1/sales/payment-methods/{$method->uuid}", [
                 'name' => 'Actualizado Test',
                 'is_active' => false,
             ])
@@ -79,7 +79,7 @@ class PaymentMethodControllerTest extends TenantFeatureTestCase
     {
         $method = PaymentMethod::factory()->create();
 
-        $this->putJson("/api/payment-methods/{$method->uuid}", ['name' => 'X'])
+        $this->putJson("/api/v1/sales/payment-methods/{$method->uuid}", ['name' => 'X'])
             ->assertUnauthorized();
     }
 
@@ -95,7 +95,7 @@ class PaymentMethodControllerTest extends TenantFeatureTestCase
         $method = PaymentMethod::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->deleteJson("/api/payment-methods/{$method->uuid}")
+            ->deleteJson("/api/v1/sales/payment-methods/{$method->uuid}")
             ->assertNoContent();
 
         $this->assertSoftDeleted('payment_methods', ['id' => $method->id], 'tenant');
@@ -106,7 +106,7 @@ class PaymentMethodControllerTest extends TenantFeatureTestCase
         $method = PaymentMethod::factory()->create(['is_active' => true]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->patchJson("/api/payment-methods/{$method->uuid}/toggle")
+            ->patchJson("/api/v1/sales/payment-methods/{$method->uuid}/toggle")
             ->assertOk()
             ->assertJsonPath('data.is_active', false);
     }
@@ -116,7 +116,7 @@ class PaymentMethodControllerTest extends TenantFeatureTestCase
         $method = PaymentMethod::factory()->inactive()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->patchJson("/api/payment-methods/{$method->uuid}/toggle")
+            ->patchJson("/api/v1/sales/payment-methods/{$method->uuid}/toggle")
             ->assertOk()
             ->assertJsonPath('data.is_active', true);
     }

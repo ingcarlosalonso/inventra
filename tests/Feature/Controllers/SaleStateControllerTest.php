@@ -79,7 +79,7 @@ class SaleStateControllerTest extends TenantFeatureTestCase
         $state = SaleState::factory()->create(['name' => 'Original Test', 'sort_order' => 0]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->putJson("/api/sale-states/{$state->uuid}", [
+            ->putJson("/api/v1/sales/states/{$state->uuid}", [
                 'name' => 'Actualizado Test',
                 'color' => '#0055ff',
                 'is_default' => false,
@@ -98,7 +98,7 @@ class SaleStateControllerTest extends TenantFeatureTestCase
         $target = SaleState::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->putJson("/api/sale-states/{$target->uuid}", [
+            ->putJson("/api/v1/sales/states/{$target->uuid}", [
                 'name' => $target->name,
                 'is_default' => true,
             ])
@@ -112,7 +112,7 @@ class SaleStateControllerTest extends TenantFeatureTestCase
     {
         $state = SaleState::factory()->create();
 
-        $this->putJson("/api/sale-states/{$state->uuid}", ['name' => 'X'])
+        $this->putJson("/api/v1/sales/states/{$state->uuid}", ['name' => 'X'])
             ->assertUnauthorized();
     }
 
@@ -121,7 +121,7 @@ class SaleStateControllerTest extends TenantFeatureTestCase
         $state = SaleState::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->deleteJson("/api/sale-states/{$state->uuid}")
+            ->deleteJson("/api/v1/sales/states/{$state->uuid}")
             ->assertNoContent();
 
         $this->assertSoftDeleted('sale_states', ['id' => $state->id], 'tenant');
@@ -132,7 +132,7 @@ class SaleStateControllerTest extends TenantFeatureTestCase
         $state = SaleState::factory()->create(['is_active' => true]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->patchJson("/api/sale-states/{$state->uuid}/toggle")
+            ->patchJson("/api/v1/sales/states/{$state->uuid}/toggle")
             ->assertOk()
             ->assertJsonPath('data.is_active', false);
     }

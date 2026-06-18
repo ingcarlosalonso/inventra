@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Permission;
 use App\Models\User;
+use Database\Seeders\PermissionSeeder;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
 use Spatie\Multitenancy\Http\Middleware\NeedsTenant;
@@ -33,12 +35,28 @@ abstract class TenantFeatureTestCase extends TestCase
 
         $this->withoutMiddleware([NeedsTenant::class]);
 
+        (new PermissionSeeder)->run();
+
         $this->user = User::factory()->create();
+        $this->user->syncPermissions(Permission::all());
     }
 
     protected function tearDown(): void
     {
         DB::connection('tenant')->rollBack();
         parent::tearDown();
+    }
+
+    protected function userWithoutPermissions(): User
+    {
+        return User::factory()->create();
+    }
+
+    protected function userWithPermissions(string|array $permissions): User
+    {
+        $user = User::factory()->create();
+        $user->givePermissionTo($permissions);
+
+        return $user;
     }
 }

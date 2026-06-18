@@ -78,7 +78,7 @@ class OrderStateControllerTest extends TenantFeatureTestCase
         $state = OrderState::factory()->create(['name' => 'Old Name']);
 
         $this->actingAs($this->user, 'sanctum')
-            ->putJson("/api/order-states/{$state->uuid}", ['name' => 'New Name'])
+            ->putJson("/api/v1/orders/states/{$state->uuid}", ['name' => 'New Name'])
             ->assertOk()
             ->assertJsonPath('data.name', 'New Name');
     }
@@ -87,7 +87,7 @@ class OrderStateControllerTest extends TenantFeatureTestCase
     {
         $state = OrderState::factory()->create();
 
-        $this->putJson("/api/order-states/{$state->uuid}", ['name' => 'X'])->assertUnauthorized();
+        $this->putJson("/api/v1/orders/states/{$state->uuid}", ['name' => 'X'])->assertUnauthorized();
     }
 
     // ─── TOGGLE ──────────────────────────────────────────────────────────────
@@ -97,7 +97,7 @@ class OrderStateControllerTest extends TenantFeatureTestCase
         $state = OrderState::factory()->create(['is_active' => true]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->patchJson("/api/order-states/{$state->uuid}/toggle")
+            ->patchJson("/api/v1/orders/states/{$state->uuid}/toggle")
             ->assertOk()
             ->assertJsonPath('data.is_active', false);
     }
@@ -109,7 +109,7 @@ class OrderStateControllerTest extends TenantFeatureTestCase
         $state = OrderState::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->deleteJson("/api/order-states/{$state->uuid}")
+            ->deleteJson("/api/v1/orders/states/{$state->uuid}")
             ->assertNoContent();
 
         $this->assertSoftDeleted($state);
@@ -119,6 +119,6 @@ class OrderStateControllerTest extends TenantFeatureTestCase
     {
         $state = OrderState::factory()->create();
 
-        $this->deleteJson("/api/order-states/{$state->uuid}")->assertUnauthorized();
+        $this->deleteJson("/api/v1/orders/states/{$state->uuid}")->assertUnauthorized();
     }
 }

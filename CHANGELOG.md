@@ -9,6 +9,13 @@ All notable changes to In-ventra are documented here.
 ### Added
 - Release notes system: central admin can draft, edit, and publish release notes parsed from CHANGELOG.md; users see a "What's New" popup on first login after each new release
 - Profile page: authenticated users can change their password from a dedicated profile section accessible via the top bar user menu
+- Permission middleware on all API endpoints: every route now enforces the corresponding `list_*` or `create_edit_delete_*` permission; previously only reports, roles/users, and bulk price were protected
+- Roles & Permissions help section: full user guide covering role management, permission catalogue, and best practices
+- `RoleControllerTest` and `PermissionControllerTest` with happy path, validation, 401, and 403 coverage
+- `RoleFactory` for use in tests
+- Human-readable permission labels and descriptions in the role editing slide-over: each checkbox now shows a friendly name and a short explanation instead of the raw database key
+- `manage_customization` permission for the system customization endpoint (logo, colours, font)
+- Translation files `lang/es/permissions.php` and `lang/en/permissions.php` with label and description for every permission
 
 ### Fixed
 - List rows across all modules (Sales, Orders, Quotes, Receptions, Daily Cashes, Products, Clients, Suppliers, and Settings catalogs) redesigned with a 2-row card layout for mobile; edit/delete buttons are always visible on touch devices instead of hidden behind hover
@@ -20,6 +27,8 @@ All notable changes to In-ventra are documented here.
 - Reports section failing to load: frontend was calling `/api/reports/*` instead of the versioned `/api/v1/reports/*` endpoints
 - 500 error on every `permission:*` protected route (reports, bulk price update, roles/users management): the `permission` middleware alias was never registered in `bootstrap/app.php`
 - Orders report 500 error: `OrdersReport` queried a non-existent `name` column on `clients` instead of `first_name`/`last_name`
+- GET endpoints for reference/config tables (payment methods, points of sale, sale/order states, couriers, cash movement types, product types, presentations, currencies) now require only `auth:sanctum` instead of a write permission, allowing all authenticated users to populate form dropdowns
+- `list_reports` orphaned permission removed from `PermissionSeeder` (it had no corresponding route)
 
 ## [1.0.0] - 2026-06-11
 

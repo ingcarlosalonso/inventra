@@ -66,11 +66,14 @@
               <label
                 v-for="perm in perms"
                 :key="perm.id"
-                class="flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2 text-sm transition"
-                :class="form.permissions.includes(perm.id) ? 'border-indigo-400 bg-indigo-50 text-indigo-700' : 'border-gray-100 bg-gray-50 text-gray-700 hover:border-gray-300'"
+                class="flex cursor-pointer items-start gap-3 rounded-lg border px-3 py-2.5 text-sm transition"
+                :class="form.permissions.includes(perm.id) ? 'border-indigo-400 bg-indigo-50' : 'border-gray-100 bg-gray-50 hover:border-gray-300'"
               >
-                <input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600" :value="perm.id" v-model="form.permissions" />
-                <span>{{ perm.name }}</span>
+                <input type="checkbox" class="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300 text-indigo-600" :value="perm.id" v-model="form.permissions" />
+                <div class="min-w-0">
+                  <span class="block font-medium leading-tight" :class="form.permissions.includes(perm.id) ? 'text-indigo-700' : 'text-gray-800'">{{ permLabel(perm.name) }}</span>
+                  <span class="block text-xs leading-tight mt-0.5" :class="form.permissions.includes(perm.id) ? 'text-indigo-500' : 'text-gray-400'">{{ permDescription(perm.name) }}</span>
+                </div>
               </label>
             </div>
           </div>
@@ -124,9 +127,10 @@ const formError = ref(null)
 const emptyForm = () => ({ name: '', permissions: [] })
 const form = ref(emptyForm())
 
-const PERMISSION_GROUPS = ['users', 'roles', 'clients', 'suppliers', 'products', 'receptions', 'sales', 'quotes', 'orders', 'daily_cashes', 'reports', 'currencies']
+const PERMISSION_GROUPS = ['users', 'roles', 'clients', 'suppliers', 'products', 'receptions', 'sales', 'quotes', 'orders', 'daily_cashes', 'reports', 'settings']
 
 function permissionGroup(name) {
+  if (name.includes('currencies') || name.includes('customization')) return 'settings'
   for (const group of PERMISSION_GROUPS) {
     if (name.includes(group)) return group
   }
@@ -135,6 +139,16 @@ function permissionGroup(name) {
 
 function groupLabel(group) {
   return proxy.$t(`roles.group_${group}`)
+}
+
+function permLabel(name) {
+  const translated = proxy.$t(`permissions.${name}.label`)
+  return translated !== `permissions.${name}.label` ? translated : name
+}
+
+function permDescription(name) {
+  const translated = proxy.$t(`permissions.${name}.description`)
+  return translated !== `permissions.${name}.description` ? translated : ''
 }
 
 const groupedPermissions = computed(() => {

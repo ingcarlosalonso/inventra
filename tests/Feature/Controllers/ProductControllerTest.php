@@ -179,7 +179,7 @@ class ProductControllerTest extends TenantFeatureTestCase
         $presentation = Presentation::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->putJson("/api/products/{$product->uuid}", [
+            ->putJson("/api/v1/products/{$product->uuid}", [
                 'name' => 'Nombre Actualizado',
                 'product_type_id' => $product->productType->uuid,
                 'presentations' => [
@@ -201,7 +201,7 @@ class ProductControllerTest extends TenantFeatureTestCase
         ]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->putJson("/api/products/{$product->uuid}", [
+            ->putJson("/api/v1/products/{$product->uuid}", [
                 'name' => $product->name,
                 'product_type_id' => $product->productType->uuid,
                 'presentations' => [
@@ -224,7 +224,7 @@ class ProductControllerTest extends TenantFeatureTestCase
         Barcode::factory()->create(['product_id' => $product->id, 'barcode' => 'OLD-CODE']);
 
         $this->actingAs($this->user, 'sanctum')
-            ->putJson("/api/products/{$product->uuid}", [
+            ->putJson("/api/v1/products/{$product->uuid}", [
                 'name' => $product->name,
                 'product_type_id' => $product->productType->uuid,
                 'presentations' => [
@@ -253,7 +253,7 @@ class ProductControllerTest extends TenantFeatureTestCase
         $product = Product::factory()->create(['is_active' => true]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->patchJson("/api/products/{$product->uuid}/toggle")
+            ->patchJson("/api/v1/products/{$product->uuid}/toggle")
             ->assertOk()
             ->assertJsonPath('data.is_active', false);
     }
@@ -265,7 +265,7 @@ class ProductControllerTest extends TenantFeatureTestCase
         $product = Product::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->deleteJson("/api/products/{$product->uuid}")
+            ->deleteJson("/api/v1/products/{$product->uuid}")
             ->assertNoContent();
 
         $this->assertSoftDeleted('products', ['id' => $product->id], 'tenant');

@@ -20,6 +20,8 @@ return [
         'daily-cashes' => 'Caja Diaria',
         'reports' => 'Reportes',
         'configuration' => 'Configuración',
+        'roles-permissions' => 'Roles y Permisos',
+        'users' => 'Usuarios y Perfil',
         'release-notes' => 'Novedades del sistema',
     ],
     'groups' => [

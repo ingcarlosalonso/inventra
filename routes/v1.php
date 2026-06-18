@@ -51,17 +51,6 @@ Route::middleware(['api', 'tenant', 'tenant.active'])->prefix('v1')->group(funct
         // ── Assistant ─────────────────────────────────────────────────────────
         Route::post('assistant/chat', [AssistantController::class, 'chat'])->middleware('throttle:20,1');
 
-        // ── Clients ───────────────────────────────────────────────────────────
-        Route::apiResource('clients', ClientController::class)->except(['show']);
-
-        // ── Daily Cash ────────────────────────────────────────────────────────
-        Route::apiResource('cash-movement-types', CashMovementTypeController::class)->except(['show']);
-
-        Route::post('daily-cashes/{dailyCash}/close', [DailyCashController::class, 'close']);
-        Route::post('daily-cashes/{dailyCash}/movements', [CashMovementController::class, 'store']);
-        Route::delete('daily-cashes/{dailyCash}/movements/{cashMovement}', [CashMovementController::class, 'destroy']);
-        Route::apiResource('daily-cashes', DailyCashController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
-
         // ── Dashboard ─────────────────────────────────────────────────────────
         Route::get('dashboard', DashboardController::class);
 
@@ -74,57 +63,234 @@ Route::middleware(['api', 'tenant', 'tenant.active'])->prefix('v1')->group(funct
             Route::delete('{notification}', [NotificationController::class, 'destroy']);
         });
 
-        // ── Orders ────────────────────────────────────────────────────────────
-        Route::patch('orders/{order}/state', [OrderController::class, 'updateState']);
-
-        Route::prefix('orders')->group(function () {
-            Route::apiResource('couriers', CourierController::class)->except(['show']);
-            Route::patch('couriers/{courier}/toggle', [CourierController::class, 'toggle']);
-
-            Route::apiResource('states', OrderStateController::class)->except(['show'])->names('order-states');
-            Route::patch('states/{orderState}/toggle', [OrderStateController::class, 'toggle']);
+        // ── Clients ───────────────────────────────────────────────────────────
+        Route::middleware('permission:list_clients')->group(function () {
+            Route::get('clients', [ClientController::class, 'index']);
+        });
+        Route::middleware('permission:create_edit_delete_clients')->group(function () {
+            Route::post('clients', [ClientController::class, 'store']);
+            Route::put('clients/{client}', [ClientController::class, 'update']);
+            Route::delete('clients/{client}', [ClientController::class, 'destroy']);
         });
 
-        Route::apiResource('orders', OrderController::class)->only(['index', 'store', 'show', 'destroy']);
+        // ── Suppliers ─────────────────────────────────────────────────────────
+        Route::middleware('permission:list_suppliers')->group(function () {
+            Route::get('suppliers', [SupplierController::class, 'index']);
+        });
+        Route::middleware('permission:create_edit_delete_suppliers')->group(function () {
+            Route::post('suppliers', [SupplierController::class, 'store']);
+            Route::put('suppliers/{supplier}', [SupplierController::class, 'update']);
+            Route::delete('suppliers/{supplier}', [SupplierController::class, 'destroy']);
+        });
 
         // ── Products ──────────────────────────────────────────────────────────
-        Route::apiResource('products', ProductController::class)->except(['show']);
-        Route::patch('products/{product}/toggle', [ProductController::class, 'toggle']);
+        Route::middleware('permission:list_products')->group(function () {
+            Route::get('products', [ProductController::class, 'index']);
+        });
+        Route::middleware('permission:create_edit_delete_products')->group(function () {
+            Route::post('products', [ProductController::class, 'store']);
+            Route::put('products/{product}', [ProductController::class, 'update']);
+            Route::delete('products/{product}', [ProductController::class, 'destroy']);
+            Route::patch('products/{product}/toggle', [ProductController::class, 'toggle']);
+            Route::post('products/import', [ProductImportController::class, 'store']);
+        });
 
         Route::prefix('products')->group(function () {
+            // Bulk price
             Route::middleware('permission:bulk_update_product_price')->group(function () {
                 Route::get('bulk-price/preview', [BulkPriceController::class, 'preview']);
                 Route::post('bulk-price', [BulkPriceController::class, 'update']);
             });
 
-            Route::apiResource('composite', CompositeProductController::class)->except(['show']);
-            Route::patch('composite/{compositeProduct}/toggle', [CompositeProductController::class, 'toggle']);
+            // Composite products
+            Route::middleware('permission:list_products')->group(function () {
+                Route::get('composite', [CompositeProductController::class, 'index']);
+            });
+            Route::middleware('permission:create_edit_delete_products')->group(function () {
+                Route::post('composite', [CompositeProductController::class, 'store']);
+                Route::put('composite/{compositeProduct}', [CompositeProductController::class, 'update']);
+                Route::delete('composite/{compositeProduct}', [CompositeProductController::class, 'destroy']);
+                Route::patch('composite/{compositeProduct}/toggle', [CompositeProductController::class, 'toggle']);
+            });
 
-            Route::post('import', [ProductImportController::class, 'store']);
+            // Promotions
+            Route::middleware('permission:list_products')->group(function () {
+                Route::get('promotions', [PromotionController::class, 'index']);
+            });
+            Route::middleware('permission:create_edit_delete_products')->group(function () {
+                Route::post('promotions', [PromotionController::class, 'store']);
+                Route::put('promotions/{promotion}', [PromotionController::class, 'update']);
+                Route::delete('promotions/{promotion}', [PromotionController::class, 'destroy']);
+                Route::patch('promotions/{promotion}/toggle', [PromotionController::class, 'toggle']);
+            });
 
-            Route::apiResource('movement-types', ProductMovementTypeController::class)->except(['show']);
+            // Product movement types — GET open to all authenticated users (needed for movement form dropdown)
+            Route::get('movement-types', [ProductMovementTypeController::class, 'index']);
+            Route::middleware('permission:create_edit_delete_product_movement_types')->group(function () {
+                Route::post('movement-types', [ProductMovementTypeController::class, 'store']);
+                Route::put('movement-types/{productMovementType}', [ProductMovementTypeController::class, 'update']);
+                Route::delete('movement-types/{productMovementType}', [ProductMovementTypeController::class, 'destroy']);
+            });
 
-            Route::apiResource('movements', ProductMovementController::class)->only(['index', 'store', 'destroy']);
+            // Product movements (extra movements)
+            Route::middleware('permission:list_products')->group(function () {
+                Route::get('movements', [ProductMovementController::class, 'index']);
+            });
+            Route::middleware('permission:create_edit_delete_products')->group(function () {
+                Route::post('movements', [ProductMovementController::class, 'store']);
+                Route::delete('movements/{productMovement}', [ProductMovementController::class, 'destroy']);
+            });
 
-            Route::apiResource('presentation-types', PresentationTypeController::class)->except(['show']);
-            Route::patch('presentation-types/{presentationType}/toggle', [PresentationTypeController::class, 'toggle']);
+            // Presentation types — GET open to all authenticated users (needed for product/reception forms)
+            Route::get('presentation-types', [PresentationTypeController::class, 'index']);
+            Route::middleware('permission:create_edit_delete_presentation_types')->group(function () {
+                Route::post('presentation-types', [PresentationTypeController::class, 'store']);
+                Route::put('presentation-types/{presentationType}', [PresentationTypeController::class, 'update']);
+                Route::delete('presentation-types/{presentationType}', [PresentationTypeController::class, 'destroy']);
+                Route::patch('presentation-types/{presentationType}/toggle', [PresentationTypeController::class, 'toggle']);
+            });
 
-            Route::apiResource('presentations', PresentationController::class)->except(['show']);
-            Route::patch('presentations/{presentation}/toggle', [PresentationController::class, 'toggle']);
+            // Presentations — GET open to all authenticated users (needed for product/reception forms)
+            Route::get('presentations', [PresentationController::class, 'index']);
+            Route::middleware('permission:create_edit_delete_presentations')->group(function () {
+                Route::post('presentations', [PresentationController::class, 'store']);
+                Route::put('presentations/{presentation}', [PresentationController::class, 'update']);
+                Route::delete('presentations/{presentation}', [PresentationController::class, 'destroy']);
+                Route::patch('presentations/{presentation}/toggle', [PresentationController::class, 'toggle']);
+            });
 
-            Route::apiResource('promotions', PromotionController::class)->except(['show']);
-            Route::patch('promotions/{promotion}/toggle', [PromotionController::class, 'toggle']);
+            // Product types — GET open to all authenticated users (needed for product filters/forms)
+            Route::get('types', [ProductTypeController::class, 'index']);
+            Route::middleware('permission:create_edit_delete_product_types')->group(function () {
+                Route::post('types', [ProductTypeController::class, 'store']);
+                Route::put('types/{productType}', [ProductTypeController::class, 'update']);
+                Route::delete('types/{productType}', [ProductTypeController::class, 'destroy']);
+                Route::patch('types/{productType}/toggle', [ProductTypeController::class, 'toggle']);
+            });
+        });
 
-            Route::apiResource('types', ProductTypeController::class)->except(['show']);
-            Route::patch('types/{productType}/toggle', [ProductTypeController::class, 'toggle']);
+        // ── Receptions ────────────────────────────────────────────────────────
+        Route::middleware('permission:list_receptions')->group(function () {
+            Route::get('receptions', [ReceptionController::class, 'index']);
+            Route::get('receptions/{reception}', [ReceptionController::class, 'show']);
+        });
+        Route::middleware('permission:create_edit_delete_receptions')->group(function () {
+            Route::post('receptions', [ReceptionController::class, 'store']);
+            Route::delete('receptions/{reception}', [ReceptionController::class, 'destroy']);
         });
 
         // ── Quotes ────────────────────────────────────────────────────────────
-        Route::post('quotes/{quote}/convert', [QuoteController::class, 'convert']);
-        Route::apiResource('quotes', QuoteController::class)->only(['index', 'store', 'show', 'destroy']);
+        Route::middleware('permission:list_quotes')->group(function () {
+            Route::get('quotes', [QuoteController::class, 'index']);
+            Route::get('quotes/{quote}', [QuoteController::class, 'show']);
+        });
+        Route::middleware('permission:create_edit_delete_quotes')->group(function () {
+            Route::post('quotes', [QuoteController::class, 'store']);
+            Route::delete('quotes/{quote}', [QuoteController::class, 'destroy']);
+            Route::post('quotes/{quote}/convert', [QuoteController::class, 'convert']);
+        });
 
-        // ── Receptions ────────────────────────────────────────────────────────
-        Route::apiResource('receptions', ReceptionController::class)->only(['index', 'store', 'show', 'destroy']);
+        // ── Orders ────────────────────────────────────────────────────────────
+        // Sub-resources before {order} wildcard to avoid route shadowing
+        Route::prefix('orders')->group(function () {
+            // Couriers GET open to all authenticated users (needed for order assignment dropdown)
+            Route::get('couriers', [CourierController::class, 'index']);
+            Route::middleware('permission:create_edit_delete_couriers')->group(function () {
+                Route::post('couriers', [CourierController::class, 'store']);
+                Route::put('couriers/{courier}', [CourierController::class, 'update']);
+                Route::delete('couriers/{courier}', [CourierController::class, 'destroy']);
+                Route::patch('couriers/{courier}/toggle', [CourierController::class, 'toggle']);
+            });
+
+            // Order states GET open to all authenticated users (needed for order form dropdowns)
+            Route::get('states', [OrderStateController::class, 'index'])->name('order-states.index');
+            Route::middleware('permission:create_edit_delete_order_states')->group(function () {
+                Route::post('states', [OrderStateController::class, 'store'])->name('order-states.store');
+                Route::put('states/{orderState}', [OrderStateController::class, 'update'])->name('order-states.update');
+                Route::delete('states/{orderState}', [OrderStateController::class, 'destroy'])->name('order-states.destroy');
+                Route::patch('states/{orderState}/toggle', [OrderStateController::class, 'toggle']);
+            });
+        });
+
+        Route::middleware('permission:list_orders')->group(function () {
+            Route::get('orders', [OrderController::class, 'index']);
+            Route::get('orders/{order}', [OrderController::class, 'show']);
+        });
+        Route::middleware('permission:create_edit_delete_orders')->group(function () {
+            Route::post('orders', [OrderController::class, 'store']);
+            Route::delete('orders/{order}', [OrderController::class, 'destroy']);
+            Route::patch('orders/{order}/state', [OrderController::class, 'updateState']);
+        });
+
+        // ── Daily Cash ────────────────────────────────────────────────────────
+        Route::middleware('permission:list_daily_cashes')->group(function () {
+            Route::get('daily-cashes', [DailyCashController::class, 'index']);
+            Route::get('daily-cashes/{dailyCash}', [DailyCashController::class, 'show']);
+        });
+        Route::middleware('permission:enable_close_daily_cash')->group(function () {
+            Route::post('daily-cashes', [DailyCashController::class, 'store']);
+            Route::put('daily-cashes/{dailyCash}', [DailyCashController::class, 'update']);
+            Route::delete('daily-cashes/{dailyCash}', [DailyCashController::class, 'destroy']);
+            Route::post('daily-cashes/{dailyCash}/close', [DailyCashController::class, 'close']);
+            Route::post('daily-cashes/{dailyCash}/movements', [CashMovementController::class, 'store']);
+            Route::delete('daily-cashes/{dailyCash}/movements/{cashMovement}', [CashMovementController::class, 'destroy']);
+        });
+
+        // Cash movement types — GET open to all authenticated users (needed for cash movement form)
+        Route::get('cash-movement-types', [CashMovementTypeController::class, 'index']);
+        Route::middleware('permission:create_edit_delete_cash_movement_types')->group(function () {
+            Route::post('cash-movement-types', [CashMovementTypeController::class, 'store']);
+            Route::put('cash-movement-types/{cashMovementType}', [CashMovementTypeController::class, 'update']);
+            Route::delete('cash-movement-types/{cashMovementType}', [CashMovementTypeController::class, 'destroy']);
+        });
+
+        // ── Sales ─────────────────────────────────────────────────────────────
+        // Sub-resources before {sale} wildcard to avoid route shadowing
+        Route::prefix('sales')->group(function () {
+            Route::middleware('permission:list_sales')->group(function () {
+                Route::get('payments/pending', [PaymentController::class, 'pending']);
+            });
+
+            Route::middleware('permission:create_edit_delete_sales')->group(function () {
+                Route::post('payments', [PaymentController::class, 'store']);
+            });
+
+            // Payment methods GET open to all authenticated users (needed for sale creation form)
+            Route::get('payment-methods', [PaymentMethodController::class, 'index']);
+            Route::middleware('permission:create_edit_delete_payment_methods')->group(function () {
+                Route::post('payment-methods', [PaymentMethodController::class, 'store']);
+                Route::put('payment-methods/{paymentMethod}', [PaymentMethodController::class, 'update']);
+                Route::delete('payment-methods/{paymentMethod}', [PaymentMethodController::class, 'destroy']);
+                Route::patch('payment-methods/{paymentMethod}/toggle', [PaymentMethodController::class, 'toggle']);
+            });
+
+            // Points of sale GET open to all authenticated users (needed for sale/cash creation forms)
+            Route::get('points-of-sale', [PointOfSaleController::class, 'index']);
+            Route::middleware('permission:create_edit_delete_points_of_sale')->group(function () {
+                Route::post('points-of-sale', [PointOfSaleController::class, 'store']);
+                Route::put('points-of-sale/{pointOfSale}', [PointOfSaleController::class, 'update']);
+                Route::delete('points-of-sale/{pointOfSale}', [PointOfSaleController::class, 'destroy']);
+                Route::patch('points-of-sale/{pointOfSale}/toggle', [PointOfSaleController::class, 'toggle']);
+            });
+
+            // Sale states GET open to all authenticated users (needed for sale form dropdowns)
+            Route::get('states', [SaleStateController::class, 'index'])->name('sale-states.index');
+            Route::middleware('permission:create_edit_delete_sale_states')->group(function () {
+                Route::post('states', [SaleStateController::class, 'store'])->name('sale-states.store');
+                Route::put('states/{saleState}', [SaleStateController::class, 'update'])->name('sale-states.update');
+                Route::delete('states/{saleState}', [SaleStateController::class, 'destroy'])->name('sale-states.destroy');
+                Route::patch('states/{saleState}/toggle', [SaleStateController::class, 'toggle']);
+            });
+        });
+
+        Route::middleware('permission:list_sales')->group(function () {
+            Route::get('sales', [SaleController::class, 'index']);
+            Route::get('sales/{sale}', [SaleController::class, 'show']);
+        });
+        Route::middleware('permission:create_edit_delete_sales')->group(function () {
+            Route::post('sales', [SaleController::class, 'store']);
+            Route::delete('sales/{sale}', [SaleController::class, 'destroy']);
+        });
 
         // ── Reports ───────────────────────────────────────────────────────────
         Route::prefix('reports')->middleware('throttle:30,1')->group(function () {
@@ -169,32 +335,21 @@ Route::middleware(['api', 'tenant', 'tenant.active'])->prefix('v1')->group(funct
             });
         });
 
-        // ── Sales ─────────────────────────────────────────────────────────────
-        Route::prefix('sales')->group(function () {
-            Route::apiResource('payment-methods', PaymentMethodController::class)->except(['show']);
-            Route::patch('payment-methods/{paymentMethod}/toggle', [PaymentMethodController::class, 'toggle']);
-
-            Route::get('payments/pending', [PaymentController::class, 'pending']);
-            Route::post('payments', [PaymentController::class, 'store']);
-
-            Route::apiResource('points-of-sale', PointOfSaleController::class)
-                ->except(['show'])
-                ->parameters(['points-of-sale' => 'pointOfSale']);
-            Route::patch('points-of-sale/{pointOfSale}/toggle', [PointOfSaleController::class, 'toggle']);
-
-            Route::apiResource('states', SaleStateController::class)->except(['show'])->names('sale-states');
-            Route::patch('states/{saleState}/toggle', [SaleStateController::class, 'toggle']);
-        });
-
-        Route::apiResource('sales', SaleController::class)->only(['index', 'store', 'show', 'destroy']);
-
         // ── Settings ──────────────────────────────────────────────────────────
         Route::prefix('settings')->group(function () {
-            Route::apiResource('currencies', CurrencyController::class)->except(['show']);
-            Route::patch('currencies/{currency}/toggle', [CurrencyController::class, 'toggle']);
+            // Currencies GET open to all authenticated users (needed for product pricing forms)
+            Route::get('currencies', [CurrencyController::class, 'index']);
+            Route::middleware('permission:create_edit_delete_currencies')->group(function () {
+                Route::post('currencies', [CurrencyController::class, 'store']);
+                Route::put('currencies/{currency}', [CurrencyController::class, 'update']);
+                Route::delete('currencies/{currency}', [CurrencyController::class, 'destroy']);
+                Route::patch('currencies/{currency}/toggle', [CurrencyController::class, 'toggle']);
+            });
 
-            Route::get('customization', [CustomizationController::class, 'show']);
-            Route::post('customization', [CustomizationController::class, 'update']);
+            Route::middleware('permission:manage_customization')->group(function () {
+                Route::get('customization', [CustomizationController::class, 'show']);
+                Route::post('customization', [CustomizationController::class, 'update']);
+            });
 
             Route::middleware('permission:create_edit_delete_roles')->group(function () {
                 Route::get('permissions', [PermissionController::class, 'index']);
@@ -206,9 +361,6 @@ Route::middleware(['api', 'tenant', 'tenant.active'])->prefix('v1')->group(funct
                 Route::patch('users/{user}/toggle', [UserController::class, 'toggle']);
             });
         });
-
-        // ── Suppliers ─────────────────────────────────────────────────────────
-        Route::apiResource('suppliers', SupplierController::class)->except(['show']);
 
         // ── Releases ──────────────────────────────────────────────────────────
         Route::post('releases/{uuid}/read', [ReleaseReadController::class, 'store']);
