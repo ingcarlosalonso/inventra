@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasUuid;
+use App\Models\User\Scopes\ExcludeSystemUsers;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -25,12 +26,18 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new ExcludeSystemUsers);
+    }
+
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'is_system' => 'boolean',
         ];
     }
 }

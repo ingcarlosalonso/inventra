@@ -9,6 +9,8 @@ use InvalidArgumentException;
 
 class ProvisionTenantAction
 {
+    public function __construct(private CreateTenantDefaultUsersAction $createDefaultUsers) {}
+
     public function execute(array $data): Tenant
     {
         $subdomain = $data['subdomain'];
@@ -47,6 +49,8 @@ class ProvisionTenantAction
             '--database' => 'tenant',
             '--force' => true,
         ]);
+
+        $this->createDefaultUsers->execute($data['contact_name'] ?? null);
 
         Tenant::forgetCurrent();
 

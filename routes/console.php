@@ -9,3 +9,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('daily-cash:auto-manage')->everyMinute();
+Schedule::command('tenants:suspend-expired')->dailyAt('00:05');

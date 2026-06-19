@@ -22,7 +22,15 @@ class Tenant extends BaseTenant
 
     public function isActive(): bool
     {
-        return $this->status === 'active' || $this->status === 'trial';
+        if ($this->status === 'suspended') {
+            return false;
+        }
+
+        if ($this->expires_at && $this->expires_at->isPast()) {
+            return false;
+        }
+
+        return true;
     }
 
     public function suspend(): void
