@@ -5,6 +5,7 @@ namespace Tests\Unit\Scopes\Product;
 use App\Models\Barcode;
 use App\Models\Product;
 use App\Models\Product\Scopes\BySearch;
+use App\Models\ProductPresentation;
 use Tests\Unit\Models\ModelTestCase;
 
 class BySearchTest extends ModelTestCase
@@ -33,7 +34,8 @@ class BySearchTest extends ModelTestCase
     public function test_filters_by_barcode(): void
     {
         $product = Product::factory()->create(['name' => 'Producto con código']);
-        Barcode::factory()->create(['product_id' => $product->id, 'barcode' => '1234567890123']);
+        $pp = ProductPresentation::factory()->create(['product_id' => $product->id]);
+        Barcode::factory()->create(['product_presentation_id' => $pp->id, 'barcode' => '1234567890123']);
         Product::factory()->create(['name' => 'Sin código']);
 
         $results = Product::query()->withScopes(new BySearch('1234567890123'))->get();

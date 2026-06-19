@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Models\ProductPresentation;
 
+use App\Models\Barcode;
 use App\Models\Presentation;
 use App\Models\Product;
 use App\Models\ProductPresentation;
@@ -21,5 +22,15 @@ class RelationsTest extends ModelTestCase
         $pp = ProductPresentation::factory()->create();
 
         $this->assertInstanceOf(Presentation::class, $pp->presentation);
+    }
+
+    public function test_has_many_barcodes(): void
+    {
+        $pp = ProductPresentation::factory()->create();
+        Barcode::factory()->create(['product_presentation_id' => $pp->id]);
+
+        $pp->refresh();
+        $this->assertCount(1, $pp->barcodes);
+        $this->assertInstanceOf(Barcode::class, $pp->barcodes->first());
     }
 }

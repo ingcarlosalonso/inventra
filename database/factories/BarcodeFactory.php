@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Barcode;
-use App\Models\Product;
+use App\Models\ProductPresentation;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -14,7 +14,7 @@ class BarcodeFactory extends Factory
     public function definition(): array
     {
         return [
-            'product_id' => Product::factory(),
+            'product_presentation_id' => ProductPresentation::factory(),
             'barcode' => fake()->unique()->ean13(),
         ];
     }

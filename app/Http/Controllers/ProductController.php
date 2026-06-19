@@ -22,6 +22,7 @@ class ProductController extends Controller
             'barcodes',
             'currency',
             'productPresentations.presentation.presentationType',
+            'productPresentations.barcodes',
         ]);
 
         if ($request->filled('search')) {
@@ -57,7 +58,7 @@ class ProductController extends Controller
         $product->update(['is_active' => ! $product->is_active]);
 
         return ProductResource::make(
-            $product->fresh()->load(['productType', 'barcodes', 'currency', 'productPresentations.presentation.presentationType'])
+            $product->fresh()->load(['productType', 'barcodes', 'currency', 'productPresentations.presentation.presentationType', 'productPresentations.barcodes'])
         );
     }
 }

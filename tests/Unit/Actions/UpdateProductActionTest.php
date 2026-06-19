@@ -3,6 +3,7 @@
 namespace Tests\Unit\Actions;
 
 use App\Actions\UpdateProductAction;
+use App\Models\Barcode;
 use App\Models\Presentation;
 use App\Models\Product;
 use App\Models\ProductPresentation;
@@ -87,10 +88,18 @@ class UpdateProductActionTest extends TestCase
         $this->assertEquals($newPresentation->id, $product->productPresentations->first()->presentation_id);
     }
 
-    public function test_replaces_barcodes_on_update(): void
+    public function test_replaces_barcodes_per_presentation_on_update(): void
     {
         $product = Product::factory()->create();
-        $product->barcodes()->create(['barcode' => 'OLD-123']);
+        $oldPresentation = Presentation::factory()->create();
+        $pp = ProductPresentation::factory()->create([
+            'product_id' => $product->id,
+            'presentation_id' => $oldPresentation->id,
+        ]);
+        Barcode::factory()->create([
+            'product_presentation_id' => $pp->id,
+            'barcode' => 'OLD-123',
+        ]);
 
         $productType = ProductType::factory()->create();
         $presentation = Presentation::factory()->create();
@@ -99,11 +108,11 @@ class UpdateProductActionTest extends TestCase
             'name' => $product->name,
             'product_type_id' => $productType->uuid,
             'is_active' => true,
-            'barcodes' => ['NEW-456'],
             'presentations' => [[
                 'presentation_id' => $presentation->uuid,
                 'price' => 50,
                 'min_stock' => 0,
+                'barcodes' => ['NEW-456'],
             ]],
         ]);
 

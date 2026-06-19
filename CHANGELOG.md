@@ -4,7 +4,15 @@ All notable changes to In-ventra are documented here.
 
 ---
 
-## [1.1.0] - xxxx-xx-xx
+## [1.2.0] - xxxx-xx-xx
+
+### Added
+- Barcodes per product presentation: each presentation can have one or more EAN/QR codes directly assigned
+- Barcode reader for sales, orders, quotes, and receipts: a scanning field that adds the corresponding item when Enter is pressed, compatible with USB/Bluetooth readers
+
+---
+
+## [1.1.0] - 2026-06-18
 
 ### Added
 - Release notes system: central admin can draft, edit, and publish release notes parsed from CHANGELOG.md; users see a "What's New" popup on first login after each new release

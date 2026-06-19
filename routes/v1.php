@@ -25,6 +25,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductImportController;
 use App\Http\Controllers\ProductMovementController;
 use App\Http\Controllers\ProductMovementTypeController;
+use App\Http\Controllers\ProductPresentationBarcodeController;
 use App\Http\Controllers\ProductTypeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PromotionController;
@@ -84,6 +85,9 @@ Route::middleware(['api', 'tenant', 'tenant.active'])->prefix('v1')->group(funct
         });
 
         // ── Products ──────────────────────────────────────────────────────────
+        Route::get('products/barcode/{barcode}', [ProductPresentationBarcodeController::class, 'show'])
+            ->middleware('permission:list_products');
+
         Route::middleware('permission:list_products')->group(function () {
             Route::get('products', [ProductController::class, 'index']);
         });

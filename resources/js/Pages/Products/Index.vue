@@ -151,6 +151,35 @@
                 required
               />
             </div>
+
+            <!-- Barcodes per presentation -->
+            <div>
+              <label class="mb-1 block text-xs font-medium text-gray-500">{{ $t('products.barcodes') }}</label>
+              <div class="space-y-1.5">
+                <div v-for="(_, bi) in pp.barcodes" :key="bi" class="flex items-center gap-2">
+                  <input
+                    v-model="pp.barcodes[bi]"
+                    type="text"
+                    class="block w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    :placeholder="$t('products.barcode')"
+                  />
+                  <button type="button" class="shrink-0 rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-red-600" @click="removeBarcode(index, bi)">
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
+                </div>
+                <p v-for="(_, bi) in pp.barcodes" :key="`err-${index}-${bi}`" class="text-xs text-red-600">
+                  {{ formErrors[`presentations.${index}.barcodes.${bi}`]?.[0] }}
+                </p>
+              </div>
+              <button
+                type="button"
+                class="mt-1.5 inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-700"
+                @click="addBarcode(index)"
+              >
+                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                {{ $t('products.add_barcode') }}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -163,35 +192,6 @@
         >
           <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
           {{ $t('products.add_presentation') }}
-        </button>
-      </div>
-
-      <!-- Barcodes -->
-      <div>
-        <label class="mb-1.5 block text-sm font-medium text-gray-700">{{ $t('products.barcodes') }}</label>
-        <div class="space-y-2">
-          <div v-for="(barcode, index) in form.barcodes" :key="index" class="flex items-center gap-2">
-            <input
-              v-model="form.barcodes[index]"
-              type="text"
-              class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              :placeholder="$t('products.barcode')"
-            />
-            <button type="button" class="shrink-0 rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-red-600" @click="removeBarcode(index)">
-              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
-          </div>
-          <p v-for="(_, i) in form.barcodes" :key="`err-${i}`" class="text-xs text-red-600">
-            {{ formErrors[`barcodes.${i}`]?.[0] }}
-          </p>
-        </div>
-        <button
-          type="button"
-          class="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-700"
-          @click="addBarcode"
-        >
-          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-          {{ $t('products.add_barcode') }}
         </button>
       </div>
 
@@ -258,7 +258,7 @@ function availablePresentationOptions(currentIndex) {
   return allPresentationOptions.value.filter(opt => !selectedIds.includes(opt.value))
 }
 
-const emptyPresentation = () => ({ presentation_id: null, price: '', min_stock: '' })
+const emptyPresentation = () => ({ presentation_id: null, price: '', min_stock: '', barcodes: [] })
 
 const emptyForm = () => ({
   name: '',
@@ -267,7 +267,6 @@ const emptyForm = () => ({
   currency_id: null,
   is_active: true,
   presentations: [emptyPresentation()],
-  barcodes: [],
 })
 const form = ref(emptyForm())
 
@@ -291,8 +290,8 @@ async function fetchOptions() {
 
 function addPresentation() { form.value.presentations.push(emptyPresentation()) }
 function removePresentation(index) { form.value.presentations.splice(index, 1) }
-function addBarcode() { form.value.barcodes.push('') }
-function removeBarcode(index) { form.value.barcodes.splice(index, 1) }
+function addBarcode(ppIndex) { form.value.presentations[ppIndex].barcodes.push('') }
+function removeBarcode(ppIndex, bcIndex) { form.value.presentations[ppIndex].barcodes.splice(bcIndex, 1) }
 
 function openCreate() {
   editing.value = null; form.value = emptyForm(); formError.value = null; slideOverOpen.value = true
@@ -310,8 +309,8 @@ function openEdit(item) {
       presentation_id: pp.presentation?.id ?? null,
       price: pp.price,
       min_stock: pp.min_stock,
+      barcodes: [...(pp.barcodes ?? [])],
     })),
-    barcodes: [...(item.barcodes ?? [])],
   }
   if (!form.value.presentations.length) form.value.presentations.push(emptyPresentation())
   formError.value = null; slideOverOpen.value = true
@@ -321,7 +320,10 @@ async function save() {
   formError.value = null
   const payload = {
     ...form.value,
-    barcodes: form.value.barcodes.filter(b => b.trim() !== ''),
+    presentations: form.value.presentations.map(pp => ({
+      ...pp,
+      barcodes: (pp.barcodes ?? []).filter(b => b.trim() !== ''),
+    })),
   }
   const result = editing.value
     ? await putForm(`/api/v1/products/${editing.value.id}`, payload)

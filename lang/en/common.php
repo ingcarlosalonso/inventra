@@ -106,4 +106,6 @@ return [
     'min' => 'min',
     'sales' => 'Sales',
     'exporting' => 'Exporting...',
+    'scan_barcode' => 'Scan barcode',
+    'scan_barcode_placeholder' => 'Scan or type the code...',
 ];

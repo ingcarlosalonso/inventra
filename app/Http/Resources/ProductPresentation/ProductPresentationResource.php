@@ -15,6 +15,7 @@ class ProductPresentationResource extends JsonResource
             'stock' => $this->stock,
             'min_stock' => $this->min_stock,
             'is_active' => $this->is_active,
+            'barcodes' => $this->whenLoaded('barcodes', fn () => $this->barcodes->pluck('barcode')),
             'presentation' => $this->whenLoaded('presentation', fn () => [
                 'id' => $this->presentation->uuid,
                 'display' => $this->presentation->relationLoaded('presentationType')
@@ -26,6 +27,10 @@ class ProductPresentationResource extends JsonResource
                     'name' => $this->presentation->presentationType->name,
                     'abbreviation' => $this->presentation->presentationType->abbreviation,
                 ] : null,
+            ]),
+            'product' => $this->whenLoaded('product', fn () => [
+                'id' => $this->product->uuid,
+                'name' => $this->product->name,
             ]),
             'created_at' => $this->created_at->toISOString(),
             'updated_at' => $this->updated_at->toISOString(),

@@ -7,6 +7,7 @@ use App\Models\Concerns\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
@@ -34,9 +35,9 @@ class Product extends Model
         return $this->belongsTo(Currency::class);
     }
 
-    public function barcodes(): HasMany
+    public function barcodes(): HasManyThrough
     {
-        return $this->hasMany(Barcode::class);
+        return $this->hasManyThrough(Barcode::class, ProductPresentation::class);
     }
 
     public function productPresentations(): HasMany
