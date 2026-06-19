@@ -34,9 +34,10 @@
     <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
       <NavItem href="/dashboard" :label="$t('common.dashboard')" :icon="icons.dashboard" />
 
-      <NavItem href="/suppliers" :label="$t('suppliers.title')" :icon="icons.suppliers" />
-      <NavItem href="/clients" :label="$t('clients.title')" :icon="icons.clients" />
-      <NavItem href="/receptions" :label="$t('receptions.title')" :icon="icons.receptions" />
+      <!-- ── Operaciones ─────────────────────────────────────── -->
+      <div class="pt-4 pb-1 px-1">
+        <p class="text-[10px] font-semibold uppercase tracking-widest text-gray-500">{{ $t('common.nav_operations') }}</p>
+      </div>
 
       <NavGroup :label="$t('sales.title')" :icon="icons.sales" :matches="['/sales', '/quotes', '/payments', '/settings/points-of-sale', '/settings/sale-states', '/settings/payment-methods']">
         <NavItem href="/sales" :label="$t('sales.title')" sub />
@@ -53,21 +54,42 @@
         <NavItem href="/settings/couriers" :label="$t('couriers.title')" sub />
       </NavGroup>
 
-      <NavGroup :label="$t('daily_cashes.title')" :icon="icons.dailyCashes" :matches="['/daily-cashes']">
-        <NavItem href="/daily-cashes" :label="$t('daily_cashes.title')" sub />
-      </NavGroup>
+      <NavItem href="/daily-cashes" :label="$t('daily_cashes.title')" :icon="icons.dailyCashes" />
 
-      <NavGroup :label="$t('common.products')" :icon="icons.products" :matches="['/products', '/settings/product-types', '/settings/presentation-types', '/settings/presentations']">
+      <!-- ── Inventario ──────────────────────────────────────── -->
+      <div class="pt-4 pb-1 px-1">
+        <p class="text-[10px] font-semibold uppercase tracking-widest text-gray-500">{{ $t('common.nav_inventory') }}</p>
+      </div>
+
+      <NavItem href="/receptions" :label="$t('receptions.title')" :icon="icons.receptions" />
+
+      <NavGroup :label="$t('common.products')" :icon="icons.products" :matches="['/products', '/settings/brands', '/settings/product-types', '/settings/presentation-types', '/settings/presentations']">
         <NavItem href="/products" :label="$t('products.title')" sub />
         <NavItem href="/products/composite" :label="$t('composite_products.title')" sub />
         <NavItem href="/products/promotions" :label="$t('promotions.title')" sub />
         <NavItem href="/products/movements" :label="$t('product_movements.title')" sub />
         <NavItem href="/products/bulk-price" :label="$t('bulk_price.title')" sub />
         <NavItem href="/products/import" :label="$t('products.import_title')" sub />
+        <NavItem href="/settings/brands" :label="$t('brands.title')" sub />
         <NavItem href="/settings/product-types" :label="$t('product_types.title')" sub />
         <NavItem href="/settings/presentation-types" :label="$t('presentation_types.title')" sub />
         <NavItem href="/settings/presentations" :label="$t('presentations.title')" sub />
       </NavGroup>
+
+      <!-- ── Contactos ───────────────────────────────────────── -->
+      <div class="pt-4 pb-1 px-1">
+        <p class="text-[10px] font-semibold uppercase tracking-widest text-gray-500">{{ $t('common.nav_contacts') }}</p>
+      </div>
+
+      <NavItem href="/clients" :label="$t('clients.title')" :icon="icons.clients" />
+      <NavItem href="/suppliers" :label="$t('suppliers.title')" :icon="icons.suppliers" />
+
+      <!-- ── Sistema ─────────────────────────────────────────── -->
+      <div class="pt-4 pb-1 px-1">
+        <p class="text-[10px] font-semibold uppercase tracking-widest text-gray-500">{{ $t('common.nav_system') }}</p>
+      </div>
+
+      <NavItem href="/reports" :label="$t('reports.title')" :icon="icons.reports" />
 
       <NavGroup
         :label="$t('common.settings')"
@@ -81,8 +103,6 @@
         <NavItem href="/settings/currencies" :label="$t('currencies.title')" sub />
         <NavItem href="/settings/customization" :label="$t('customization.title')" sub />
       </NavGroup>
-
-      <NavItem href="/reports" :label="$t('reports.title')" :icon="icons.reports" />
 
       <NavItem href="/help" :label="$t('help.title')" :icon="icons.help" />
     </nav>

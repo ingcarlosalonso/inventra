@@ -18,6 +18,7 @@ Route::middleware(['tenant', 'tenant.active'])->group(function () {
         Route::get('/dashboard', fn () => Inertia::render('Dashboard'))->name('dashboard');
 
         // Settings / parametrization
+        Route::get('/settings/brands', fn () => Inertia::render('Settings/Brands/Index'))->name('settings.brands');
         Route::get('/settings/product-types', fn () => Inertia::render('Settings/ProductTypes/Index'))->name('settings.product-types');
         Route::get('/settings/presentation-types', fn () => Inertia::render('Settings/PresentationTypes/Index'))->name('settings.presentation-types');
         Route::get('/settings/presentations', fn () => Inertia::render('Settings/Presentations/Index'))->name('settings.presentations');

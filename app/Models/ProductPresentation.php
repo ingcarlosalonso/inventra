@@ -6,6 +6,7 @@ use App\Models\Concerns\HasAuditFields;
 use App\Models\Concerns\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -35,6 +36,11 @@ class ProductPresentation extends Model
     public function presentation(): BelongsTo
     {
         return $this->belongsTo(Presentation::class);
+    }
+
+    public function barcodes(): HasMany
+    {
+        return $this->hasMany(Barcode::class);
     }
 
     public function saleItems(): MorphMany

@@ -13,8 +13,8 @@ class Barcode extends Model
 
     protected $guarded = [];
 
-    public function product(): BelongsTo
+    public function productPresentation(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(ProductPresentation::class);
     }
 }

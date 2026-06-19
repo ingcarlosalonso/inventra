@@ -37,7 +37,8 @@ class ProductControllerTest extends TenantFeatureTestCase
     public function test_index_filters_by_barcode(): void
     {
         $product = Product::factory()->create();
-        Barcode::factory()->create(['product_id' => $product->id, 'barcode' => '7794000012345']);
+        $pp = ProductPresentation::factory()->create(['product_id' => $product->id]);
+        Barcode::factory()->create(['product_presentation_id' => $pp->id, 'barcode' => '7794000012345']);
         Product::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
@@ -104,7 +105,7 @@ class ProductControllerTest extends TenantFeatureTestCase
         $response->assertJsonCount(2, 'data.presentations');
     }
 
-    public function test_store_creates_product_with_barcodes(): void
+    public function test_store_creates_product_with_barcodes_per_presentation(): void
     {
         $productType = ProductType::factory()->create();
         $presentation = Presentation::factory()->create();
@@ -114,9 +115,13 @@ class ProductControllerTest extends TenantFeatureTestCase
                 'name' => 'Producto con Códigos',
                 'product_type_id' => $productType->uuid,
                 'presentations' => [
-                    ['presentation_id' => $presentation->uuid, 'price' => 100, 'min_stock' => 1],
+                    [
+                        'presentation_id' => $presentation->uuid,
+                        'price' => 100,
+                        'min_stock' => 1,
+                        'barcodes' => ['111222333444', '555666777888'],
+                    ],
                 ],
-                'barcodes' => ['111222333444', '555666777888'],
             ])
             ->assertCreated()
             ->assertJsonCount(2, 'data.barcodes');
@@ -150,20 +155,24 @@ class ProductControllerTest extends TenantFeatureTestCase
     {
         $productType = ProductType::factory()->create();
         $presentation = Presentation::factory()->create();
-        $existing = Product::factory()->create();
-        Barcode::factory()->create(['product_id' => $existing->id, 'barcode' => 'DUPLICADO']);
+        $existingPp = ProductPresentation::factory()->create();
+        Barcode::factory()->create(['product_presentation_id' => $existingPp->id, 'barcode' => 'DUPLICADO']);
 
         $this->actingAs($this->user, 'sanctum')
             ->postJson('/api/v1/products', [
                 'name' => 'Nuevo Producto',
                 'product_type_id' => $productType->uuid,
                 'presentations' => [
-                    ['presentation_id' => $presentation->uuid, 'price' => 100, 'min_stock' => 1],
+                    [
+                        'presentation_id' => $presentation->uuid,
+                        'price' => 100,
+                        'min_stock' => 1,
+                        'barcodes' => ['DUPLICADO'],
+                    ],
                 ],
-                'barcodes' => ['DUPLICADO'],
             ])
             ->assertUnprocessable()
-            ->assertJsonValidationErrors(['barcodes.0']);
+            ->assertJsonValidationErrors(['presentations.0.barcodes.0']);
     }
 
     public function test_store_requires_auth(): void
@@ -217,20 +226,30 @@ class ProductControllerTest extends TenantFeatureTestCase
         ], 'tenant');
     }
 
-    public function test_update_syncs_barcodes(): void
+    public function test_update_syncs_barcodes_per_presentation(): void
     {
         $product = Product::factory()->create();
-        $presentation = Presentation::factory()->create();
-        Barcode::factory()->create(['product_id' => $product->id, 'barcode' => 'OLD-CODE']);
+        $oldPresentation = Presentation::factory()->create();
+        $oldPp = ProductPresentation::factory()->create([
+            'product_id' => $product->id,
+            'presentation_id' => $oldPresentation->id,
+        ]);
+        Barcode::factory()->create(['product_presentation_id' => $oldPp->id, 'barcode' => 'OLD-CODE']);
+
+        $newPresentation = Presentation::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
             ->putJson("/api/v1/products/{$product->uuid}", [
                 'name' => $product->name,
                 'product_type_id' => $product->productType->uuid,
                 'presentations' => [
-                    ['presentation_id' => $presentation->uuid, 'price' => 100, 'min_stock' => 1],
+                    [
+                        'presentation_id' => $newPresentation->uuid,
+                        'price' => 100,
+                        'min_stock' => 1,
+                        'barcodes' => ['NEW-CODE'],
+                    ],
                 ],
-                'barcodes' => ['NEW-CODE'],
             ])
             ->assertOk()
             ->assertJsonCount(1, 'data.barcodes')

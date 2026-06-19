@@ -11,7 +11,7 @@ class ModelTest extends ModelTestCase
     public function test_it_has_expected_columns(): void
     {
         $this->assertHasExpectedColumns(Product::tableName(), [
-            'id', 'uuid', 'product_type_id', 'currency_id',
+            'id', 'uuid', 'product_type_id', 'brand_id', 'currency_id',
             'name', 'description', 'cost',
             'is_active', 'created_by', 'updated_by',
             'created_at', 'updated_at', 'deleted_at',

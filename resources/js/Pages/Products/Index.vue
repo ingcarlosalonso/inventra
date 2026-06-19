@@ -57,7 +57,7 @@
               </div>
               <div class="mt-0.5 flex items-center justify-between gap-2">
                 <p class="truncate text-xs text-gray-400 min-w-0">
-                  {{ [item.product_type?.name, item.presentations?.length ? `${item.presentations.length} ${$t('products.presentations')}` : null, item.barcodes?.length ? `${item.barcodes.length} ${$t('products.barcodes')}` : null].filter(Boolean).join(' · ') || '—' }}
+                  {{ [item.brand?.name, item.product_type?.name, item.presentations?.length ? `${item.presentations.length} ${$t('products.presentations')}` : null, item.barcodes?.length ? `${item.barcodes.length} ${$t('products.barcodes')}` : null].filter(Boolean).join(' · ') || '—' }}
                 </p>
                 <div class="flex items-center gap-0.5 shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition">
                   <button type="button" class="rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-indigo-600" :title="$t('common.edit')" @click="openEdit(item)"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg></button>
@@ -79,6 +79,14 @@
     <form class="space-y-5" @submit.prevent="save">
       <InputField v-model="form.name" :label="$t('products.name')" :error="formErrors.name?.[0]" required />
       <TextareaField v-model="form.description" :label="$t('products.description')" :error="formErrors.description?.[0]" :rows="2" />
+
+      <SelectField
+        v-model="form.brand_id"
+        :label="$t('products.brand')"
+        :options="brandOptions"
+        :placeholder="$t('common.none')"
+        :error="formErrors.brand_id?.[0]"
+      />
 
       <SelectField
         v-model="form.product_type_id"
@@ -151,6 +159,35 @@
                 required
               />
             </div>
+
+            <!-- Barcodes per presentation -->
+            <div>
+              <label class="mb-1 block text-xs font-medium text-gray-500">{{ $t('products.barcodes') }}</label>
+              <div class="space-y-1.5">
+                <div v-for="(_, bi) in pp.barcodes" :key="bi" class="flex items-center gap-2">
+                  <input
+                    v-model="pp.barcodes[bi]"
+                    type="text"
+                    class="block w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    :placeholder="$t('products.barcode')"
+                  />
+                  <button type="button" class="shrink-0 rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-red-600" @click="removeBarcode(index, bi)">
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
+                </div>
+                <p v-for="(_, bi) in pp.barcodes" :key="`err-${index}-${bi}`" class="text-xs text-red-600">
+                  {{ formErrors[`presentations.${index}.barcodes.${bi}`]?.[0] }}
+                </p>
+              </div>
+              <button
+                type="button"
+                class="mt-1.5 inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-700"
+                @click="addBarcode(index)"
+              >
+                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                {{ $t('products.add_barcode') }}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -163,35 +200,6 @@
         >
           <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
           {{ $t('products.add_presentation') }}
-        </button>
-      </div>
-
-      <!-- Barcodes -->
-      <div>
-        <label class="mb-1.5 block text-sm font-medium text-gray-700">{{ $t('products.barcodes') }}</label>
-        <div class="space-y-2">
-          <div v-for="(barcode, index) in form.barcodes" :key="index" class="flex items-center gap-2">
-            <input
-              v-model="form.barcodes[index]"
-              type="text"
-              class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              :placeholder="$t('products.barcode')"
-            />
-            <button type="button" class="shrink-0 rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-red-600" @click="removeBarcode(index)">
-              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
-          </div>
-          <p v-for="(_, i) in form.barcodes" :key="`err-${i}`" class="text-xs text-red-600">
-            {{ formErrors[`barcodes.${i}`]?.[0] }}
-          </p>
-        </div>
-        <button
-          type="button"
-          class="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-700"
-          @click="addBarcode"
-        >
-          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-          {{ $t('products.add_barcode') }}
         </button>
       </div>
 
@@ -243,10 +251,12 @@ const deleteTarget = ref(null)
 const formError = ref(null)
 
 const productTypes = ref([])
+const brands = ref([])
 const presentations = ref([])
 const currencies = ref([])
 
 const productTypeOptions = computed(() => productTypes.value.map(pt => ({ value: pt.id, label: pt.name })))
+const brandOptions = computed(() => brands.value.map(b => ({ value: b.id, label: b.name })))
 const currencyOptions = computed(() => currencies.value.map(c => ({ value: c.id, label: `${c.name} (${c.symbol})` })))
 
 const allPresentationOptions = computed(() => presentations.value.map(p => ({ value: p.id, label: p.display })))
@@ -258,16 +268,16 @@ function availablePresentationOptions(currentIndex) {
   return allPresentationOptions.value.filter(opt => !selectedIds.includes(opt.value))
 }
 
-const emptyPresentation = () => ({ presentation_id: null, price: '', min_stock: '' })
+const emptyPresentation = () => ({ presentation_id: null, price: '', min_stock: '', barcodes: [] })
 
 const emptyForm = () => ({
   name: '',
   description: '',
+  brand_id: null,
   product_type_id: null,
   currency_id: null,
   is_active: true,
   presentations: [emptyPresentation()],
-  barcodes: [],
 })
 const form = ref(emptyForm())
 
@@ -279,20 +289,22 @@ async function fetchItems(url = null) {
 }
 
 async function fetchOptions() {
-  const [ptRes, pRes, cRes] = await Promise.all([
+  const [ptRes, brandRes, pRes, cRes] = await Promise.all([
     get('/api/v1/products/types'),
+    get('/api/v1/products/brands'),
     get('/api/v1/products/presentations'),
     get('/api/v1/settings/currencies'),
   ])
   if (ptRes.data) productTypes.value = ptRes.data.data ?? ptRes.data
+  if (brandRes.data) brands.value = (brandRes.data.data ?? brandRes.data).filter(b => b.is_active)
   if (pRes.data) presentations.value = pRes.data.data ?? pRes.data
   if (cRes.data) currencies.value = cRes.data.data ?? cRes.data
 }
 
 function addPresentation() { form.value.presentations.push(emptyPresentation()) }
 function removePresentation(index) { form.value.presentations.splice(index, 1) }
-function addBarcode() { form.value.barcodes.push('') }
-function removeBarcode(index) { form.value.barcodes.splice(index, 1) }
+function addBarcode(ppIndex) { form.value.presentations[ppIndex].barcodes.push('') }
+function removeBarcode(ppIndex, bcIndex) { form.value.presentations[ppIndex].barcodes.splice(bcIndex, 1) }
 
 function openCreate() {
   editing.value = null; form.value = emptyForm(); formError.value = null; slideOverOpen.value = true
@@ -303,6 +315,7 @@ function openEdit(item) {
   form.value = {
     name: item.name,
     description: item.description ?? '',
+    brand_id: item.brand?.id ?? null,
     product_type_id: item.product_type?.id ?? null,
     currency_id: item.currency?.id ?? null,
     is_active: item.is_active,
@@ -310,8 +323,8 @@ function openEdit(item) {
       presentation_id: pp.presentation?.id ?? null,
       price: pp.price,
       min_stock: pp.min_stock,
+      barcodes: [...(pp.barcodes ?? [])],
     })),
-    barcodes: [...(item.barcodes ?? [])],
   }
   if (!form.value.presentations.length) form.value.presentations.push(emptyPresentation())
   formError.value = null; slideOverOpen.value = true
@@ -321,7 +334,10 @@ async function save() {
   formError.value = null
   const payload = {
     ...form.value,
-    barcodes: form.value.barcodes.filter(b => b.trim() !== ''),
+    presentations: form.value.presentations.map(pp => ({
+      ...pp,
+      barcodes: (pp.barcodes ?? []).filter(b => b.trim() !== ''),
+    })),
   }
   const result = editing.value
     ? await putForm(`/api/v1/products/${editing.value.id}`, payload)

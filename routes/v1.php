@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AssistantController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\BulkPriceController;
 use App\Http\Controllers\CashMovementController;
 use App\Http\Controllers\CashMovementTypeController;
@@ -25,6 +26,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductImportController;
 use App\Http\Controllers\ProductMovementController;
 use App\Http\Controllers\ProductMovementTypeController;
+use App\Http\Controllers\ProductPresentationBarcodeController;
 use App\Http\Controllers\ProductTypeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PromotionController;
@@ -84,6 +86,9 @@ Route::middleware(['api', 'tenant', 'tenant.active'])->prefix('v1')->group(funct
         });
 
         // ── Products ──────────────────────────────────────────────────────────
+        Route::get('products/barcode/{barcode}', [ProductPresentationBarcodeController::class, 'show'])
+            ->middleware('permission:list_products');
+
         Route::middleware('permission:list_products')->group(function () {
             Route::get('products', [ProductController::class, 'index']);
         });
@@ -166,6 +171,15 @@ Route::middleware(['api', 'tenant', 'tenant.active'])->prefix('v1')->group(funct
                 Route::put('types/{productType}', [ProductTypeController::class, 'update']);
                 Route::delete('types/{productType}', [ProductTypeController::class, 'destroy']);
                 Route::patch('types/{productType}/toggle', [ProductTypeController::class, 'toggle']);
+            });
+
+            // Brands — GET open to all authenticated users (needed for product filters/forms)
+            Route::get('brands', [BrandController::class, 'index']);
+            Route::middleware('permission:create_edit_delete_brands')->group(function () {
+                Route::post('brands', [BrandController::class, 'store']);
+                Route::put('brands/{brand}', [BrandController::class, 'update']);
+                Route::delete('brands/{brand}', [BrandController::class, 'destroy']);
+                Route::patch('brands/{brand}/toggle', [BrandController::class, 'toggle']);
             });
         });
 

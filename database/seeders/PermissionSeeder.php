@@ -26,6 +26,7 @@ class PermissionSeeder extends Seeder
             'list_products',
             'create_edit_delete_products',
             'bulk_update_product_price',
+            'create_edit_delete_brands',
             'create_edit_delete_product_types',
             'create_edit_delete_presentation_types',
             'create_edit_delete_presentations',

@@ -66,7 +66,30 @@
           </div>
 
           <!-- Product search -->
-          <div class="px-5 py-4 border-b border-gray-100">
+          <div class="px-5 py-4 border-b border-gray-100 space-y-4">
+
+            <!-- Barcode scanner -->
+            <div>
+              <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-gray-400">{{ $t('common.scan_barcode') }}</label>
+              <div class="relative">
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                  <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75zM6.75 16.5h.75v.75h-.75v-.75zM16.5 6.75h.75v.75h-.75v-.75zM13.5 13.5h.75v.75h-.75v-.75zM13.5 19.5h.75v.75h-.75v-.75zM19.5 13.5h.75v.75h-.75v-.75zM19.5 19.5h.75v.75h-.75v-.75zM16.5 16.5h.75v.75h-.75v-.75z" />
+                  </svg>
+                </div>
+                <input
+                  ref="barcodeInput"
+                  v-model="barcodeValue"
+                  type="text"
+                  :placeholder="$t('common.scan_barcode_placeholder')"
+                  class="block w-full rounded-lg border border-gray-300 py-2 pl-9 pr-3 text-sm text-gray-900 shadow-sm placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  @keydown.enter.prevent="scanBarcode"
+                />
+              </div>
+              <p v-if="barcodeError" class="mt-1 text-xs text-red-600">{{ barcodeError }}</p>
+            </div>
+
             <div class="relative" ref="searchContainer">
               <label class="mb-1.5 block text-sm font-medium text-gray-700">{{ $t('sales.search_product') }}</label>
               <div class="relative">
@@ -100,8 +123,11 @@
                     @mouseover="highlighted = i"
                   >
                     <div>
-                      <span class="font-medium">{{ opt.productName }}</span>
-                      <span class="ml-2 text-xs text-gray-500">{{ opt.presentationDisplay }}</span>
+                      <div class="flex items-center gap-2">
+                        <span class="font-medium">{{ opt.productName }}</span>
+                        <span v-if="opt.brandName" class="inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium bg-violet-100 text-violet-700">{{ opt.brandName }}</span>
+                      </div>
+                      <span class="text-xs text-gray-500">{{ opt.presentationDisplay }}</span>
                     </div>
                     <div class="ml-4 text-right shrink-0">
                       <p class="text-xs font-medium text-gray-900">${{ formatNumber(opt.price) }}</p>
@@ -132,7 +158,10 @@
                 <tr v-for="(item, index) in form.items" :key="item._key" class="group hover:bg-gray-50 transition">
                   <td class="px-5 py-3 text-xs text-gray-400 tabular-nums">{{ index + 1 }}</td>
                   <td class="px-3 py-3">
-                    <p class="font-medium text-gray-900">{{ item.productName }}</p>
+                    <div class="flex items-center gap-1.5">
+                      <p class="font-medium text-gray-900">{{ item.productName }}</p>
+                      <span v-if="item.brandName" class="inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium bg-violet-100 text-violet-700">{{ item.brandName }}</span>
+                    </div>
                     <p class="text-xs text-gray-400">{{ item.presentationDisplay }}</p>
                   </td>
                   <td class="px-3 py-2">
@@ -382,6 +411,7 @@ import TextareaField from '@/Components/TextareaField.vue'
 import SelectField from '@/Components/SelectField.vue'
 import StepperIndicator from '@/Components/StepperIndicator.vue'
 import { useApi } from '@/composables/useApi'
+import { useBarcodeScanner } from '@/composables/useBarcodeScanner'
 
 defineOptions({ layout: AppLayout })
 
@@ -436,6 +466,40 @@ const posOptions = computed(() => pointsOfSale.value.map(p => ({ value: p.id, la
 const stateOptions = computed(() => saleStates.value.map(s => ({ value: s.id, label: s.name })))
 const paymentMethodOptions = computed(() => paymentMethods.value.map(m => ({ value: m.id, label: m.name })))
 
+// ── Barcode scanner ────────────────────────────────────────────────────────
+const barcodeInput = ref(null)
+const barcodeValue = ref('')
+const barcodeError = ref('')
+
+async function scanBarcode() {
+  const code = barcodeValue.value.trim()
+  if (!code) return
+
+  const { data, error } = await get(`/api/v1/products/barcode/${encodeURIComponent(code)}`)
+
+  if (error || !data?.data) {
+    barcodeError.value = t('products.barcode_not_found')
+    barcodeValue.value = ''
+    return
+  }
+
+  barcodeError.value = ''
+  const pp = data.data
+  addItem({
+    id: pp.id,
+    productName: pp.product?.name ?? '',
+    presentationDisplay: pp.presentation?.display ?? '',
+    price: pp.price ?? 0,
+    stock: pp.stock ?? 0,
+  })
+  barcodeValue.value = ''
+}
+
+useBarcodeScanner(barcodeInput, (code) => {
+  barcodeValue.value = code
+  scanBarcode()
+})
+
 // ── Product search ─────────────────────────────────────────────────────────
 const productSearch = ref('')
 const searchOpen = ref(false)
@@ -460,6 +524,7 @@ function addItem(opt) {
     _key: ++itemKeyCounter,
     product_presentation_id: opt.id,
     productName: opt.productName,
+    brandName: opt.brandName ?? null,
     presentationDisplay: opt.presentationDisplay,
     description: opt.productName + (opt.presentationDisplay ? ' - ' + opt.presentationDisplay : ''),
     quantity: 1,
@@ -561,6 +626,7 @@ async function fetchOptions() {
       .map(pp => ({
         id: pp.id,
         productName: product.name,
+        brandName: product.brand?.name ?? null,
         presentationDisplay: pp.presentation?.display ?? '',
         price: pp.price ?? 0,
         stock: pp.stock ?? 0,

@@ -15,6 +15,7 @@ class HelpController extends Controller
         'products',
         'composite-products',
         'promotions',
+        'brands',
         'product-types',
         'presentations',
         'suppliers',
@@ -33,7 +34,7 @@ class HelpController extends Controller
 
     private const TOPIC_GROUPS = [
         'main' => ['dashboard'],
-        'inventory' => ['products', 'composite-products', 'promotions', 'product-types', 'presentations', 'suppliers', 'receptions'],
+        'inventory' => ['products', 'composite-products', 'promotions', 'brands', 'product-types', 'presentations', 'suppliers', 'receptions'],
         'commercial' => ['clients', 'sales', 'quotes', 'orders', 'daily-cashes', 'reports'],
         'configuration' => ['configuration', 'roles-permissions', 'users', 'release-notes'],
     ];

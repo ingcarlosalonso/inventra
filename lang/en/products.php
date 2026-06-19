@@ -10,6 +10,7 @@ return [
     'price' => 'Sale Price',
     'stock' => 'Current Stock',
     'min_stock' => 'Minimum Stock',
+    'brand' => 'Brand',
     'product_type' => 'Product Type',
     'presentation' => 'Presentation',
     'currency' => 'Currency',
@@ -19,6 +20,7 @@ return [
     'barcodes' => 'Barcodes',
     'add_barcode' => 'Add barcode',
     'barcode' => 'Barcode',
+    'barcode_not_found' => 'Barcode not found.',
 
     // Import
     'import_title' => 'Import Products from XLSX',
