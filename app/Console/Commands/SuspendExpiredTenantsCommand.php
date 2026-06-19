@@ -3,8 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Models\Tenant;
+use App\Models\Tenant\Scopes\Expired;
+use App\Models\Tenant\Scopes\NotSuspended;
 use Illuminate\Console\Command;
-use Illuminate\Support\Carbon;
 
 class SuspendExpiredTenantsCommand extends Command
 {
@@ -15,9 +16,7 @@ class SuspendExpiredTenantsCommand extends Command
     public function handle(): int
     {
         $expired = Tenant::query()
-            ->whereIn('status', ['active', 'trial'])
-            ->whereNotNull('expires_at')
-            ->where('expires_at', '<', Carbon::today())
+            ->withScopes([new NotSuspended, new Expired])
             ->get();
 
         if ($expired->isEmpty()) {
