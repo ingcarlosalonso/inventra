@@ -4,6 +4,16 @@ All notable changes to In-ventra are documented here.
 
 ---
 
+## [1.3.0] - xxxx-xx-xx
+
+### Added
+- Automatic user creation on tenant provisioning: when a new tenant is created from the central admin panel, an Administrator role is created with all permissions and two users are provisioned — one derived from the contact name (`nombre.apellido@in-ventra.com`, password equals the email by default) and one internal system user for platform access
+- System user (`is_system` flag): the internal admin user is excluded at the query level from all tenant user listings and API responses via a global Eloquent scope
+- `expires_at` enforcement: tenants whose expiration date has passed are now blocked immediately via `Tenant::isActive()`, regardless of their `status` field
+- `tenants:suspend-expired` command: scheduled daily at 00:05, automatically sets expired tenants to `suspended` so the central admin panel reflects the correct status
+
+---
+
 ## [1.2.0] - xxxx-xx-xx
 
 ### Added
