@@ -10,6 +10,7 @@ return [
     'price' => 'Precio de Venta',
     'stock' => 'Stock Actual',
     'min_stock' => 'Stock Mínimo',
+    'brand' => 'Marca',
     'product_type' => 'Tipo de Producto',
     'presentation' => 'Presentación',
     'currency' => 'Moneda',

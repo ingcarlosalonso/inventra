@@ -10,6 +10,7 @@ return [
     'price' => 'Sale Price',
     'stock' => 'Current Stock',
     'min_stock' => 'Minimum Stock',
+    'brand' => 'Brand',
     'product_type' => 'Product Type',
     'presentation' => 'Presentation',
     'currency' => 'Currency',

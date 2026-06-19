@@ -123,8 +123,11 @@
                     @mouseover="highlighted = i"
                   >
                     <div>
-                      <span class="font-medium">{{ opt.productName }}</span>
-                      <span class="ml-2 text-xs text-gray-500">{{ opt.presentationDisplay }}</span>
+                      <div class="flex items-center gap-2">
+                        <span class="font-medium">{{ opt.productName }}</span>
+                        <span v-if="opt.brandName" class="inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium bg-violet-100 text-violet-700">{{ opt.brandName }}</span>
+                      </div>
+                      <span class="text-xs text-gray-500">{{ opt.presentationDisplay }}</span>
                     </div>
                     <div class="ml-4 text-right shrink-0">
                       <p class="text-xs font-medium text-gray-900">${{ formatNumber(opt.price) }}</p>
@@ -155,7 +158,10 @@
                 <tr v-for="(item, index) in form.items" :key="item._key" class="group hover:bg-gray-50 transition">
                   <td class="px-5 py-3 text-xs text-gray-400 tabular-nums">{{ index + 1 }}</td>
                   <td class="px-3 py-3">
-                    <p class="font-medium text-gray-900">{{ item.productName }}</p>
+                    <div class="flex items-center gap-1.5">
+                      <p class="font-medium text-gray-900">{{ item.productName }}</p>
+                      <span v-if="item.brandName" class="inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium bg-violet-100 text-violet-700">{{ item.brandName }}</span>
+                    </div>
                     <p class="text-xs text-gray-400">{{ item.presentationDisplay }}</p>
                   </td>
                   <td class="px-3 py-2">
@@ -518,6 +524,7 @@ function addItem(opt) {
     _key: ++itemKeyCounter,
     product_presentation_id: opt.id,
     productName: opt.productName,
+    brandName: opt.brandName ?? null,
     presentationDisplay: opt.presentationDisplay,
     description: opt.productName + (opt.presentationDisplay ? ' - ' + opt.presentationDisplay : ''),
     quantity: 1,
@@ -619,6 +626,7 @@ async function fetchOptions() {
       .map(pp => ({
         id: pp.id,
         productName: product.name,
+        brandName: product.brand?.name ?? null,
         presentationDisplay: pp.presentation?.display ?? '',
         price: pp.price ?? 0,
         stock: pp.stock ?? 0,

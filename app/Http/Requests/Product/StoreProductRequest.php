@@ -16,6 +16,7 @@ class StoreProductRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
+            'brand_id' => ['nullable', 'string', 'exists:tenant.brands,uuid'],
             'product_type_id' => ['required', 'string', 'exists:tenant.product_types,uuid'],
             'currency_id' => ['nullable', 'string', 'exists:tenant.currencies,uuid'],
             'is_active' => ['boolean'],

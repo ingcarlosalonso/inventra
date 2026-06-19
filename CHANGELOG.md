@@ -7,6 +7,7 @@ All notable changes to In-ventra are documented here.
 ## [1.2.0] - xxxx-xx-xx
 
 ### Added
+- Brands (marcas): full CRUD for product brands with active/inactive toggle; products can be assigned an optional brand; brand label shown in product list and in the product search dropdown on sales, orders, and quotes
 - Barcodes per product presentation: each presentation can have one or more EAN/QR codes directly assigned
 - Barcode reader for sales, orders, quotes, and receipts: a scanning field that adds the corresponding item when Enter is pressed, compatible with USB/Bluetooth readers
 

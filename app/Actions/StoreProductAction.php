@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\Models\Brand;
 use App\Models\Currency;
 use App\Models\Presentation;
 use App\Models\Product;
@@ -13,6 +14,7 @@ class StoreProductAction
      * @param  array{
      *     name: string,
      *     description: string|null,
+     *     brand_id: string|null,
      *     product_type_id: string,
      *     currency_id: string|null,
      *     is_active: bool,
@@ -29,6 +31,7 @@ class StoreProductAction
         $presentations = $data['presentations'];
         unset($data['presentations']);
 
+        $data['brand_id'] = $this->resolveId(Brand::class, $data['brand_id'] ?? null);
         $data['product_type_id'] = $this->resolveId(ProductType::class, $data['product_type_id']);
         $data['currency_id'] = $this->resolveId(Currency::class, $data['currency_id'] ?? null);
 
@@ -36,7 +39,7 @@ class StoreProductAction
 
         $this->syncPresentations($product, $presentations);
 
-        return $product->load(['productType', 'barcodes', 'currency', 'productPresentations.presentation.presentationType', 'productPresentations.barcodes']);
+        return $product->load(['brand', 'productType', 'barcodes', 'currency', 'productPresentations.presentation.presentationType', 'productPresentations.barcodes']);
     }
 
     private function syncPresentations(Product $product, array $presentations): void

@@ -57,13 +57,14 @@
         <NavItem href="/daily-cashes" :label="$t('daily_cashes.title')" sub />
       </NavGroup>
 
-      <NavGroup :label="$t('common.products')" :icon="icons.products" :matches="['/products', '/settings/product-types', '/settings/presentation-types', '/settings/presentations']">
+      <NavGroup :label="$t('common.products')" :icon="icons.products" :matches="['/products', '/settings/brands', '/settings/product-types', '/settings/presentation-types', '/settings/presentations']">
         <NavItem href="/products" :label="$t('products.title')" sub />
         <NavItem href="/products/composite" :label="$t('composite_products.title')" sub />
         <NavItem href="/products/promotions" :label="$t('promotions.title')" sub />
         <NavItem href="/products/movements" :label="$t('product_movements.title')" sub />
         <NavItem href="/products/bulk-price" :label="$t('bulk_price.title')" sub />
         <NavItem href="/products/import" :label="$t('products.import_title')" sub />
+        <NavItem href="/settings/brands" :label="$t('brands.title')" sub />
         <NavItem href="/settings/product-types" :label="$t('product_types.title')" sub />
         <NavItem href="/settings/presentation-types" :label="$t('presentation_types.title')" sub />
         <NavItem href="/settings/presentations" :label="$t('presentations.title')" sub />

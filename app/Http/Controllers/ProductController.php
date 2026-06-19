@@ -18,6 +18,7 @@ class ProductController extends Controller
     public function index(IndexProductRequest $request): AnonymousResourceCollection
     {
         $query = Product::with([
+            'brand',
             'productType',
             'barcodes',
             'currency',
@@ -58,7 +59,7 @@ class ProductController extends Controller
         $product->update(['is_active' => ! $product->is_active]);
 
         return ProductResource::make(
-            $product->fresh()->load(['productType', 'barcodes', 'currency', 'productPresentations.presentation.presentationType', 'productPresentations.barcodes'])
+            $product->fresh()->load(['brand', 'productType', 'barcodes', 'currency', 'productPresentations.presentation.presentationType', 'productPresentations.barcodes'])
         );
     }
 }
