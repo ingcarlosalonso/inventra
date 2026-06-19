@@ -11,6 +11,27 @@ abstract class TestCase extends BaseTestCase
 {
     private static bool $tenantDbMigrated = false;
 
+    protected static function createTenantsTable(): void
+    {
+        if (Schema::hasTable('tenants')) {
+            return;
+        }
+
+        Schema::create('tenants', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('domain')->unique();
+            $table->string('database')->unique();
+            $table->string('email')->nullable();
+            $table->string('contact_name')->nullable();
+            $table->enum('status', ['trial', 'active', 'suspended'])->default('trial');
+            $table->string('plan')->nullable();
+            $table->date('expires_at')->nullable();
+            $table->text('notes')->nullable();
+            $table->timestamps();
+        });
+    }
+
     protected static function createReleaseTables(): void
     {
         if (! Schema::hasTable('admins')) {
