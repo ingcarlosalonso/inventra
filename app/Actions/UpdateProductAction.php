@@ -9,6 +9,21 @@ use App\Models\ProductType;
 
 class UpdateProductAction
 {
+    /**
+     * @param  array{
+     *     name: string,
+     *     description: string|null,
+     *     product_type_id: string,
+     *     currency_id: string|null,
+     *     is_active: bool,
+     *     presentations: array<int, array{
+     *         presentation_id: string,
+     *         price: float|int,
+     *         min_stock: float|int,
+     *         barcodes: string[]|null
+     *     }>
+     * }  $data
+     */
     public function execute(Product $product, array $data): Product
     {
         $presentations = $data['presentations'];
