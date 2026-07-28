@@ -4,6 +4,19 @@ All notable changes to In-ventra are documented here.
 
 ---
 
+## [1.4.0] - xxxx-xx-xx
+
+### Fixed
+- AI Assistant (and product/composite product search in general) required the search text to match as one exact substring, so a query like "coca cola 500" would fail to find "Coca-Cola 500ml". Product and composite product search now match each word independently, in any order
+- AI Assistant "stock and price" tool queried `stock`/`min_stock`/`price` directly on `Product`, which doesn't have those columns (they live on `ProductPresentation`) — every answer came back with blank values. It now queries `ProductPresentation` correctly, including inactive-presentation filtering
+- AI Assistant "low stock" tool ran a raw `stock <= min_stock` query against the `products` table (same missing-columns issue as above), which errored on every call. Fixed the same way, via `ProductPresentation`
+- AI Assistant "composite products" and "promotions" tools referenced a `products` relation that no longer exists since the kits/promotions restructure — both errored on every call. Now use the current `items.product` relation and `sale_price`/`code` fields
+- AI Assistant "daily cash status" tool referenced a `movements` relation that doesn't exist on `DailyCash` (the real relation is `cashMovements`) — errored on every call
+- AI Assistant "recent receptions" tool referenced a `product` relation that doesn't exist on reception items (items relate to `productPresentation.product`) — errored on every call
+- AI Assistant "clients" tool ordered by a non-existent `name` column (clients are stored as `first_name`/`last_name`) — errored on every call
+
+---
+
 ## [1.3.0] - xxxx-xx-xx
 
 ### Added

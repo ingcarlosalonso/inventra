@@ -11,11 +11,11 @@ use App\Models\DailyCash\Scopes\ByPointOfSaleName as DailyCashByPointOfSaleName;
 use App\Models\DailyCash\Scopes\Open;
 use App\Models\Order;
 use App\Models\Order\Scopes\BySearch as OrderBySearch;
-use App\Models\Product;
-use App\Models\Product\Scopes\BelowMinStock;
-use App\Models\Product\Scopes\BySearch as ProductBySearch;
 use App\Models\ProductMovement;
 use App\Models\ProductMovement\Scopes\BySearch as ProductMovementBySearch;
+use App\Models\ProductPresentation;
+use App\Models\ProductPresentation\Scopes\BelowMinStock;
+use App\Models\ProductPresentation\Scopes\BySearch as ProductPresentationBySearch;
 use App\Models\Promotion;
 use App\Models\Promotion\Scopes\BySearch as PromotionBySearch;
 use App\Models\Quote;
@@ -115,19 +115,25 @@ class AssistantService
             ->for('Get current stock levels for products. Use for questions about stock, inventory, availability, or product prices.')
             ->withStringParameter('search', 'Optional product name or barcode filter (leave empty for all)')
             ->using(function (string $search = '') {
-                $query = Product::query()->withScopes(new Active);
+                $query = ProductPresentation::query()
+                    ->withScopes(new Active)
+                    ->whereHas('product', fn ($q) => $q->withScopes(new Active));
 
                 if ($search !== '') {
-                    $query->withScopes(new ProductBySearch($search));
+                    $query->withScopes(new ProductPresentationBySearch($search));
                 }
 
-                $products = $query->with('productType')->orderBy('name')->limit(50)->get();
+                $presentations = $query->with(['product.productType', 'presentation'])
+                    ->limit(50)
+                    ->get()
+                    ->sortBy(fn ($pp) => $pp->product?->name)
+                    ->values();
 
-                if ($products->isEmpty()) {
+                if ($presentations->isEmpty()) {
                     return 'No products found.';
                 }
 
-                return $products->map(fn ($p) => "- {$p->name} [{$p->productType?->name}]: stock={$p->stock}, min={$p->min_stock}, price={$p->price}")->join("\n");
+                return $presentations->map(fn ($pp) => "- {$pp->product?->name} ({$pp->presentation?->name}) [{$pp->product?->productType?->name}]: stock={$pp->stock}, min={$pp->min_stock}, price={$pp->price}")->join("\n");
             });
     }
 
@@ -137,20 +143,25 @@ class AssistantService
             ->for('Get products at or below minimum stock level. Use for low stock alerts or replenishment questions.')
             ->withStringParameter('search', 'Optional product name filter (leave empty for all)')
             ->using(function (string $search = '') {
-                $query = Product::query()->withScopes(new Active)->withScopes(new BelowMinStock);
+                $query = ProductPresentation::query()
+                    ->withScopes([new Active, new BelowMinStock])
+                    ->whereHas('product', fn ($q) => $q->withScopes(new Active));
 
                 if ($search !== '') {
-                    $query->withScopes(new ProductBySearch($search));
+                    $query->withScopes(new ProductPresentationBySearch($search));
                 }
 
-                $products = $query->orderBy('stock')->limit(50)->get();
+                $presentations = $query->with(['product', 'presentation'])
+                    ->orderByRaw('stock - min_stock ASC')
+                    ->limit(50)
+                    ->get();
 
-                if ($products->isEmpty()) {
+                if ($presentations->isEmpty()) {
                     return 'No products below minimum stock. All good!';
                 }
 
-                return "Low stock products ({$products->count()}):\n"
-                    .$products->map(fn ($p) => "- {$p->name}: stock={$p->stock} (min={$p->min_stock})")->join("\n");
+                return "Low stock products ({$presentations->count()}):\n"
+                    .$presentations->map(fn ($pp) => "- {$pp->product?->name} ({$pp->presentation?->name}): stock={$pp->stock} (min={$pp->min_stock})")->join("\n");
             });
     }
 
@@ -166,7 +177,7 @@ class AssistantService
                     $query->withScopes(new CompositeProductBySearch($search));
                 }
 
-                $composites = $query->with('products')->orderBy('name')->limit(30)->get();
+                $composites = $query->with('items.product')->orderBy('name')->limit(30)->get();
 
                 if ($composites->isEmpty()) {
                     return 'No composite products configured.';
@@ -174,9 +185,9 @@ class AssistantService
 
                 return "Composite products ({$composites->count()}):\n"
                     .$composites->map(function ($cp) {
-                        $components = $cp->products->map(fn ($p) => "{$p->pivot->quantity}x {$p->name}")->join(', ');
+                        $components = $cp->items->map(fn ($item) => "{$item->quantity}x {$item->product?->name}")->join(', ');
 
-                        return "- {$cp->name} (price={$cp->price}): {$components}";
+                        return "- {$cp->name}".($cp->code ? " ({$cp->code})" : '').": {$components}";
                     })->join("\n");
             });
     }
@@ -193,7 +204,7 @@ class AssistantService
                     $query->withScopes(new PromotionBySearch($search));
                 }
 
-                $promotions = $query->with('products')->orderBy('name')->limit(30)->get();
+                $promotions = $query->with('items.product')->orderBy('name')->limit(30)->get();
 
                 if ($promotions->isEmpty()) {
                     return 'No active promotions found.';
@@ -201,10 +212,9 @@ class AssistantService
 
                 return "Active promotions ({$promotions->count()}):\n"
                     .$promotions->map(function ($promo) {
-                        $items = $promo->products->map(fn ($p) => "{$p->pivot->quantity}x {$p->name}")->join(', ');
-                        $dates = $promo->starts_at ? " [{$promo->starts_at} → {$promo->ends_at}]" : '';
+                        $items = $promo->items->map(fn ($item) => "{$item->quantity}x {$item->product?->name}")->join(', ');
 
-                        return "- {$promo->name} (price={$promo->price}){$dates}: {$items}";
+                        return "- {$promo->name}".($promo->sale_price ? " (price={$promo->sale_price})" : '').": {$items}";
                     })->join("\n");
             });
     }
@@ -317,7 +327,7 @@ class AssistantService
             ->withStringParameter('search', 'Optional supplier name filter')
             ->withStringParameter('limit', 'How many to return (default 10)')
             ->using(function (string $search = '', string $limit = '10') {
-                $query = Reception::query()->with(['supplier', 'items.product'])->latest();
+                $query = Reception::query()->with(['supplier', 'items.productPresentation.product'])->latest();
 
                 if ($search !== '') {
                     $query->withScopes(new ReceptionBySearch($search));
@@ -330,7 +340,7 @@ class AssistantService
                 }
 
                 return $receptions->map(function ($r) {
-                    $items = $r->items->map(fn ($i) => "{$i->quantity}x {$i->product?->name}")->join(', ');
+                    $items = $r->items->map(fn ($i) => "{$i->quantity}x {$i->productPresentation?->product?->name}")->join(', ');
 
                     return "- #{$r->id} | {$r->supplier?->name} | total={$r->total} | {$r->received_at->format('d/m/Y')} | [{$items}]";
                 })->join("\n");
@@ -345,7 +355,7 @@ class AssistantService
             ->using(function (string $point_of_sale = '') {
                 $query = DailyCash::query()
                     ->withScopes(new Open)
-                    ->with(['pointOfSale', 'movements.cashMovementType']);
+                    ->with(['pointOfSale', 'cashMovements.cashMovementType']);
 
                 if ($point_of_sale !== '') {
                     $query->withScopes(new DailyCashByPointOfSaleName($point_of_sale));
@@ -358,8 +368,8 @@ class AssistantService
                 }
 
                 return $cashes->map(function ($c) {
-                    $income = $c->movements->where('cashMovementType.is_income', true)->sum('amount');
-                    $expenses = $c->movements->where('cashMovementType.is_income', false)->sum('amount');
+                    $income = $c->cashMovements->where('cashMovementType.is_income', true)->sum('amount');
+                    $expenses = $c->cashMovements->where('cashMovementType.is_income', false)->sum('amount');
 
                     return "- {$c->pointOfSale?->name}: opening={$c->opening_balance}, income={$income}, expenses={$expenses}, opened={$c->opened_at}";
                 })->join("\n");
@@ -435,7 +445,7 @@ class AssistantService
                     $query->withScopes(new ClientBySearch($search));
                 }
 
-                $clients = $query->orderBy('name')->limit(20)->get();
+                $clients = $query->orderBy('last_name')->orderBy('first_name')->limit(20)->get();
 
                 if ($clients->isEmpty()) {
                     return 'No clients found.';

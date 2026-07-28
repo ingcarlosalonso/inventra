@@ -43,4 +43,44 @@ class BySearchTest extends ModelTestCase
         $this->assertCount(1, $results);
         $this->assertEquals($product->id, $results->first()->id);
     }
+
+    public function test_matches_multi_word_search_regardless_of_extra_words(): void
+    {
+        Product::factory()->create(['name' => 'Coca-Cola 500ml']);
+        Product::factory()->create(['name' => 'Sprite 500ml']);
+
+        $results = Product::query()->withScopes(new BySearch('coca cola 500'))->get();
+
+        $this->assertCount(1, $results);
+        $this->assertEquals('Coca-Cola 500ml', $results->first()->name);
+    }
+
+    public function test_matches_multi_word_search_regardless_of_word_order(): void
+    {
+        Product::factory()->create(['name' => 'Coca-Cola 500ml']);
+
+        $results = Product::query()->withScopes(new BySearch('500ml cola'))->get();
+
+        $this->assertCount(1, $results);
+    }
+
+    public function test_requires_all_words_to_match(): void
+    {
+        Product::factory()->create(['name' => 'Coca-Cola 500ml']);
+        Product::factory()->create(['name' => 'Coca-Cola 1L']);
+
+        $results = Product::query()->withScopes(new BySearch('cola 500'))->get();
+
+        $this->assertCount(1, $results);
+        $this->assertEquals('Coca-Cola 500ml', $results->first()->name);
+    }
+
+    public function test_blank_search_does_not_filter(): void
+    {
+        $products = Product::factory()->count(2)->create();
+
+        $results = Product::query()->withScopes(new BySearch('   '))->get();
+
+        $this->assertTrue($products->every(fn ($p) => $results->contains('id', $p->id)));
+    }
 }
