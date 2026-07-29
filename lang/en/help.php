@@ -6,6 +6,7 @@ return [
     'search_placeholder' => 'Search help...',
     'topics' => [
         'dashboard' => 'Dashboard',
+        'ai-assistant' => 'AI Assistant',
         'products' => 'Products',
         'composite-products' => 'Composite Products',
         'promotions' => 'Promotions',

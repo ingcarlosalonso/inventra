@@ -72,6 +72,10 @@ This is useful when the client pays partially with different methods. The system
 
 From the **Quotes** module, you can convert an accepted quote into a sale. The system pre-loads all quote items into the sale form so you only need to add payments and confirm.
 
+## Creating a sale with the AI Assistant
+
+You can also ask the **AI Assistant** (icon in the top bar) to create the sale for you, describing it in plain language: client, products, discount and payment method. The assistant shows you a draft with the total before confirming. See [AI Assistant](/help/ai-assistant).
+
 ## Tips
 
 > **Tip**: Configure a "Pending" sale state as default and "Confirmed" as final state. This lets you register credit sales without immediate payment and confirm them when collected.

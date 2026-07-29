@@ -93,6 +93,10 @@ El detalle del pedido muestra el historial completo:
 - Pagos recibidos.
 - Notas del operador y del cliente.
 
+## Crear un pedido con el Asistente de IA
+
+También podés pedirle al **Asistente de IA** (ícono en la barra superior) que cree el pedido por vos, describiendo cliente, productos, dirección de entrega y forma de pago en lenguaje natural. Te muestra un borrador antes de confirmar. Ver [Asistente de IA](/help/ai-assistant).
+
 ## Consejos
 
 > **Tip**: Configurá los estados con colores distintivos para identificar rápidamente en la lista qué pedidos necesitan atención inmediata.

@@ -162,6 +162,7 @@ const suggestionKeys = [
   'suggestion_sales_today',
   'suggestion_recent_orders',
   'suggestion_cash_open',
+  'suggestion_create_sale',
 ]
 
 function autoResize(e) {

@@ -57,6 +57,10 @@ When an order reaches a **final state** (e.g. "Delivered"), the system records s
 
 You can assign or reassign the courier at any time before the order reaches final state. The Orders report shows metrics by courier.
 
+## Creating an order with the AI Assistant
+
+You can also ask the **AI Assistant** (icon in the top bar) to create the order for you, describing client, products, delivery address and payment method in plain language. It shows you a draft before confirming. See [AI Assistant](/help/ai-assistant).
+
 ## Tips
 
 > **Tip**: Configure states with distinctive colors to quickly identify which orders need immediate attention.

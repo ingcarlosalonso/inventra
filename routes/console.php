@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 
 Schedule::command('daily-cash:auto-manage')->everyMinute();
 Schedule::command('tenants:suspend-expired')->dailyAt('00:05');
+Schedule::command('assistant:check-model')->dailyAt('06:00');

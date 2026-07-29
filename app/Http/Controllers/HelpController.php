@@ -12,6 +12,7 @@ class HelpController extends Controller
 {
     private const TOPICS = [
         'dashboard',
+        'ai-assistant',
         'products',
         'composite-products',
         'promotions',
@@ -33,7 +34,7 @@ class HelpController extends Controller
     ];
 
     private const TOPIC_GROUPS = [
-        'main' => ['dashboard'],
+        'main' => ['dashboard', 'ai-assistant'],
         'inventory' => ['products', 'composite-products', 'promotions', 'brands', 'product-types', 'presentations', 'suppliers', 'receptions'],
         'commercial' => ['clients', 'sales', 'quotes', 'orders', 'daily-cashes', 'reports'],
         'configuration' => ['configuration', 'roles-permissions', 'users', 'release-notes'],

@@ -197,13 +197,20 @@ The central domain (`CENTRAL_DOMAIN=development.central.in-ventra.com`) is the *
 - Excel export via `ReportExport` (`FromArray` + `WithHeadings` + `WithStyles` + `ShouldAutoSize`), styled with a bold white-on-indigo (`#4F46E5`) header row — keep this style consistent for new report exports.
 
 ### AI Assistant (`AssistantService`)
-- Chat endpoint: `POST /api/v1/assistant/chat`, throttled `throttle:20,1`, behind `auth:sanctum`.
-- Backed by `prism-php/prism`, provider `Groq`, model `meta-llama/llama-4-scout-17b-16e-instruct` (constant `AssistantService::MODEL`).
+- Chat endpoint: `POST /api/v1/assistant/chat`, throttled `throttle:20,1`, behind `auth:sanctum`. `AssistantController::chat` passes `$request->user()` into `AssistantService::chat()` — the service needs it for permission checks and as the `user_id` on anything it creates.
+- Backed by `prism-php/prism`, provider `Groq`. **Model is config-driven, not hardcoded**: `config('assistant.model')` (env `GROQ_MODEL`, default `llama-3.3-70b-versatile`) with `config('assistant.fallback_models')` (env `GROQ_FALLBACK_MODELS`, comma-separated, default `openai/gpt-oss-20b`) — see `config/assistant.php`. Groq periodically retires "preview" models; `AssistantService::chat()` tries each configured model in order and falls back automatically on failure, so a deprecated model degrades to the next one instead of a 500. If every model fails, it logs the error and returns the translated `assistant.unavailable` string instead of throwing. The `assistant:check-model` command (scheduled daily at 06:00 in `routes/console.php`) calls `App\Adapters\GroqAdapter::availableModels()` and logs a warning (failing the command, for alerting) if the **primary** configured model is no longer available — update `GROQ_MODEL` when that happens.
 - System prompt is built per-request with the **current tenant name** and enforces tenant isolation: the assistant must refuse to discuss other tenants and must always call a tool before answering data questions (no hallucinated numbers).
-- Tools are tenant-scoped read-only queries (stock, low stock, composite products, promotions, sales summary, recent sales/orders/quotes/receptions, daily cash status, product movements, top-selling products, clients, suppliers, users).
+- Most tools are tenant-scoped **read-only** queries (stock, low stock, composite products, promotions, sales summary, recent sales/orders/quotes/receptions, daily cash status, product movements, top-selling products, clients, suppliers, users).
+- Three tools are **mutating**: `create_sale`, `create_order`, `create_quote`. They only support plain products (no kits/promotions — composite products have no stored price and promotion price is optional, so neither can be auto-priced reliably; the manual creation screens have the same limitation today). They follow a shared safety protocol, implemented in `AssistantService`:
+    - **Server-side resolution only**: every free-text reference (client, product, payment method, point of sale, courier) is resolved tenant-side via `App\Actions\Assistant\{ResolveClientMatch,ResolveSaleableItemMatches,ResolvePaymentMethodMatch,ResolvePointOfSaleMatch}` — the LLM only ever supplies search strings, never an id/uuid. Ambiguous (>1 match) or not-found results block the tool and return a message asking the model to clarify with the user instead of guessing.
+    - **`confirm` flag (propose-then-commit)**: every mutating tool takes a `confirm` boolean (default `false`). `confirm=false` resolves everything and returns a priced draft/preview — no database write happens. Only `confirm=true` actually calls `ProcessSaleService`/`ProcessOrderService`/`ProcessQuoteService`.
+    - **Two-turn enforcement, not just a prompt instruction**: a model can call a tool with `confirm=false` and then, within that *same* reply/turn, call it again with `confirm=true` before the human has seen anything — the system prompt tells it not to, but nothing stops it structurally. So `AssistantService::chat()` also checks `priorReplyWasADraft($messages)`: `confirm=true` is only honoured when the assistant's immediately preceding reply (the previous HTTP round-trip) actually was a shown draft. A draft is detected via a stable marker (`AssistantService::DRAFT_MARKER`) the backend appends to its own reply text in `chat()` — never left to the model to reproduce verbatim, since it typically paraphrases tool results into its own words/language.
+    - **Permission gate**: each tool checks `$user->can('create_edit_delete_{sales,orders,quotes}')` before doing anything and returns a `PERMISSION_DENIED: ...` string if it fails — same permission the manual UI enforces.
+    - Actual creation is delegated entirely to the existing `ProcessSaleService`/`ProcessOrderService`/`ProcessQuoteService` (no duplicated business logic); `InsufficientStockException` is caught and its message returned to the model instead of surfacing as a generic tool error.
 - `ChatAssistantRequest` validates `messages` (array, 1–50 items, each `role` in `user|assistant`, `content` max 2000 chars).
-- **When adding new assistant tools**: keep them read-only, scope every query to the current tenant (rely on the tenant DB connection — never accept a tenant identifier from the LLM), and avoid exposing PII (emails, full user lists) unless the requesting user already has permission to see that data through the normal UI. Review `usersTool`/`clientsTool`/`suppliersTool` outputs whenever fields are added — only return what's needed for the assistant's stated purpose.
-- `GROQ_API_KEY` env var. Config in `config/prism.php`.
+- **When adding new read-only assistant tools**: keep them read-only, scope every query to the current tenant (rely on the tenant DB connection — never accept a tenant identifier from the LLM), and avoid exposing PII (emails, full user lists) unless the requesting user already has permission to see that data through the normal UI. Review `usersTool`/`clientsTool`/`suppliersTool` outputs whenever fields are added — only return what's needed for the assistant's stated purpose.
+- **When adding new mutating assistant tools**: follow the same protocol as `create_sale`/`create_order`/`create_quote` — server-side resolution of every reference, a `confirm` flag that defaults to previewing, a permission check matching the equivalent manual-UI permission, and delegate the actual write to the existing Action/Service for that entity (never write directly from the tool closure).
+- `GROQ_API_KEY` env var, provider config in `config/prism.php`. Model selection (`GROQ_MODEL`, `GROQ_FALLBACK_MODELS`) is in `config/assistant.php` — see above.
 
 ### Administration
 - User, role, and permission management.
@@ -415,7 +422,8 @@ For simple CRUD, use `$request->validated()` directly. Do not create DTOs just t
 - [ ] Deletions of stock-affecting models (`Sale`, `Order`, `Reception`, `ProductMovement`) revert stock and check the record's current state before allowing deletion.
 - [ ] No `env()` calls outside `config/*.php`.
 - [ ] No debug/scratch files committed under `public/` (e.g. `phpinfo()` dumps, test text files) — `public/` is served directly and anything there is world-readable.
-- [ ] New AI Assistant tools are read-only, tenant-scoped via the tenant DB connection (never via an LLM-supplied identifier), and don't leak more PII than the requesting user already has access to via the UI.
+- [ ] New read-only AI Assistant tools are tenant-scoped via the tenant DB connection (never via an LLM-supplied identifier) and don't leak more PII than the requesting user already has access to via the UI.
+- [ ] New mutating AI Assistant tools resolve every reference server-side (no LLM-supplied ids), default to a non-persisting preview behind a `confirm` flag, check the same permission the manual UI would require, and delegate the write to the existing Action/Service instead of writing directly.
 
 ## Migrations
 
@@ -506,6 +514,8 @@ SANCTUM_TOKEN_PREFIX=inventra_
 
 # AI Assistant (Groq, via Prism)
 GROQ_API_KEY=
+GROQ_MODEL=llama-3.3-70b-versatile
+GROQ_FALLBACK_MODELS=openai/gpt-oss-20b
 ```
 
 > `.env.testing` mirrors these with SQLite connections for central and tenant DBs (`DB_CONNECTION=sqlite`, `DB_TENANT_DRIVER=sqlite`). Its `APP_KEY` is a fixed test-only value — never reuse it outside the `testing` environment.
@@ -518,6 +528,7 @@ php artisan tenant:migrate                    # Run migrations on all tenant DBs
 php artisan tenant:migrate --fresh --seed     # Fresh + seed all tenant DBs
 php artisan central:create-admin --email=... --password=...  # Create/update a central admin
 php artisan daily-cash:auto-manage            # Run the auto open/close cycle once (also scheduled)
+php artisan assistant:check-model             # Verify configured Groq model(s) are still available (also scheduled daily)
 php artisan serve
 npm run dev
 npm run build

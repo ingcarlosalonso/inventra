@@ -10,7 +10,7 @@ class AssistantController extends Controller
 {
     public function chat(ChatAssistantRequest $request, AssistantService $service): JsonResponse
     {
-        $reply = $service->chat($request->validated('messages'));
+        $reply = $service->chat($request->validated('messages'), $request->user());
 
         return response()->json(['message' => $reply]);
     }

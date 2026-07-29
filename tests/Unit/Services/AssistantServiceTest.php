@@ -2,6 +2,11 @@
 
 namespace Tests\Unit\Services;
 
+use App\Actions\Assistant\ResolveClientMatch;
+use App\Actions\Assistant\ResolvePaymentMethodMatch;
+use App\Actions\Assistant\ResolvePointOfSaleMatch;
+use App\Actions\Assistant\ResolveSaleableItemMatches;
+use App\Actions\BuildSaleItemsData;
 use App\Models\CashMovement;
 use App\Models\CashMovementType;
 use App\Models\Client;
@@ -11,6 +16,7 @@ use App\Models\Courier;
 use App\Models\DailyCash;
 use App\Models\Order;
 use App\Models\OrderState;
+use App\Models\PaymentMethod;
 use App\Models\PointOfSale;
 use App\Models\Presentation;
 use App\Models\Product;
@@ -29,8 +35,14 @@ use App\Models\SaleState;
 use App\Models\Supplier;
 use App\Models\User;
 use App\Services\AssistantService;
+use App\Services\ProcessOrderService;
+use App\Services\ProcessQuoteService;
+use App\Services\ProcessSaleService;
+use Database\Seeders\PermissionSeeder;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
+use Prism\Prism\Facades\Prism;
+use Prism\Prism\Testing\TextResponseFake;
 use Prism\Prism\Tool;
 use ReflectionClass;
 use Tests\TestCase;
@@ -50,6 +62,8 @@ class AssistantServiceTest extends TestCase
         DB::connection('tenant')->beginTransaction();
 
         self::migrateTenantDb();
+
+        (new PermissionSeeder)->run();
     }
 
     protected function tearDown(): void
@@ -58,11 +72,25 @@ class AssistantServiceTest extends TestCase
         parent::tearDown();
     }
 
-    private function tool(string $name): Tool
+    private function service(): AssistantService
     {
-        $service = new AssistantService;
+        return new AssistantService(
+            new ResolveClientMatch,
+            new ResolveSaleableItemMatches,
+            new ResolvePaymentMethodMatch,
+            new ResolvePointOfSaleMatch,
+            new BuildSaleItemsData,
+            new ProcessSaleService(new BuildSaleItemsData),
+            new ProcessOrderService(new BuildSaleItemsData),
+            new ProcessQuoteService(new BuildSaleItemsData),
+        );
+    }
+
+    private function tool(string $name, ?User $user = null, bool $draftAlreadyShown = false): Tool
+    {
+        $service = $this->service();
         $ref = new ReflectionClass($service);
-        $tools = $ref->getMethod('tools')->invoke($service);
+        $tools = $ref->getMethod('tools')->invoke($service, $user ?? User::factory()->create(), $draftAlreadyShown);
 
         foreach ($tools as $tool) {
             if ($tool->name() === $name) {
@@ -71,6 +99,14 @@ class AssistantServiceTest extends TestCase
         }
 
         throw new \RuntimeException("Tool [{$name}] not found.");
+    }
+
+    private function userWithPermissions(string|array $permissions): User
+    {
+        $user = User::factory()->create();
+        $user->givePermissionTo($permissions);
+
+        return $user;
     }
 
     private function presentationFor(Product $product, array $attributes = []): ProductPresentation
@@ -501,9 +537,9 @@ class AssistantServiceTest extends TestCase
 
     public function test_all_tools_are_registered(): void
     {
-        $service = new AssistantService;
+        $service = $this->service();
         $ref = new ReflectionClass($service);
-        $tools = $ref->getMethod('tools')->invoke($service);
+        $tools = $ref->getMethod('tools')->invoke($service, User::factory()->create());
 
         $names = array_map(fn (Tool $tool) => $tool->name(), $tools);
 
@@ -523,6 +559,352 @@ class AssistantServiceTest extends TestCase
             'get_clients',
             'get_suppliers',
             'get_users',
+            'create_sale',
+            'create_order',
+            'create_quote',
         ], $names);
+    }
+
+    // ─── create_sale ─────────────────────────────────────────────────────────
+
+    public function test_create_sale_denies_without_permission(): void
+    {
+        $user = User::factory()->create();
+        $pos = PointOfSale::factory()->create();
+        $product = Product::factory()->create(['name' => 'Coca-Cola 500ml']);
+        $this->presentationFor($product, ['price' => 100]);
+
+        $result = $this->tool('create_sale', $user)->handle(
+            confirm: true,
+            items: [['search' => 'Coca-Cola', 'quantity' => 1]],
+        );
+
+        $this->assertStringContainsString('PERMISSION_DENIED', $result);
+        $this->assertSame(0, Sale::count());
+    }
+
+    public function test_create_sale_reports_ambiguous_client(): void
+    {
+        $user = $this->userWithPermissions('create_edit_delete_sales');
+        Client::factory()->create(['first_name' => 'Juan', 'last_name' => 'Perez']);
+        Client::factory()->create(['first_name' => 'Juan', 'last_name' => 'Gomez']);
+        PointOfSale::factory()->create();
+
+        $result = $this->tool('create_sale', $user)->handle(
+            confirm: false,
+            client_search: 'Juan',
+            items: [['search' => 'zzz', 'quantity' => 1]],
+        );
+
+        $this->assertStringContainsString('Multiple clients match', $result);
+        $this->assertSame(0, Sale::count());
+    }
+
+    public function test_create_sale_reports_item_not_found(): void
+    {
+        $user = $this->userWithPermissions('create_edit_delete_sales');
+        PointOfSale::factory()->create();
+
+        $result = $this->tool('create_sale', $user)->handle(
+            confirm: false,
+            items: [['search' => 'zzz_nonexistent_zzz', 'quantity' => 1]],
+        );
+
+        $this->assertStringContainsString('No product found matching', $result);
+        $this->assertSame(0, Sale::count());
+    }
+
+    public function test_create_sale_requires_point_of_sale_when_none_exists(): void
+    {
+        $user = $this->userWithPermissions('create_edit_delete_sales');
+        $product = Product::factory()->create(['name' => 'Coca-Cola 500ml']);
+        $this->presentationFor($product, ['price' => 100]);
+
+        $result = $this->tool('create_sale', $user)->handle(
+            confirm: false,
+            items: [['search' => 'Coca-Cola', 'quantity' => 1]],
+        );
+
+        $this->assertStringContainsString('No active points of sale', $result);
+        $this->assertSame(0, Sale::count());
+    }
+
+    public function test_create_sale_preview_does_not_persist_anything(): void
+    {
+        $user = $this->userWithPermissions('create_edit_delete_sales');
+        PointOfSale::factory()->create(['name' => 'Caja Central']);
+        $product = Product::factory()->create(['name' => 'Coca-Cola 500ml']);
+        $pp = $this->presentationFor($product, ['price' => 100, 'stock' => 50]);
+
+        $result = $this->tool('create_sale', $user)->handle(
+            confirm: false,
+            items: [['search' => 'Coca-Cola', 'quantity' => 3]],
+        );
+
+        $this->assertStringContainsString('PREVIEW ONLY', $result);
+        $this->assertStringContainsString('3x Coca-Cola', $result);
+        $this->assertStringContainsString('Total: 300.00', $result);
+        $this->assertStringContainsString('remains as debt/credit', $result);
+        $this->assertSame(0, Sale::count());
+        $this->assertSame('50.000', $pp->fresh()->stock);
+    }
+
+    public function test_create_sale_confirm_creates_sale_decrements_stock_and_registers_payment(): void
+    {
+        $user = $this->userWithPermissions('create_edit_delete_sales');
+        PointOfSale::factory()->create(['name' => 'Caja Central']);
+        SaleState::factory()->default()->create();
+        $client = Client::factory()->create(['first_name' => 'Marcela', 'last_name' => 'Fernandez']);
+        $product = Product::factory()->create(['name' => 'Coca-Cola 500ml']);
+        $pp = $this->presentationFor($product, ['price' => 100, 'stock' => 50]);
+        $method = PaymentMethod::factory()->create(['name' => 'Efectivo']);
+
+        $result = $this->tool('create_sale', $user, true)->handle(
+            confirm: true,
+            client_search: 'Marcela',
+            items: [['search' => 'Coca-Cola', 'quantity' => 3]],
+            payments: [['method_search' => 'Efectivo', 'amount' => 300]],
+        );
+
+        $this->assertStringContainsString('created successfully', $result);
+        $this->assertStringContainsString('fully paid', $result);
+        $this->assertSame(1, Sale::count());
+
+        $sale = Sale::first();
+        $this->assertSame($client->id, $sale->client_id);
+        $this->assertSame('300.00', $sale->total);
+        $this->assertSame('47.000', $pp->fresh()->stock);
+        $this->assertSame(1, $sale->payments()->count());
+        $this->assertSame($method->id, $sale->payments()->first()->payment_method_id);
+    }
+
+    public function test_create_sale_reports_insufficient_stock_without_persisting(): void
+    {
+        $user = $this->userWithPermissions('create_edit_delete_sales');
+        PointOfSale::factory()->create();
+        $product = Product::factory()->create(['name' => 'Coca-Cola 500ml']);
+        $this->presentationFor($product, ['price' => 100, 'stock' => 1]);
+
+        $result = $this->tool('create_sale', $user, true)->handle(
+            confirm: true,
+            items: [['search' => 'Coca-Cola', 'quantity' => 10]],
+        );
+
+        $this->assertStringContainsString('Coca-Cola', $result);
+        $this->assertSame(0, Sale::count());
+    }
+
+    public function test_create_sale_auto_selects_the_only_point_of_sale(): void
+    {
+        $user = $this->userWithPermissions('create_edit_delete_sales');
+        $pos = PointOfSale::factory()->create(['name' => 'Unica Caja']);
+        SaleState::factory()->default()->create();
+        $product = Product::factory()->create(['name' => 'Coca-Cola 500ml']);
+        $this->presentationFor($product, ['price' => 100, 'stock' => 50]);
+
+        $result = $this->tool('create_sale', $user, true)->handle(
+            confirm: true,
+            items: [['search' => 'Coca-Cola', 'quantity' => 1]],
+        );
+
+        $this->assertStringContainsString('created successfully', $result);
+        $this->assertSame($pos->id, Sale::first()->point_of_sale_id);
+    }
+
+    // ─── create_order ────────────────────────────────────────────────────────
+
+    public function test_create_order_denies_without_permission(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::factory()->create(['name' => 'Coca-Cola 500ml']);
+        $this->presentationFor($product, ['price' => 100]);
+
+        $result = $this->tool('create_order', $user)->handle(
+            confirm: true,
+            items: [['search' => 'Coca-Cola', 'quantity' => 1]],
+        );
+
+        $this->assertStringContainsString('PERMISSION_DENIED', $result);
+        $this->assertSame(0, Order::count());
+    }
+
+    public function test_create_order_allows_no_point_of_sale(): void
+    {
+        $user = $this->userWithPermissions('create_edit_delete_orders');
+        OrderState::factory()->default()->create();
+        $product = Product::factory()->create(['name' => 'Coca-Cola 500ml']);
+        $pp = $this->presentationFor($product, ['price' => 100, 'stock' => 20]);
+
+        $result = $this->tool('create_order', $user, true)->handle(
+            confirm: true,
+            items: [['search' => 'Coca-Cola', 'quantity' => 2]],
+        );
+
+        $this->assertStringContainsString('created successfully', $result);
+        $this->assertSame(1, Order::count());
+        $this->assertNull(Order::first()->point_of_sale_id);
+        $this->assertSame('18.000', $pp->fresh()->stock);
+    }
+
+    public function test_create_order_reports_courier_not_found(): void
+    {
+        $user = $this->userWithPermissions('create_edit_delete_orders');
+        $product = Product::factory()->create(['name' => 'Coca-Cola 500ml']);
+        $this->presentationFor($product, ['price' => 100]);
+
+        $result = $this->tool('create_order', $user)->handle(
+            confirm: false,
+            courier_search: 'zzz_nonexistent_zzz',
+            items: [['search' => 'Coca-Cola', 'quantity' => 1]],
+        );
+
+        $this->assertStringContainsString('No courier found matching', $result);
+        $this->assertSame(0, Order::count());
+    }
+
+    public function test_create_order_preview_includes_courier_and_address(): void
+    {
+        $user = $this->userWithPermissions('create_edit_delete_orders');
+        Courier::factory()->create(['name' => 'Pedro Flete']);
+        $product = Product::factory()->create(['name' => 'Coca-Cola 500ml']);
+        $this->presentationFor($product, ['price' => 100]);
+
+        $result = $this->tool('create_order', $user)->handle(
+            confirm: false,
+            courier_search: 'Pedro',
+            address: 'Calle Falsa 123',
+            items: [['search' => 'Coca-Cola', 'quantity' => 1]],
+        );
+
+        $this->assertStringContainsString('PREVIEW ONLY', $result);
+        $this->assertStringContainsString('Courier: Pedro Flete', $result);
+        $this->assertStringContainsString('Address: Calle Falsa 123', $result);
+        $this->assertSame(0, Order::count());
+    }
+
+    // ─── create_quote ────────────────────────────────────────────────────────
+
+    public function test_create_quote_denies_without_permission(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::factory()->create(['name' => 'Coca-Cola 500ml']);
+        $this->presentationFor($product, ['price' => 100]);
+
+        $result = $this->tool('create_quote', $user)->handle(
+            confirm: true,
+            items: [['search' => 'Coca-Cola', 'quantity' => 1]],
+        );
+
+        $this->assertStringContainsString('PERMISSION_DENIED', $result);
+        $this->assertSame(0, Quote::count());
+    }
+
+    public function test_create_quote_preview_has_no_payments_section(): void
+    {
+        $user = $this->userWithPermissions('create_edit_delete_quotes');
+        $product = Product::factory()->create(['name' => 'Coca-Cola 500ml']);
+        $this->presentationFor($product, ['price' => 100]);
+
+        $result = $this->tool('create_quote', $user)->handle(
+            confirm: false,
+            items: [['search' => 'Coca-Cola', 'quantity' => 2]],
+        );
+
+        $this->assertStringContainsString('PREVIEW ONLY', $result);
+        $this->assertStringNotContainsString('Payments:', $result);
+        $this->assertSame(0, Quote::count());
+    }
+
+    public function test_create_quote_confirm_creates_quote_without_touching_stock(): void
+    {
+        $user = $this->userWithPermissions('create_edit_delete_quotes');
+        $product = Product::factory()->create(['name' => 'Coca-Cola 500ml']);
+        $pp = $this->presentationFor($product, ['price' => 100, 'stock' => 50]);
+
+        $result = $this->tool('create_quote', $user, true)->handle(
+            confirm: true,
+            items: [['search' => 'Coca-Cola', 'quantity' => 2]],
+        );
+
+        $this->assertStringContainsString('created successfully', $result);
+        $this->assertSame(1, Quote::count());
+        $this->assertSame('200.00', Quote::first()->total);
+        $this->assertSame('50.000', $pp->fresh()->stock);
+    }
+
+    // ─── chat() model fallback ───────────────────────────────────────────────
+
+    public function test_chat_uses_the_configured_model(): void
+    {
+        config(['assistant.model' => 'llama-3.3-70b-versatile', 'assistant.fallback_models' => []]);
+        Prism::fake([TextResponseFake::make()->withText('¡Hola!')]);
+
+        $reply = $this->service()->chat([['role' => 'user', 'content' => 'Hola']], User::factory()->create());
+
+        $this->assertSame('¡Hola!', $reply);
+    }
+
+    public function test_chat_returns_a_friendly_translated_message_when_every_configured_model_fails(): void
+    {
+        config(['assistant.model' => 'llama-3.3-70b-versatile', 'assistant.fallback_models' => ['llama-3.1-8b-instant']]);
+        app()->setLocale('es');
+        // A queue with no entry at index 0 makes Prism's fake throw "Could not find a response"
+        // on every attempt (the sequence counter never advances past the failing lookup), which
+        // simulates every configured model failing regardless of how many are configured.
+        Prism::fake([1 => TextResponseFake::make()->withText('unused')]);
+
+        $reply = $this->service()->chat([['role' => 'user', 'content' => 'Hola']], User::factory()->create());
+
+        $this->assertSame(__('assistant.unavailable'), $reply);
+        $this->assertNotEmpty($reply);
+    }
+
+    // ─── two-turn confirmation guard ─────────────────────────────────────────
+    //
+    // A model can call a tool with confirm=false and, within that same turn, call it again with
+    // confirm=true before the human ever sees the draft — that would silently defeat the whole
+    // point of the preview step. These tests cover the structural guard for that: confirm=true is
+    // only honoured when the assistant's immediately preceding reply actually was a shown draft.
+
+    public function test_create_sale_confirm_is_rejected_without_a_prior_draft_in_history(): void
+    {
+        $user = $this->userWithPermissions('create_edit_delete_sales');
+        PointOfSale::factory()->create();
+        SaleState::factory()->default()->create();
+        $product = Product::factory()->create(['name' => 'Coca-Cola 500ml']);
+        $this->presentationFor($product, ['price' => 100, 'stock' => 50]);
+
+        $result = $this->tool('create_sale', $user, draftAlreadyShown: false)->handle(
+            confirm: true,
+            items: [['search' => 'Coca-Cola', 'quantity' => 1]],
+        );
+
+        $this->assertStringContainsString('confirm=false first', $result);
+        $this->assertSame(0, Sale::count());
+    }
+
+    public function test_chat_appends_a_stable_marker_to_draft_replies_and_detects_it_on_the_next_turn(): void
+    {
+        $service = $this->service();
+        $ref = new ReflectionClass($service);
+        $marker = $ref->getReflectionConstant('DRAFT_MARKER')->getValue();
+
+        $priorReplyWasADraft = $ref->getMethod('priorReplyWasADraft');
+
+        $this->assertFalse($priorReplyWasADraft->invoke($service, [
+            ['role' => 'user', 'content' => 'Creame una venta'],
+        ]));
+
+        $this->assertFalse($priorReplyWasADraft->invoke($service, [
+            ['role' => 'user', 'content' => 'Creame una venta'],
+            ['role' => 'assistant', 'content' => 'Venta #12 creada con éxito.'],
+            ['role' => 'user', 'content' => 'Confirmá'],
+        ]));
+
+        $this->assertTrue($priorReplyWasADraft->invoke($service, [
+            ['role' => 'user', 'content' => 'Creame una venta'],
+            ['role' => 'assistant', 'content' => "Total: 100.\n\n{$marker}"],
+            ['role' => 'user', 'content' => 'Confirmá'],
+        ]));
     }
 }
