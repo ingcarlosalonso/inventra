@@ -92,6 +92,10 @@ Navegá a **Presupuestos** para ver el listado:
 
 Los presupuestos con fecha de vencimiento pasada se marcan visualmente como **vencidos** pero permanecen en la lista. Podés renovar la fecha de vencimiento editando el presupuesto.
 
+## Crear un presupuesto con el Asistente de IA
+
+También podés pedirle al **Asistente de IA** (ícono en la barra superior) que cree el presupuesto por vos, describiendo cliente, productos y vencimiento en lenguaje natural. Te muestra un borrador antes de confirmar. Ver [Asistente de IA](/help/ai-assistant).
+
 ## Consejos
 
 > **Tip**: Usá el campo de notas para incluir condiciones de pago, tiempos de entrega o cualquier consideración especial del presupuesto.

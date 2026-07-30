@@ -38,4 +38,24 @@ class BySearchTest extends ModelTestCase
 
         $this->assertCount(0, $results);
     }
+
+    public function test_matches_multi_word_search_regardless_of_word_order(): void
+    {
+        CompositeProduct::factory()->create(['name' => 'Kit Oficina Premium']);
+        CompositeProduct::factory()->create(['name' => 'Kit Hogar Básico']);
+
+        $results = CompositeProduct::withScopes(new BySearch('premium oficina'))->get();
+
+        $this->assertCount(1, $results);
+        $this->assertSame('Kit Oficina Premium', $results->first()->name);
+    }
+
+    public function test_blank_search_does_not_filter(): void
+    {
+        $composites = CompositeProduct::factory()->count(2)->create();
+
+        $results = CompositeProduct::withScopes(new BySearch('   '))->get();
+
+        $this->assertTrue($composites->every(fn ($c) => $results->contains('id', $c->id)));
+    }
 }

@@ -47,4 +47,19 @@ class BySearchTest extends ModelTestCase
 
         $this->assertCount(0, $results);
     }
+
+    public function test_filters_by_full_name_with_first_and_last_name_in_any_order(): void
+    {
+        $target = Client::factory()->create(['first_name' => 'Luciana', 'last_name' => 'Fernández']);
+        Client::factory()->create(['first_name' => 'Luciana', 'last_name' => 'Gomez']);
+        Client::factory()->create(['first_name' => 'Martín', 'last_name' => 'Fernández']);
+
+        $byFirstLast = Client::withScopes(new BySearch('Luciana Fernández'))->get();
+        $byLastFirst = Client::withScopes(new BySearch('Fernández Luciana'))->get();
+
+        $this->assertCount(1, $byFirstLast);
+        $this->assertSame($target->id, $byFirstLast->first()->id);
+        $this->assertCount(1, $byLastFirst);
+        $this->assertSame($target->id, $byLastFirst->first()->id);
+    }
 }
