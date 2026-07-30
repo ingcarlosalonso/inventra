@@ -18,11 +18,13 @@ class RelationsTest extends ModelTestCase
         $this->assertInstanceOf(ProductType::class, $product->productType);
     }
 
-    public function test_has_many_barcodes(): void
+    public function test_has_many_barcodes_through_presentations(): void
     {
         $product = Product::factory()->create();
-        Barcode::factory()->count(2)->create(['product_id' => $product->id]);
+        $pp = ProductPresentation::factory()->create(['product_id' => $product->id]);
+        Barcode::factory()->count(2)->create(['product_presentation_id' => $pp->id]);
 
+        $product->refresh();
         $this->assertCount(2, $product->barcodes);
     }
 

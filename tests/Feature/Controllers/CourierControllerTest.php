@@ -70,7 +70,7 @@ class CourierControllerTest extends TenantFeatureTestCase
         $courier = Courier::factory()->create(['name' => 'Old Name']);
 
         $this->actingAs($this->user, 'sanctum')
-            ->putJson("/api/couriers/{$courier->uuid}", ['name' => 'New Name'])
+            ->putJson("/api/v1/orders/couriers/{$courier->uuid}", ['name' => 'New Name'])
             ->assertOk()
             ->assertJsonPath('data.name', 'New Name');
     }
@@ -79,7 +79,7 @@ class CourierControllerTest extends TenantFeatureTestCase
     {
         $courier = Courier::factory()->create();
 
-        $this->putJson("/api/couriers/{$courier->uuid}", ['name' => 'X'])->assertUnauthorized();
+        $this->putJson("/api/v1/orders/couriers/{$courier->uuid}", ['name' => 'X'])->assertUnauthorized();
     }
 
     // ─── TOGGLE ──────────────────────────────────────────────────────────────
@@ -89,7 +89,7 @@ class CourierControllerTest extends TenantFeatureTestCase
         $courier = Courier::factory()->create(['is_active' => true]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->patchJson("/api/couriers/{$courier->uuid}/toggle")
+            ->patchJson("/api/v1/orders/couriers/{$courier->uuid}/toggle")
             ->assertOk()
             ->assertJsonPath('data.is_active', false);
     }
@@ -101,7 +101,7 @@ class CourierControllerTest extends TenantFeatureTestCase
         $courier = Courier::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->deleteJson("/api/couriers/{$courier->uuid}")
+            ->deleteJson("/api/v1/orders/couriers/{$courier->uuid}")
             ->assertNoContent();
 
         $this->assertSoftDeleted($courier);
@@ -111,6 +111,6 @@ class CourierControllerTest extends TenantFeatureTestCase
     {
         $courier = Courier::factory()->create();
 
-        $this->deleteJson("/api/couriers/{$courier->uuid}")->assertUnauthorized();
+        $this->deleteJson("/api/v1/orders/couriers/{$courier->uuid}")->assertUnauthorized();
     }
 }

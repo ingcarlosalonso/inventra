@@ -60,6 +60,12 @@ return [
 
     'subdomain_suffix' => env('EXT_SUBDOMAIN_URL', '.com'),
 
+    'tenant_user_email_domain' => env('TENANT_USER_EMAIL_DOMAIN', 'in-ventra.com'),
+
+    'inventra_hidden_admin_email' => env('INVENTRA_HIDDEN_ADMIN_EMAIL', 'admin.in-ventra@in-ventra.com'),
+
+    'inventra_hidden_admin_password' => env('INVENTRA_HIDDEN_ADMIN_PASSWORD'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

@@ -12,9 +12,11 @@ class HelpController extends Controller
 {
     private const TOPICS = [
         'dashboard',
+        'ai-assistant',
         'products',
         'composite-products',
         'promotions',
+        'brands',
         'product-types',
         'presentations',
         'suppliers',
@@ -26,14 +28,16 @@ class HelpController extends Controller
         'daily-cashes',
         'reports',
         'configuration',
+        'roles-permissions',
+        'users',
         'release-notes',
     ];
 
     private const TOPIC_GROUPS = [
-        'main' => ['dashboard'],
-        'inventory' => ['products', 'composite-products', 'promotions', 'product-types', 'presentations', 'suppliers', 'receptions'],
+        'main' => ['dashboard', 'ai-assistant'],
+        'inventory' => ['products', 'composite-products', 'promotions', 'brands', 'product-types', 'presentations', 'suppliers', 'receptions'],
         'commercial' => ['clients', 'sales', 'quotes', 'orders', 'daily-cashes', 'reports'],
-        'configuration' => ['configuration', 'release-notes'],
+        'configuration' => ['configuration', 'roles-permissions', 'users', 'release-notes'],
     ];
 
     public function show(string $topic = 'dashboard'): Response

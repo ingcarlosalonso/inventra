@@ -108,6 +108,10 @@ Esto es útil cuando el cliente paga parcialmente con diferentes medios. El sist
 
 Desde el módulo de **Presupuestos**, podés convertir un presupuesto aceptado en una venta. El sistema pre-carga todos los ítems del presupuesto en el formulario de venta para que solo agregues los pagos y confirmes.
 
+## Crear una venta con el Asistente de IA
+
+También podés pedirle al **Asistente de IA** (ícono en la barra superior) que cree la venta por vos, describiéndola en lenguaje natural: cliente, productos, descuento y forma de pago. El asistente te muestra un borrador con el total antes de confirmar. Ver [Asistente de IA](/help/ai-assistant).
+
 ## Consejos
 
 > **Tip**: Configurá un estado de venta "Pendiente" como default y "Confirmada" como estado final. Así podés registrar ventas a crédito sin cobro inmediato y luego confirmarlas cuando se cobra.

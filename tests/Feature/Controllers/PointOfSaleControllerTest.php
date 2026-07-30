@@ -71,7 +71,7 @@ class PointOfSaleControllerTest extends TenantFeatureTestCase
         $pos = PointOfSale::factory()->create(['number' => 5, 'name' => 'Original Test']);
 
         $this->actingAs($this->user, 'sanctum')
-            ->putJson("/api/points-of-sale/{$pos->uuid}", [
+            ->putJson("/api/v1/sales/points-of-sale/{$pos->uuid}", [
                 'number' => 5,
                 'name' => 'Actualizado Test',
                 'is_active' => false,
@@ -85,7 +85,7 @@ class PointOfSaleControllerTest extends TenantFeatureTestCase
     {
         $pos = PointOfSale::factory()->create();
 
-        $this->putJson("/api/points-of-sale/{$pos->uuid}", ['number' => 1, 'name' => 'X'])
+        $this->putJson("/api/v1/sales/points-of-sale/{$pos->uuid}", ['number' => 1, 'name' => 'X'])
             ->assertUnauthorized();
     }
 
@@ -101,7 +101,7 @@ class PointOfSaleControllerTest extends TenantFeatureTestCase
         $pos = PointOfSale::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->deleteJson("/api/points-of-sale/{$pos->uuid}")
+            ->deleteJson("/api/v1/sales/points-of-sale/{$pos->uuid}")
             ->assertNoContent();
 
         $this->assertSoftDeleted('points_of_sale', ['id' => $pos->id], 'tenant');
@@ -112,7 +112,7 @@ class PointOfSaleControllerTest extends TenantFeatureTestCase
         $pos = PointOfSale::factory()->create(['is_active' => true]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->patchJson("/api/points-of-sale/{$pos->uuid}/toggle")
+            ->patchJson("/api/v1/sales/points-of-sale/{$pos->uuid}/toggle")
             ->assertOk()
             ->assertJsonPath('data.is_active', false);
     }
@@ -122,7 +122,7 @@ class PointOfSaleControllerTest extends TenantFeatureTestCase
         $pos = PointOfSale::factory()->create(['is_active' => false]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->patchJson("/api/points-of-sale/{$pos->uuid}/toggle")
+            ->patchJson("/api/v1/sales/points-of-sale/{$pos->uuid}/toggle")
             ->assertOk()
             ->assertJsonPath('data.is_active', true);
     }

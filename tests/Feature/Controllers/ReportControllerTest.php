@@ -99,7 +99,7 @@ class ReportControllerTest extends TenantFeatureTestCase
         Sale::factory()->create(['client_id' => Client::factory()->create()->id, 'point_of_sale_id' => $pos->id, 'total' => 250]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson("/api/reports/sales?client_id={$client->uuid}")
+            ->getJson("/api/v1/reports/sales?client_id={$client->uuid}")
             ->assertOk();
 
         foreach ($response->json('table') as $row) {
@@ -342,7 +342,7 @@ class ReportControllerTest extends TenantFeatureTestCase
         DailyCash::factory()->create(['opened_at' => now()]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson("/api/reports/daily-cashes?point_of_sale_id={$pos->uuid}")
+            ->getJson("/api/v1/reports/daily-cashes?point_of_sale_id={$pos->uuid}")
             ->assertOk();
 
         foreach ($response->json('table') as $row) {
@@ -410,7 +410,7 @@ class ReportControllerTest extends TenantFeatureTestCase
         Order::factory()->create();
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson("/api/reports/orders?courier_id={$courier->uuid}")
+            ->getJson("/api/v1/reports/orders?courier_id={$courier->uuid}")
             ->assertOk();
 
         foreach ($response->json('table') as $row) {
@@ -563,7 +563,7 @@ class ReportControllerTest extends TenantFeatureTestCase
         Reception::factory()->create(['received_at' => now()->format('Y-m-d')]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson("/api/reports/purchases?supplier_id={$supplier->uuid}")
+            ->getJson("/api/v1/reports/purchases?supplier_id={$supplier->uuid}")
             ->assertOk();
 
         foreach ($response->json('table') as $row) {

@@ -65,6 +65,10 @@ You can also convert a quote into a delivery order:
 4. Complete delivery details (address, courier, delivery date).
 5. Confirm the order.
 
+## Creating a quote with the AI Assistant
+
+You can also ask the **AI Assistant** (icon in the top bar) to create the quote for you, describing client, products and expiration in plain language. It shows you a draft before confirming. See [AI Assistant](/help/ai-assistant).
+
 ## Tips
 
 > **Tip**: Use the notes field to include payment terms, delivery times, or any special consideration of the quote.

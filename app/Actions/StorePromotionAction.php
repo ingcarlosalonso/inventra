@@ -7,6 +7,15 @@ use App\Models\Promotion;
 
 class StorePromotionAction
 {
+    /**
+     * @param  array{
+     *     name: string,
+     *     code: string|null,
+     *     sale_price: float|int|null,
+     *     is_active: bool,
+     *     items: array<int, array{product_id: string, quantity: int}>
+     * }  $data
+     */
     public function execute(array $data): Promotion
     {
         $items = $data['items'];

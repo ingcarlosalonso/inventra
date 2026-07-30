@@ -30,6 +30,19 @@ Cada presentación tiene:
 - **Precio de venta**: precio de lista de esta presentación.
 - **Stock actual**: cantidad disponible actualmente.
 - **Stock mínimo**: umbral de alerta de stock bajo.
+- **Códigos de barras**: uno o varios códigos EAN/QR asociados a esta presentación específica.
+
+> **Importante**: Los códigos de barras son por presentación, no por producto. Una lavandina de 500 ml tiene un código distinto a la de 1 litro. Esto permite que al escanear el código el sistema identifique exactamente qué presentación agregar.
+
+### Escaneo de código de barras
+
+En los formularios de **Ventas**, **Pedidos**, **Presupuestos** y **Recepciones**, encontrarás el campo **Escanear código de barras** encima del buscador de productos.
+
+- Apuntá el lector de barras al producto o ingresá el código manualmente.
+- Al presionar Enter, el sistema busca la presentación correspondiente y la agrega automáticamente.
+- Si el código no está registrado, aparece un mensaje de error.
+
+Los lectores de barras físicos (USB/Bluetooth) envían el código y simulan Enter automáticamente — no requieren ninguna configuración adicional.
 
 ## Lista de productos
 
@@ -55,8 +68,8 @@ Usá el selector de estado para ver solo productos activos, inactivos o todos.
 2. Completá el nombre, descripción (opcional) y seleccioná el tipo de producto.
 3. Elegí la moneda del producto.
 4. Agregá al menos una **presentación**: seleccioná tipo, ingresá cantidad, precio y stock.
-5. Opcionalmente agregá más presentaciones con el botón **+ Agregar presentación**.
-6. Opcionalmente ingresá códigos de barra.
+5. Dentro de cada presentación, opcionalmente ingresá uno o más **códigos de barras** con el botón **+ Agregar código**.
+6. Opcionalmente agregá más presentaciones con el botón **+ Agregar presentación**.
 7. Hacé clic en **Guardar**.
 
 ## Editar un producto

@@ -78,7 +78,7 @@ class CurrencyControllerTest extends TenantFeatureTestCase
         $currency = Currency::factory()->create(['name' => 'Moneda Test', 'symbol' => 'MT', 'iso_code' => 'XMT']);
 
         $this->actingAs($this->user, 'sanctum')
-            ->putJson("/api/currencies/{$currency->uuid}", [
+            ->putJson("/api/v1/settings/currencies/{$currency->uuid}", [
                 'name' => 'Moneda Test Actualizada',
                 'symbol' => 'MT',
                 'iso_code' => 'XMT',
@@ -94,7 +94,7 @@ class CurrencyControllerTest extends TenantFeatureTestCase
         $currency = Currency::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->deleteJson("/api/currencies/{$currency->uuid}")
+            ->deleteJson("/api/v1/settings/currencies/{$currency->uuid}")
             ->assertNoContent();
 
         $this->assertSoftDeleted('currencies', ['id' => $currency->id], 'tenant');
@@ -105,7 +105,7 @@ class CurrencyControllerTest extends TenantFeatureTestCase
         $currency = Currency::factory()->create(['is_active' => true]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->patchJson("/api/currencies/{$currency->uuid}/toggle")
+            ->patchJson("/api/v1/settings/currencies/{$currency->uuid}/toggle")
             ->assertOk()
             ->assertJsonPath('data.is_active', false);
     }

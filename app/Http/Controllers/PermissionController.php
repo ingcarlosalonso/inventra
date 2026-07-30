@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\Role\PermissionResource;
+use App\Models\Permission;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Spatie\Permission\Models\Permission;
 
 class PermissionController extends Controller
 {

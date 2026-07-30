@@ -6,6 +6,7 @@ return [
     'search_placeholder' => 'Buscar en la ayuda...',
     'topics' => [
         'dashboard' => 'Dashboard',
+        'ai-assistant' => 'Asistente de IA',
         'products' => 'Productos',
         'composite-products' => 'Productos Compuestos',
         'promotions' => 'Promociones',
@@ -20,6 +21,8 @@ return [
         'daily-cashes' => 'Caja Diaria',
         'reports' => 'Reportes',
         'configuration' => 'Configuración',
+        'roles-permissions' => 'Roles y Permisos',
+        'users' => 'Usuarios y Perfil',
         'release-notes' => 'Novedades del sistema',
     ],
     'groups' => [

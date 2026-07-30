@@ -50,7 +50,7 @@ class QuoteControllerTest extends TenantFeatureTestCase
         $quote = Quote::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson("/api/quotes/{$quote->uuid}")
+            ->getJson("/api/v1/quotes/{$quote->uuid}")
             ->assertOk()
             ->assertJsonPath('data.id', $quote->uuid);
     }
@@ -65,7 +65,7 @@ class QuoteControllerTest extends TenantFeatureTestCase
     public function test_show_requires_auth(): void
     {
         $quote = Quote::factory()->create();
-        $this->getJson("/api/quotes/{$quote->uuid}")->assertUnauthorized();
+        $this->getJson("/api/v1/quotes/{$quote->uuid}")->assertUnauthorized();
     }
 
     // ─── STORE ───────────────────────────────────────────────────────────────
@@ -178,7 +178,7 @@ class QuoteControllerTest extends TenantFeatureTestCase
         ];
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson("/api/quotes/{$quote->uuid}/convert", $payload)
+            ->postJson("/api/v1/quotes/{$quote->uuid}/convert", $payload)
             ->assertCreated()
             ->assertJsonPath('data.total', 300);
 
@@ -193,7 +193,7 @@ class QuoteControllerTest extends TenantFeatureTestCase
         $pm = PaymentMethod::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->postJson("/api/quotes/{$quote->uuid}/convert", [
+            ->postJson("/api/v1/quotes/{$quote->uuid}/convert", [
                 'point_of_sale_id' => $pos->uuid,
                 'payments' => [['payment_method_id' => $pm->uuid, 'amount' => 100]],
             ])
@@ -204,7 +204,7 @@ class QuoteControllerTest extends TenantFeatureTestCase
     public function test_convert_requires_auth(): void
     {
         $quote = Quote::factory()->create();
-        $this->postJson("/api/quotes/{$quote->uuid}/convert", [])->assertUnauthorized();
+        $this->postJson("/api/v1/quotes/{$quote->uuid}/convert", [])->assertUnauthorized();
     }
 
     // ─── DESTROY ─────────────────────────────────────────────────────────────
@@ -214,7 +214,7 @@ class QuoteControllerTest extends TenantFeatureTestCase
         $quote = Quote::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->deleteJson("/api/quotes/{$quote->uuid}")
+            ->deleteJson("/api/v1/quotes/{$quote->uuid}")
             ->assertNoContent();
 
         $this->assertSoftDeleted($quote);
@@ -230,6 +230,6 @@ class QuoteControllerTest extends TenantFeatureTestCase
     public function test_destroy_requires_auth(): void
     {
         $quote = Quote::factory()->create();
-        $this->deleteJson("/api/quotes/{$quote->uuid}")->assertUnauthorized();
+        $this->deleteJson("/api/v1/quotes/{$quote->uuid}")->assertUnauthorized();
     }
 }

@@ -131,7 +131,7 @@ class CompositeProductControllerTest extends TenantFeatureTestCase
         $product = Product::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->putJson("/api/composite-products/{$compositeProduct->uuid}", [
+            ->putJson("/api/v1/products/composite/{$compositeProduct->uuid}", [
                 'name' => 'Nombre Actualizado',
                 'items' => [
                     ['product_id' => $product->uuid, 'quantity' => 5],
@@ -153,7 +153,7 @@ class CompositeProductControllerTest extends TenantFeatureTestCase
         $newProduct = Product::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->putJson("/api/composite-products/{$compositeProduct->uuid}", [
+            ->putJson("/api/v1/products/composite/{$compositeProduct->uuid}", [
                 'name' => $compositeProduct->name,
                 'items' => [
                     ['product_id' => $newProduct->uuid, 'quantity' => 2],
@@ -177,7 +177,7 @@ class CompositeProductControllerTest extends TenantFeatureTestCase
         $compositeProduct = CompositeProduct::factory()->create(['is_active' => true]);
 
         $this->actingAs($this->user, 'sanctum')
-            ->patchJson("/api/composite-products/{$compositeProduct->uuid}/toggle")
+            ->patchJson("/api/v1/products/composite/{$compositeProduct->uuid}/toggle")
             ->assertOk()
             ->assertJsonPath('data.is_active', false);
     }
@@ -189,7 +189,7 @@ class CompositeProductControllerTest extends TenantFeatureTestCase
         $compositeProduct = CompositeProduct::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->deleteJson("/api/composite-products/{$compositeProduct->uuid}")
+            ->deleteJson("/api/v1/products/composite/{$compositeProduct->uuid}")
             ->assertNoContent();
 
         $this->assertSoftDeleted('composite_products', ['id' => $compositeProduct->id], 'tenant');

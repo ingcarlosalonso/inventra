@@ -67,7 +67,7 @@ class SupplierControllerTest extends TenantFeatureTestCase
         $supplier = Supplier::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->putJson("/api/suppliers/{$supplier->uuid}", ['name' => 'Nuevo Nombre', 'is_active' => true])
+            ->putJson("/api/v1/suppliers/{$supplier->uuid}", ['name' => 'Nuevo Nombre', 'is_active' => true])
             ->assertOk()
             ->assertJsonPath('data.name', 'Nuevo Nombre');
     }
@@ -77,7 +77,7 @@ class SupplierControllerTest extends TenantFeatureTestCase
         $supplier = Supplier::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->deleteJson("/api/suppliers/{$supplier->uuid}")
+            ->deleteJson("/api/v1/suppliers/{$supplier->uuid}")
             ->assertNoContent();
 
         $this->assertSoftDeleted('suppliers', ['id' => $supplier->id], 'tenant');

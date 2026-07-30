@@ -41,7 +41,7 @@ class UserController extends Controller
         $data = $request->safe()->except(['roles', 'password']);
 
         if ($request->filled('password')) {
-            $data['password'] = $request->input('password');
+            $data['password'] = $request->validated()['password'];
         }
 
         $user->update($data);

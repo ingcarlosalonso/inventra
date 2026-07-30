@@ -44,7 +44,7 @@ class ReceptionControllerTest extends TenantFeatureTestCase
         $reception = Reception::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson("/api/receptions/{$reception->uuid}")
+            ->getJson("/api/v1/receptions/{$reception->uuid}")
             ->assertOk()
             ->assertJsonPath('data.id', $reception->uuid);
     }
@@ -60,7 +60,7 @@ class ReceptionControllerTest extends TenantFeatureTestCase
     {
         $reception = Reception::factory()->create();
 
-        $this->getJson("/api/receptions/{$reception->uuid}")->assertUnauthorized();
+        $this->getJson("/api/v1/receptions/{$reception->uuid}")->assertUnauthorized();
     }
 
     // ─── STORE ───────────────────────────────────────────────────────────────
@@ -148,7 +148,7 @@ class ReceptionControllerTest extends TenantFeatureTestCase
         $reception = Reception::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->deleteJson("/api/receptions/{$reception->uuid}")
+            ->deleteJson("/api/v1/receptions/{$reception->uuid}")
             ->assertNoContent();
 
         $this->assertSoftDeleted($reception);
@@ -165,6 +165,6 @@ class ReceptionControllerTest extends TenantFeatureTestCase
     {
         $reception = Reception::factory()->create();
 
-        $this->deleteJson("/api/receptions/{$reception->uuid}")->assertUnauthorized();
+        $this->deleteJson("/api/v1/receptions/{$reception->uuid}")->assertUnauthorized();
     }
 }

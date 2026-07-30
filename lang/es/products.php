@@ -10,6 +10,7 @@ return [
     'price' => 'Precio de Venta',
     'stock' => 'Stock Actual',
     'min_stock' => 'Stock Mínimo',
+    'brand' => 'Marca',
     'product_type' => 'Tipo de Producto',
     'presentation' => 'Presentación',
     'currency' => 'Moneda',
@@ -19,6 +20,7 @@ return [
     'barcodes' => 'Códigos de Barras',
     'add_barcode' => 'Agregar código',
     'barcode' => 'Código de barras',
+    'barcode_not_found' => 'Código de barras no encontrado.',
 
     // Import
     'import_title' => 'Importar Productos desde XLSX',

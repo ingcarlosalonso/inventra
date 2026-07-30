@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Concerns\HasAuditFields;
 use App\Models\Concerns\HasUuid;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -23,6 +24,17 @@ class Presentation extends Model
             'quantity' => 'decimal:3',
             'is_active' => 'boolean',
         ];
+    }
+
+    /**
+     * There is no stored "name" column — the table only has quantity + presentation_type_id.
+     * This is the single source of truth for a human-readable label (e.g. "2 L").
+     */
+    protected function display(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => trim(((float) $this->quantity).' '.($this->presentationType?->abbreviation ?? '')),
+        );
     }
 
     public function presentationType(): BelongsTo

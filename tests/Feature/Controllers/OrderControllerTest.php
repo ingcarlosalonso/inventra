@@ -52,7 +52,7 @@ class OrderControllerTest extends TenantFeatureTestCase
         $order = Order::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->getJson("/api/orders/{$order->uuid}")
+            ->getJson("/api/v1/orders/{$order->uuid}")
             ->assertOk()
             ->assertJsonPath('data.id', $order->uuid);
     }
@@ -68,7 +68,7 @@ class OrderControllerTest extends TenantFeatureTestCase
     {
         $order = Order::factory()->create();
 
-        $this->getJson("/api/orders/{$order->uuid}")->assertUnauthorized();
+        $this->getJson("/api/v1/orders/{$order->uuid}")->assertUnauthorized();
     }
 
     // ─── STORE ───────────────────────────────────────────────────────────────
@@ -216,7 +216,7 @@ class OrderControllerTest extends TenantFeatureTestCase
         $newState = OrderState::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->patchJson("/api/orders/{$order->uuid}/state", [
+            ->patchJson("/api/v1/orders/{$order->uuid}/state", [
                 'order_state_id' => $newState->uuid,
             ])
             ->assertOk()
@@ -228,7 +228,7 @@ class OrderControllerTest extends TenantFeatureTestCase
         $order = Order::factory()->create();
         $state = OrderState::factory()->create();
 
-        $this->patchJson("/api/orders/{$order->uuid}/state", [
+        $this->patchJson("/api/v1/orders/{$order->uuid}/state", [
             'order_state_id' => $state->uuid,
         ])->assertUnauthorized();
     }
@@ -240,7 +240,7 @@ class OrderControllerTest extends TenantFeatureTestCase
         $order = Order::factory()->create();
 
         $this->actingAs($this->user, 'sanctum')
-            ->deleteJson("/api/orders/{$order->uuid}")
+            ->deleteJson("/api/v1/orders/{$order->uuid}")
             ->assertNoContent();
 
         $this->assertSoftDeleted($order);
@@ -257,7 +257,7 @@ class OrderControllerTest extends TenantFeatureTestCase
     {
         $order = Order::factory()->create();
 
-        $this->deleteJson("/api/orders/{$order->uuid}")->assertUnauthorized();
+        $this->deleteJson("/api/v1/orders/{$order->uuid}")->assertUnauthorized();
     }
 
     // ─── PAID AMOUNT ─────────────────────────────────────────────────────────

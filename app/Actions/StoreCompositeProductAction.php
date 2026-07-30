@@ -7,6 +7,14 @@ use App\Models\Product;
 
 class StoreCompositeProductAction
 {
+    /**
+     * @param  array{
+     *     name: string,
+     *     code: string|null,
+     *     is_active: bool,
+     *     items: array<int, array{product_id: string, quantity: int}>
+     * }  $data
+     */
     public function execute(array $data): CompositeProduct
     {
         $items = $data['items'];

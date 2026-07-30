@@ -12,11 +12,21 @@ class BySearch implements Scope
 
     public function apply(Builder $builder, Model $model): void
     {
-        $builder->where(function (Builder $q) {
-            $q->where('first_name', 'like', "%{$this->search}%")
-                ->orWhere('last_name', 'like', "%{$this->search}%")
-                ->orWhere('email', 'like', "%{$this->search}%")
-                ->orWhere('phone', 'like', "%{$this->search}%");
+        $terms = array_filter(preg_split('/\s+/', trim($this->search)) ?: []);
+
+        if ($terms === []) {
+            return;
+        }
+
+        $builder->where(function (Builder $query) use ($terms) {
+            foreach ($terms as $term) {
+                $query->where(function (Builder $q) use ($term) {
+                    $q->where('first_name', 'like', "%{$term}%")
+                        ->orWhere('last_name', 'like', "%{$term}%")
+                        ->orWhere('email', 'like', "%{$term}%")
+                        ->orWhere('phone', 'like', "%{$term}%");
+                });
+            }
         });
     }
 }

@@ -15,6 +15,21 @@ class UpdateProductRequestTest extends TestCase
         $fakeProduct = new class
         {
             public int $id = 1;
+
+            public function barcodes(): static
+            {
+                return $this;
+            }
+
+            public function pluck(string $column): static
+            {
+                return $this;
+            }
+
+            public function toArray(): array
+            {
+                return [];
+            }
         };
 
         $request = new UpdateProductRequest;
