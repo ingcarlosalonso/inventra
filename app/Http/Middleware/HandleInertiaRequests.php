@@ -3,15 +3,16 @@
 namespace App\Http\Middleware;
 
 use App\Models\Customization;
+use App\Models\Module;
 use App\Models\Release;
 use App\Models\Release\Scopes\Published;
+use App\Models\Tenant;
 use App\Models\UserReleaseRead;
 use App\Models\UserReleaseRead\Scopes\ByReleaseUuid;
 use App\Models\UserReleaseRead\Scopes\ByUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Inertia\Middleware;
-use Spatie\Multitenancy\Models\Tenant;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -44,8 +45,29 @@ class HandleInertiaRequests extends Middleware
             ],
             'customization' => $this->loadCustomization(),
             'unread_release' => $this->loadUnreadRelease($request),
+            'enabledModules' => $this->loadEnabledModules(),
             'app_version' => config('app.version'),
         ]);
+    }
+
+    private function loadEnabledModules(): array
+    {
+        try {
+            $tenant = Tenant::current();
+
+            if (! $tenant) {
+                return [];
+            }
+
+            return Module::query()
+                ->get()
+                ->filter(fn (Module $module) => $tenant->hasModule($module->key))
+                ->pluck('key')
+                ->values()
+                ->toArray();
+        } catch (\Throwable) {
+            return [];
+        }
     }
 
     private function loadUnreadRelease(Request $request): ?array

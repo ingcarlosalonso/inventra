@@ -60,4 +60,9 @@ return [
 
     'no_tenants' => 'No hay clientes registrados.',
     'empty_state' => 'Todavía no creaste ningún cliente. Hacé clic en "Nuevo cliente" para comenzar.',
+
+    'modules' => 'Módulos',
+    'no_modules' => 'No hay módulos vendibles configurados todavía.',
+    'module_updated' => 'Módulo actualizado.',
+    'module_not_enabled' => 'Este módulo no está contratado. Contactá al administrador para activarlo.',
 ];

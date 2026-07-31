@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\TenantModule\Scopes\ByModuleKey;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Multitenancy\Models\Tenant as BaseTenant;
 
 class Tenant extends BaseTenant
@@ -41,5 +43,19 @@ class Tenant extends BaseTenant
     public function activate(): void
     {
         $this->update(['status' => 'active']);
+    }
+
+    public function tenantModules(): HasMany
+    {
+        return $this->hasMany(TenantModule::class);
+    }
+
+    public function hasModule(string $key): bool
+    {
+        $tenantModule = $this->tenantModules()
+            ->withScopes(new ByModuleKey($key))
+            ->first();
+
+        return $tenantModule?->isActive() ?? false;
     }
 }

@@ -1,5 +1,7 @@
 # Pedidos
 
+> **Nota**: Pedidos y Presupuestos es un módulo contratable por separado. Si no ves esta sección en tu menú, contactá al administrador de tu cuenta para activarlo.
+
 El módulo de Pedidos gestiona las órdenes de entrega. Un pedido puede crearse desde una venta, desde un presupuesto o de forma independiente. Permite asignar un courier (repartidor), definir la dirección de entrega y hacer seguimiento del estado de la entrega.
 
 ## ¿Qué es un pedido?

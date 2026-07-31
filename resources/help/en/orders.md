@@ -1,5 +1,7 @@
 # Orders
 
+> **Note**: Orders & Quotes is a separately contracted module. If you don't see this section in your menu, contact your account administrator to enable it.
+
 The Orders module manages delivery orders. An order can be created from a sale, from a quote, or independently. It allows assigning a courier (delivery person), defining the delivery address, and tracking the delivery status.
 
 ## What is an Order?
