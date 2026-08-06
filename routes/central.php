@@ -3,6 +3,7 @@
 use App\Http\Controllers\Central\AuthController;
 use App\Http\Controllers\Central\ReleaseController;
 use App\Http\Controllers\Central\TenantController;
+use App\Http\Controllers\Central\TenantModuleController;
 use Illuminate\Support\Facades\Route;
 
 Route::domain(config('app.central_domain'))->name('central.')->group(function () {
@@ -20,6 +21,7 @@ Route::domain(config('app.central_domain'))->name('central.')->group(function ()
         Route::put('/tenants/{tenant}', [TenantController::class, 'update'])->name('tenants.update');
         Route::post('/tenants/{tenant}/suspend', [TenantController::class, 'suspend'])->name('tenants.suspend');
         Route::post('/tenants/{tenant}/activate', [TenantController::class, 'activate'])->name('tenants.activate');
+        Route::post('/tenants/{tenant}/modules/{module}/toggle', [TenantModuleController::class, 'toggle'])->name('tenants.modules.toggle');
 
         // Releases
         Route::prefix('releases')->name('releases.')->group(function () {

@@ -51,23 +51,29 @@ Route::middleware(['tenant', 'tenant.active'])->group(function () {
         Route::get('/sales/create', fn () => Inertia::render('Sales/Create'))->name('sales.create');
         Route::get('/sales/{uuid}', fn () => Inertia::render('Sales/Show', ['uuid' => request()->route('uuid')]))->name('sales.page-show');
 
-        // Quotes
-        Route::get('/quotes', fn () => Inertia::render('Quotes/Index'))->name('quotes');
-        Route::get('/quotes/create', fn () => Inertia::render('Quotes/Create'))->name('quotes.create');
-        Route::get('/quotes/{uuid}', fn () => Inertia::render('Quotes/Show', ['uuid' => request()->route('uuid')]))->name('quotes.page-show');
+        // Quotes & Orders (module: orders_quotes)
+        Route::middleware('module:orders_quotes')->group(function () {
+            // Quotes
+            Route::get('/quotes', fn () => Inertia::render('Quotes/Index'))->name('quotes');
+            Route::get('/quotes/create', fn () => Inertia::render('Quotes/Create'))->name('quotes.create');
+            Route::get('/quotes/{uuid}', fn () => Inertia::render('Quotes/Show', ['uuid' => request()->route('uuid')]))->name('quotes.page-show');
 
-        // Orders
-        Route::get('/orders', fn () => Inertia::render('Orders/Index'))->name('orders');
-        Route::get('/orders/create', fn () => Inertia::render('Orders/Create'))->name('orders.create');
-        Route::get('/orders/{uuid}', fn () => Inertia::render('Orders/Show', ['uuid' => request()->route('uuid')]))->name('orders.page-show');
+            // Orders
+            Route::get('/orders', fn () => Inertia::render('Orders/Index'))->name('orders');
+            Route::get('/orders/create', fn () => Inertia::render('Orders/Create'))->name('orders.create');
+            Route::get('/orders/{uuid}', fn () => Inertia::render('Orders/Show', ['uuid' => request()->route('uuid')]))->name('orders.page-show');
+
+            // Settings / orders config
+            Route::get('/settings/order-states', fn () => Inertia::render('Settings/OrderStates/Index'))->name('settings.order-states');
+            Route::get('/settings/couriers', fn () => Inertia::render('Settings/Couriers/Index'))->name('settings.couriers');
+
+            // Reports
+            Route::get('/reports/orders', fn () => Inertia::render('Reports/Orders'))->name('reports.orders');
+        });
 
         // Daily Cashes
         Route::get('/daily-cashes', fn () => Inertia::render('DailyCashes/Index'))->name('daily-cashes');
         Route::get('/daily-cashes/{uuid}', fn () => Inertia::render('DailyCashes/Show', ['uuid' => request()->route('uuid')]))->name('daily-cashes.page-show');
-
-        // Settings / orders config
-        Route::get('/settings/order-states', fn () => Inertia::render('Settings/OrderStates/Index'))->name('settings.order-states');
-        Route::get('/settings/couriers', fn () => Inertia::render('Settings/Couriers/Index'))->name('settings.couriers');
 
         // Customization
         Route::get('/settings/customization', fn () => Inertia::render('Settings/Customization/Index'))->name('settings.customization');
@@ -99,7 +105,6 @@ Route::middleware(['tenant', 'tenant.active'])->group(function () {
         Route::get('/reports/payments', fn () => Inertia::render('Reports/Payments'))->name('reports.payments');
         Route::get('/reports/inventory', fn () => Inertia::render('Reports/Inventory'))->name('reports.inventory');
         Route::get('/reports/daily-cashes', fn () => Inertia::render('Reports/DailyCashes'))->name('reports.daily-cashes');
-        Route::get('/reports/orders', fn () => Inertia::render('Reports/Orders'))->name('reports.orders');
         Route::get('/reports/clients', fn () => Inertia::render('Reports/Clients'))->name('reports.clients');
         Route::get('/reports/purchases', fn () => Inertia::render('Reports/Purchases'))->name('reports.purchases');
     }); // end auth:sanctum

@@ -1,5 +1,7 @@
 # Asistente de IA
 
+> **Nota**: El Asistente de IA es un módulo contratable por separado. Si no ves el ícono en la barra superior, contactá al administrador de tu cuenta para activarlo.
+
 El Asistente de IA está disponible desde el ícono en la barra superior, en cualquier pantalla del sistema. Responde preguntas sobre tu negocio y, desde esta versión, también puede **crear ventas, pedidos y presupuestos** por vos.
 
 ## Consultar información

@@ -41,14 +41,14 @@
 
       <NavGroup :label="$t('sales.title')" :icon="icons.sales" :matches="['/sales', '/quotes', '/payments', '/settings/points-of-sale', '/settings/sale-states', '/settings/payment-methods']">
         <NavItem href="/sales" :label="$t('sales.title')" sub />
-        <NavItem href="/quotes" :label="$t('quotes.title')" sub />
+        <NavItem v-if="hasModule('orders_quotes')" href="/quotes" :label="$t('quotes.title')" sub />
         <NavItem href="/payments/create" :label="$t('payments.title')" sub />
         <NavItem href="/settings/points-of-sale" :label="$t('points_of_sale.title')" sub />
         <NavItem href="/settings/sale-states" :label="$t('sale_states.title')" sub />
         <NavItem href="/settings/payment-methods" :label="$t('payment_methods.title')" sub />
       </NavGroup>
 
-      <NavGroup :label="$t('orders.title')" :icon="icons.orders" :matches="['/orders', '/settings/order-states', '/settings/couriers']">
+      <NavGroup v-if="hasModule('orders_quotes')" :label="$t('orders.title')" :icon="icons.orders" :matches="['/orders', '/settings/order-states', '/settings/couriers']">
         <NavItem href="/orders" :label="$t('orders.title')" sub />
         <NavItem href="/settings/order-states" :label="$t('order_states.title')" sub />
         <NavItem href="/settings/couriers" :label="$t('couriers.title')" sub />
@@ -135,6 +135,8 @@ const page = usePage()
 const user = computed(() => page.props.auth?.user)
 const customization = computed(() => page.props.customization ?? {})
 const appVersion = computed(() => page.props.app_version ?? '')
+const enabledModules = computed(() => page.props.enabledModules ?? [])
+const hasModule = (key) => enabledModules.value.includes(key)
 const userInitials = computed(() => {
   const name = user.value?.name ?? ''
   return name.split(' ').map(w => w[0]).slice(0, 2).join('')

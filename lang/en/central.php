@@ -60,4 +60,9 @@ return [
 
     'no_tenants' => 'No clients registered.',
     'empty_state' => 'You haven\'t created any clients yet. Click "New client" to get started.',
+
+    'modules' => 'Modules',
+    'no_modules' => 'No sellable modules configured yet.',
+    'module_updated' => 'Module updated.',
+    'module_not_enabled' => 'This module is not contracted. Contact your administrator to enable it.',
 ];

@@ -70,6 +70,36 @@ abstract class TestCase extends BaseTestCase
         });
     }
 
+    protected static function createModuleTables(): void
+    {
+        if (! Schema::hasTable('modules')) {
+            Schema::create('modules', function (Blueprint $table) {
+                $table->id();
+                $table->string('key')->unique();
+                $table->string('name');
+                $table->text('description')->nullable();
+                $table->unsignedInteger('sort_order')->default(0);
+                $table->timestamps();
+            });
+        }
+
+        if (Schema::hasTable('tenant_modules')) {
+            return;
+        }
+
+        Schema::create('tenant_modules', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('module_id')->constrained()->cascadeOnDelete();
+            $table->enum('status', ['trial', 'active', 'suspended'])->default('trial');
+            $table->date('expires_at')->nullable();
+            $table->text('notes')->nullable();
+            $table->timestamps();
+
+            $table->unique(['tenant_id', 'module_id']);
+        });
+    }
+
     protected static function migrateTenantDb(): void
     {
         if (self::$tenantDbMigrated) {

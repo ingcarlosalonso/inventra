@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Central;
 
 use App\Actions\ProvisionTenantAction;
 use App\Http\Controllers\Controller;
+use App\Models\Module;
 use App\Models\Tenant;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,6 +15,8 @@ class TenantController extends Controller
 {
     public function index(Request $request): Response
     {
+        $modules = Module::query()->orderBy('sort_order')->get();
+
         $tenants = Tenant::query()
             ->when($request->filled('search'), fn ($q) => $q->where('name', 'like', '%'.$request->search.'%')
                 ->orWhere('email', 'like', '%'.$request->search.'%'))
@@ -31,6 +34,12 @@ class TenantController extends Controller
                 'expires_at' => $tenant->expires_at?->format('Y-m-d'),
                 'notes' => $tenant->notes,
                 'created_at' => $tenant->created_at->format('Y-m-d'),
+                'modules' => $modules->map(fn (Module $module) => [
+                    'id' => $module->id,
+                    'key' => $module->key,
+                    'name' => $module->name,
+                    'enabled' => $tenant->hasModule($module->key),
+                ])->values(),
             ]);
 
         return Inertia::render('Central/Tenants/Index', compact('tenants'));

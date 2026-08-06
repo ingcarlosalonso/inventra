@@ -1,5 +1,7 @@
 # AI Assistant
 
+> **Note**: The AI Assistant is a separately contracted module. If you don't see the icon in the top bar, contact your account administrator to enable it.
+
 The AI Assistant is available from the icon in the top bar, on any screen. It answers questions about your business and, as of this version, can also **create sales, orders and quotes** for you.
 
 ## Asking questions
