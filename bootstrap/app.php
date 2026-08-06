@@ -2,6 +2,7 @@
 
 use App\Exceptions\InsufficientStockException;
 use App\Http\Middleware\EnsureActiveTenant;
+use App\Http\Middleware\EnsureModuleEnabled;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
@@ -40,6 +41,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'tenant' => NeedsTenant::class,
             'tenant.session' => EnsureValidTenantSession::class,
             'tenant.active' => EnsureActiveTenant::class,
+            'module' => EnsureModuleEnabled::class,
             'permission' => PermissionMiddleware::class,
             'role' => RoleMiddleware::class,
             'role_or_permission' => RoleOrPermissionMiddleware::class,

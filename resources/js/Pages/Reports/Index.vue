@@ -7,7 +7,7 @@
 
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <a
-        v-for="report in reports"
+        v-for="report in visibleReports"
         :key="report.href"
         :href="report.href"
         class="group relative flex flex-col overflow-hidden rounded-xl bg-white p-5 shadow-sm ring-1 ring-gray-200 transition-all hover:shadow-md hover:-translate-y-0.5"
@@ -38,13 +38,16 @@
 <script setup>
 import { computed } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
-import { router } from '@inertiajs/vue3'
+import { router, usePage } from '@inertiajs/vue3'
 import { getCurrentInstance } from 'vue'
 
 defineOptions({ layout: AppLayout })
 
 const { proxy } = getCurrentInstance()
 const t = (key) => proxy.$t(key)
+
+const page = usePage()
+const enabledModules = computed(() => page.props.enabledModules ?? [])
 
 const reports = computed(() => [
   {
@@ -88,6 +91,7 @@ const reports = computed(() => [
     href: '/reports/orders',
     color: 'bg-orange-500',
     icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01',
+    module: 'orders_quotes',
   },
   {
     title: t('reports.clients_title'),
@@ -104,4 +108,8 @@ const reports = computed(() => [
     icon: 'M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z',
   },
 ])
+
+const visibleReports = computed(() =>
+  reports.value.filter((report) => !report.module || enabledModules.value.includes(report.module))
+)
 </script>

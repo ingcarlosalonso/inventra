@@ -50,8 +50,8 @@ Route::middleware(['api', 'tenant', 'tenant.active'])->prefix('v1')->group(funct
         Route::post('auth/logout', [AuthController::class, 'logout']);
         Route::put('profile/password', [ProfileController::class, 'updatePassword']);
 
-        // ── Assistant ─────────────────────────────────────────────────────────
-        Route::post('assistant/chat', [AssistantController::class, 'chat'])->middleware('throttle:20,1');
+        // ── Assistant (module: ai_assistant) ─────────────────────────────────────
+        Route::post('assistant/chat', [AssistantController::class, 'chat'])->middleware(['throttle:20,1', 'module:ai_assistant']);
 
         // ── Dashboard ─────────────────────────────────────────────────────────
         Route::get('dashboard', DashboardController::class);
@@ -193,47 +193,50 @@ Route::middleware(['api', 'tenant', 'tenant.active'])->prefix('v1')->group(funct
             Route::delete('receptions/{reception}', [ReceptionController::class, 'destroy']);
         });
 
-        // ── Quotes ────────────────────────────────────────────────────────────
-        Route::middleware('permission:list_quotes')->group(function () {
-            Route::get('quotes', [QuoteController::class, 'index']);
-            Route::get('quotes/{quote}', [QuoteController::class, 'show']);
-        });
-        Route::middleware('permission:create_edit_delete_quotes')->group(function () {
-            Route::post('quotes', [QuoteController::class, 'store']);
-            Route::delete('quotes/{quote}', [QuoteController::class, 'destroy']);
-            Route::post('quotes/{quote}/convert', [QuoteController::class, 'convert']);
-        });
-
-        // ── Orders ────────────────────────────────────────────────────────────
-        // Sub-resources before {order} wildcard to avoid route shadowing
-        Route::prefix('orders')->group(function () {
-            // Couriers GET open to all authenticated users (needed for order assignment dropdown)
-            Route::get('couriers', [CourierController::class, 'index']);
-            Route::middleware('permission:create_edit_delete_couriers')->group(function () {
-                Route::post('couriers', [CourierController::class, 'store']);
-                Route::put('couriers/{courier}', [CourierController::class, 'update']);
-                Route::delete('couriers/{courier}', [CourierController::class, 'destroy']);
-                Route::patch('couriers/{courier}/toggle', [CourierController::class, 'toggle']);
+        // ── Quotes & Orders (module: orders_quotes) ──────────────────────────────
+        Route::middleware('module:orders_quotes')->group(function () {
+            // ── Quotes ────────────────────────────────────────────────────────
+            Route::middleware('permission:list_quotes')->group(function () {
+                Route::get('quotes', [QuoteController::class, 'index']);
+                Route::get('quotes/{quote}', [QuoteController::class, 'show']);
+            });
+            Route::middleware('permission:create_edit_delete_quotes')->group(function () {
+                Route::post('quotes', [QuoteController::class, 'store']);
+                Route::delete('quotes/{quote}', [QuoteController::class, 'destroy']);
+                Route::post('quotes/{quote}/convert', [QuoteController::class, 'convert']);
             });
 
-            // Order states GET open to all authenticated users (needed for order form dropdowns)
-            Route::get('states', [OrderStateController::class, 'index'])->name('order-states.index');
-            Route::middleware('permission:create_edit_delete_order_states')->group(function () {
-                Route::post('states', [OrderStateController::class, 'store'])->name('order-states.store');
-                Route::put('states/{orderState}', [OrderStateController::class, 'update'])->name('order-states.update');
-                Route::delete('states/{orderState}', [OrderStateController::class, 'destroy'])->name('order-states.destroy');
-                Route::patch('states/{orderState}/toggle', [OrderStateController::class, 'toggle']);
-            });
-        });
+            // ── Orders ────────────────────────────────────────────────────────
+            // Sub-resources before {order} wildcard to avoid route shadowing
+            Route::prefix('orders')->group(function () {
+                // Couriers GET open to all authenticated users (needed for order assignment dropdown)
+                Route::get('couriers', [CourierController::class, 'index']);
+                Route::middleware('permission:create_edit_delete_couriers')->group(function () {
+                    Route::post('couriers', [CourierController::class, 'store']);
+                    Route::put('couriers/{courier}', [CourierController::class, 'update']);
+                    Route::delete('couriers/{courier}', [CourierController::class, 'destroy']);
+                    Route::patch('couriers/{courier}/toggle', [CourierController::class, 'toggle']);
+                });
 
-        Route::middleware('permission:list_orders')->group(function () {
-            Route::get('orders', [OrderController::class, 'index']);
-            Route::get('orders/{order}', [OrderController::class, 'show']);
-        });
-        Route::middleware('permission:create_edit_delete_orders')->group(function () {
-            Route::post('orders', [OrderController::class, 'store']);
-            Route::delete('orders/{order}', [OrderController::class, 'destroy']);
-            Route::patch('orders/{order}/state', [OrderController::class, 'updateState']);
+                // Order states GET open to all authenticated users (needed for order form dropdowns)
+                Route::get('states', [OrderStateController::class, 'index'])->name('order-states.index');
+                Route::middleware('permission:create_edit_delete_order_states')->group(function () {
+                    Route::post('states', [OrderStateController::class, 'store'])->name('order-states.store');
+                    Route::put('states/{orderState}', [OrderStateController::class, 'update'])->name('order-states.update');
+                    Route::delete('states/{orderState}', [OrderStateController::class, 'destroy'])->name('order-states.destroy');
+                    Route::patch('states/{orderState}/toggle', [OrderStateController::class, 'toggle']);
+                });
+            });
+
+            Route::middleware('permission:list_orders')->group(function () {
+                Route::get('orders', [OrderController::class, 'index']);
+                Route::get('orders/{order}', [OrderController::class, 'show']);
+            });
+            Route::middleware('permission:create_edit_delete_orders')->group(function () {
+                Route::post('orders', [OrderController::class, 'store']);
+                Route::delete('orders/{order}', [OrderController::class, 'destroy']);
+                Route::patch('orders/{order}/state', [OrderController::class, 'updateState']);
+            });
         });
 
         // ── Daily Cash ────────────────────────────────────────────────────────
@@ -323,7 +326,7 @@ Route::middleware(['api', 'tenant', 'tenant.active'])->prefix('v1')->group(funct
                 Route::get('inventory/export', [ReportController::class, 'inventoryExport']);
             });
 
-            Route::middleware('permission:list_report_orders')->group(function () {
+            Route::middleware(['module:orders_quotes', 'permission:list_report_orders'])->group(function () {
                 Route::get('orders', [ReportController::class, 'orders']);
                 Route::get('orders/export', [ReportController::class, 'ordersExport']);
             });

@@ -12,7 +12,7 @@
       </main>
     </div>
 
-    <AiAssistant />
+    <AiAssistant v-if="hasAiAssistant" />
     <ReleasePopup />
   </div>
 </template>
@@ -30,6 +30,7 @@ const sidebarOpen = ref(false)
 const page = usePage()
 
 const customization = computed(() => page.props.customization ?? {})
+const hasAiAssistant = computed(() => (page.props.enabledModules ?? []).includes('ai_assistant'))
 
 const fontStyle = computed(() => ({
     fontFamily: customization.value.font_family ?? 'Inter',

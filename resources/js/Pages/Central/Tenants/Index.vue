@@ -83,6 +83,12 @@
               <td class="px-5 py-4">
                 <div class="flex items-center gap-2">
                   <button
+                    @click="openModules(tenant)"
+                    class="rounded px-2.5 py-1 text-xs text-indigo-400 transition hover:bg-indigo-900/40 hover:text-indigo-300"
+                  >
+                    {{ $t('central.modules') }}
+                  </button>
+                  <button
                     @click="openEdit(tenant)"
                     class="rounded px-2.5 py-1 text-xs text-gray-400 transition hover:bg-gray-700 hover:text-white"
                   >
@@ -247,6 +253,55 @@
         </div>
       </div>
     </transition>
+
+    <!-- Modules slide-over -->
+    <transition
+      enter-active-class="transition ease-out duration-200"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition ease-in duration-150"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
+      <div v-if="modulesTenant" class="fixed inset-0 z-50 flex justify-end">
+        <div class="fixed inset-0 bg-gray-950/70" @click="closeModules" />
+        <div class="relative z-10 flex w-full max-w-md flex-col bg-gray-900 shadow-2xl">
+          <div class="flex items-center justify-between border-b border-gray-800 px-6 py-4">
+            <h2 class="text-base font-semibold text-white">
+              {{ $t('central.modules') }} — {{ modulesTenant.name }}
+            </h2>
+            <button @click="closeModules" class="text-gray-400 hover:text-white">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="flex-1 space-y-3 overflow-y-auto px-6 py-5">
+            <p v-if="modulesTenant.modules.length === 0" class="text-sm text-gray-500">
+              {{ $t('central.no_modules') }}
+            </p>
+            <div
+              v-for="module in modulesTenant.modules"
+              :key="module.id"
+              class="flex items-center justify-between rounded-lg border border-gray-800 bg-gray-800/50 px-4 py-3"
+            >
+              <span class="text-sm text-white">{{ module.name }}</span>
+              <button
+                @click="toggleModule(module)"
+                :class="module.enabled ? 'bg-indigo-600' : 'bg-gray-700'"
+                class="relative inline-flex h-6 w-11 items-center rounded-full transition"
+              >
+                <span
+                  :class="module.enabled ? 'translate-x-6' : 'translate-x-1'"
+                  class="inline-block h-4 w-4 transform rounded-full bg-white transition"
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
   </CentralLayout>
 </template>
 
@@ -263,6 +318,8 @@ const search = ref('')
 const filterStatus = ref('')
 const slideOver = ref(false)
 const editing = ref(null)
+const modulesTenantId = ref(null)
+const modulesTenant = computed(() => props.tenants.find((t) => t.id === modulesTenantId.value) ?? null)
 
 const form = useForm({
   name: '',
@@ -361,6 +418,22 @@ function suspendTenant(tenant) {
 function activateTenant(tenant) {
   if (!confirm(`¿Reactivar acceso de "${tenant.name}"?`)) return
   router.post(route('central.tenants.activate', tenant.id), {}, { preserveScroll: true })
+}
+
+function openModules(tenant) {
+  modulesTenantId.value = tenant.id
+}
+
+function closeModules() {
+  modulesTenantId.value = null
+}
+
+function toggleModule(module) {
+  router.post(
+    route('central.tenants.modules.toggle', [modulesTenantId.value, module.id]),
+    {},
+    { preserveScroll: true, preserveState: true }
+  )
 }
 </script>
 
