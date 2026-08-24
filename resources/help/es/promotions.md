@@ -44,11 +44,7 @@ Podés modificar cualquier atributo de la promoción en cualquier momento. Activ
 
 ## Uso en ventas y pedidos
 
-Al crear una venta o pedido, buscá la promoción por nombre o código. El sistema la agrega como un ítem único con el precio configurado. Al confirmar, descuenta el stock de cada componente.
-
-## Disponibilidad de stock
-
-La promoción solo está disponible si todos sus componentes tienen stock suficiente para la cantidad definida en la promoción.
+Actualmente las promociones no pueden agregarse a una venta ni a un pedido: las pantallas de creación de ventas y pedidos no tienen soporte para promociones.
 
 ## Activar / Desactivar
 

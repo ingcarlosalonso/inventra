@@ -65,7 +65,7 @@ Cuando un pedido llega a un **estado final** (ej: "Entregado"), el sistema regis
 
 ## Asignación de courier
 
-Podés asignar o reasignar el courier en cualquier momento antes de que el pedido llegue a estado final. El reporte de Pedidos muestra métricas por courier.
+El courier se asigna al crear el pedido y actualmente no puede modificarse después. El reporte de Pedidos muestra métricas por courier.
 
 ## Lista de pedidos
 
@@ -76,15 +76,12 @@ En **Pedidos** verás:
 - Estado (con badge de color)
 - Fechas de entrega y programada
 - Total
-- Acciones: ver, editar, cambiar estado
+- Acciones: ver, cambiar estado
 
 ### Filtros
 
+- Por búsqueda (texto libre)
 - Por estado
-- Por cliente
-- Por courier
-- Por punto de venta
-- Por rango de fechas
 
 ## Seguimiento y trazabilidad
 

@@ -4,6 +4,18 @@ All notable changes to In-ventra are documented here.
 
 ---
 
+## [2.0.1] - 2026-08-24
+
+### Fixed
+- Product listing never showed current stock per presentation, even though the backend already returned it (`ProductPresentationResource.stock`) — the list row only showed brand/type/presentation count. Added a per-product stock badge (color-coded for out-of-stock/low-stock) to the product list
+- `UserController::toggle` had no self-guard, unlike `destroy` — a user could deactivate their own account and lock themselves out. Added the same self-check `destroy` already had
+- Deleting a `ProductType` or `Presentation` still assigned to products threw an uncaught `QueryException` (500) instead of a friendly error, since the FK is `restrictOnDelete()` but the controllers never checked for existing products first. Both now return a 422 with a translated message
+- Receptions linked to an open daily cash had zero effect on that cash's balance — `StoreReceptionAction` never recorded anything against the cash and `CalculateDailyCashBalanceAction` never looked at `Reception` at all, despite the Help docs and app documentation describing the reception total as reflected in the day's balance. The balance calculation (and the equivalent `DailyCash` index/show queries) now subtracts linked receptions' totals
+- `CompositeProductController::destroy` deleted unconditionally with no check for prior usage. Composite products aren't addable through Sales/Orders/Quotes today, but the polymorphic `saleable_type`/`saleable_id` columns those items already use to reference sellable items have no DB-level FK (morph columns can't be indexed/constrained), so once that flow ships this would silently orphan historical sale/order/quote items instead of failing loudly. Blocked deletion (422) when a composite product is still referenced by any `SaleItem`, `OrderItem`, or `QuoteItem`
+- Audited every Help section (`resources/help/{es,en}/*.md`) against actual app behavior and corrected numerous claims describing filters, actions, and flows that don't exist (e.g. non-existent list filters across Sales/Orders/Quotes/Daily Cashes/Reports, PDF generation for Quotes, editing Sales/Orders/Quotes after creation, adding composite products/promotions to a sale or order, client CUIT/credit-limit/history, `list_users`/`list_roles` as functional view-only permissions, and dashboard quick-action buttons that aren't in the top bar)
+
+---
+
 ## [1.4.0] - xxxx-xx-xx
 
 ### Added

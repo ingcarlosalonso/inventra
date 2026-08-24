@@ -1,32 +1,32 @@
 # Productos Compuestos
 
-Los productos compuestos (también llamados **kits**) son agrupaciones de productos simples que se venden juntos como una unidad. Son ideales para armar combos, packs o sets de productos relacionados.
+Los productos compuestos (también llamados **kits**) son agrupaciones de productos simples que definen los componentes de un combo, pack o set de productos relacionados.
 
 ## ¿Qué es un producto compuesto?
 
-Un producto compuesto es un conjunto de productos del catálogo que se vende como un solo ítem. Ejemplo:
+Un producto compuesto es un conjunto de productos del catálogo agrupados como un solo ítem. Ejemplo:
 
 **"Kit Limpieza Hogar"** compuesto por:
 - 1x Detergente 1 litro
 - 2x Esponja de cocina
 - 1x Lavandina 500 ml
 
-Al vender este kit, el sistema descuenta automáticamente el stock de cada componente.
+Actualmente los productos compuestos no tienen precio de venta propio y no pueden agregarse a una venta o pedido: funcionan como una lista de componentes para referencia interna.
 
 ## Diferencias con productos simples
 
 | Característica | Producto simple | Producto compuesto |
 |---|---|---|
-| Precio propio | Sí | No (derivado de componentes) |
-| Stock propio | Sí | No (disponibilidad según componentes) |
+| Precio propio | Sí | No |
+| Stock propio | Sí | No (es una lista de componentes) |
 | Componentes | No | Sí (lista de productos con cantidades) |
-| Venta en ventas/pedidos | Sí | Sí |
+| Venta en ventas/pedidos | Sí | No |
 
 ## Atributos del producto compuesto
 
 - **Nombre**: nombre del kit o combo (ej: "Starter Kit Premium").
 - **Código**: código interno opcional para identificación rápida.
-- **Estado**: activo o inactivo. Los inactivos no aparecen en ventas.
+- **Estado**: activo o inactivo.
 - **Ítems**: lista de productos que componen el kit, cada uno con:
   - Producto seleccionado
   - Presentación del producto
@@ -46,18 +46,17 @@ Al vender este kit, el sistema descuenta automáticamente el stock de cada compo
 
 Podés modificar el nombre, código, estado y la lista de componentes. Cambiar los componentes no afecta ventas ya registradas.
 
-## Disponibilidad y precio
+## Precio
 
-- **Precio**: el sistema calcula automáticamente el precio del kit como la suma de los precios de sus componentes por cantidad.
-- **Disponibilidad**: el kit está disponible para venta solo si todos sus componentes tienen stock suficiente. Si algún componente se agota, el kit queda sin stock disponible.
+Los productos compuestos no tienen un precio de venta propio: no se calcula automáticamente a partir del precio de sus componentes, y actualmente no pueden venderse directamente como una unidad.
 
 ## Uso en ventas y pedidos
 
-Al crear una venta o un pedido, podés buscar el kit por nombre o código. El sistema lo agrega como un solo ítem, pero al confirmar la venta registra los movimientos de stock de cada componente individualmente.
+Actualmente los productos compuestos no pueden agregarse a una venta ni a un pedido: las pantallas de creación de ventas y pedidos solo admiten productos simples.
 
 ## Activar / Desactivar
 
-Igual que los productos simples, podés activar o desactivar un kit sin eliminarlo. Los kits inactivos no aparecen en el selector de productos al crear ventas.
+Igual que los productos simples, podés activar o desactivar un kit sin eliminarlo.
 
 ## Eliminar un producto compuesto
 
@@ -65,6 +64,4 @@ Solo se puede eliminar si no tiene ventas ni pedidos asociados. El sistema pedir
 
 ## Consejos
 
-> **Tip**: Usá productos compuestos para crear combos promocionales de temporada sin necesidad de crear un nuevo producto simple.
-
-> **Tip**: Si un kit tiene componentes con stock bajo, aparecerá en el Dashboard como kit con disponibilidad limitada.
+> **Tip**: Usá productos compuestos para modelar combos o packs de productos relacionados sin necesidad de crear un nuevo producto simple.

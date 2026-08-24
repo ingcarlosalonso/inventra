@@ -37,7 +37,7 @@ Identifies best-selling products and catalog performance.
 - Bar chart: top products by revenue
 - Detailed table by product/presentation
 
-**Filters:** date range, product type.
+**Filters:** date range.
 
 ---
 
@@ -55,7 +55,7 @@ Analyzes how clients pay and the collection flow.
 - Pie chart: distribution by payment method
 - Movements table with method, amount, and date
 
-**Filters:** date range, payment method, point of sale.
+**Filters:** date range, payment method.
 
 ---
 
@@ -74,7 +74,7 @@ Shows the current stock status of all products.
 - Stock status: OK / Low / Out of stock (with colors)
 - Stock value (quantity x price)
 
-**Filters:** product type, stock status, name search.
+**Filters:** product type, name search.
 
 ---
 
@@ -91,7 +91,7 @@ Financial summary of all cash registers in the period.
 **Table:**
 - Detail per cash: opening, closing, income, expenses, difference.
 
-**Filters:** date range, point of sale, status (open/closed).
+**Filters:** date range, point of sale.
 
 ---
 
@@ -109,7 +109,7 @@ Analysis of delivery performance and logistics.
 - Order distribution by state
 - Courier ranking by delivery count
 
-**Filters:** date range, state, courier, point of sale.
+**Filters:** date range, state, courier.
 
 ---
 
@@ -122,7 +122,7 @@ Identifies most active clients and their purchasing behavior.
 - Number of purchases per client
 - Average ticket per client
 
-**Filters:** date range, client.
+**Filters:** date range.
 
 ---
 

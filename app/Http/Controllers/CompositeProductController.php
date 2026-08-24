@@ -4,12 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Actions\StoreCompositeProductAction;
 use App\Actions\UpdateCompositeProductAction;
+use App\Enums\SaleItemType;
 use App\Http\Requests\CompositeProduct\IndexCompositeProductRequest;
 use App\Http\Requests\CompositeProduct\StoreCompositeProductRequest;
 use App\Http\Requests\CompositeProduct\UpdateCompositeProductRequest;
 use App\Http\Resources\CompositeProduct\CompositeProductResource;
 use App\Models\CompositeProduct;
 use App\Models\CompositeProduct\Scopes\BySearch;
+use App\Models\OrderItem;
+use App\Models\QuoteItem;
+use App\Models\SaleItem;
+use App\Models\Scopes\BySaleable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
@@ -42,6 +47,17 @@ class CompositeProductController extends Controller
 
     public function destroy(CompositeProduct $compositeProduct): JsonResponse
     {
+        $morphType = SaleItemType::Composite->morphType();
+        $scope = new BySaleable($morphType, $compositeProduct->id);
+
+        $isReferenced = SaleItem::query()->withScopes($scope)->exists()
+            || OrderItem::query()->withScopes($scope)->exists()
+            || QuoteItem::query()->withScopes($scope)->exists();
+
+        if ($isReferenced) {
+            return response()->json(['message' => __('composite_products.has_sales_error')], 422);
+        }
+
         $compositeProduct->delete();
 
         return response()->json([], 204);

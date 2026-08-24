@@ -40,7 +40,7 @@ Example:
 
 ## Use in Sales and Orders
 
-When creating a sale or order, search the promotion by name or code. The system adds it as a single item with the configured price. On confirmation, it deducts stock from each component.
+Promotions currently can't be added to a sale or an order: the sale and order creation screens don't have support for promotions.
 
 ## Tips
 

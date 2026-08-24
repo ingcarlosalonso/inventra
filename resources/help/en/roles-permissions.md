@@ -53,10 +53,8 @@ Permissions are grouped by module:
 ### Users & Roles
 | Permission | What it allows |
 |---|---|
-| `list_users` | View the user list |
-| `create_edit_delete_users` | Create, edit, and delete users |
-| `list_roles` | View the roles list |
-| `create_edit_delete_roles` | Create, edit, and delete roles and their permissions |
+| `create_edit_delete_users` | View, create, edit, and delete users (there is no separate view-only permission for this screen) |
+| `create_edit_delete_roles` | View, create, edit, and delete roles and their permissions (there is no separate view-only permission for this screen) |
 
 ### Clients & Suppliers
 | Permission | What it allows |

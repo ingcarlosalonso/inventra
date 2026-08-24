@@ -29,6 +29,8 @@ When editing a user you can modify all their data. **The password field is optio
 
 Using the toggle button in the list you can activate or deactivate an account without deleting it. Inactive users cannot log in.
 
+> A user **also cannot deactivate their own account**.
+
 ---
 
 ## Changing another user's password (Admin)

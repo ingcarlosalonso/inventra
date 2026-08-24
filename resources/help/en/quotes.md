@@ -2,11 +2,11 @@
 
 > **Note**: Orders & Quotes is a separately contracted module. If you don't see this section in your menu, contact your account administrator to enable it.
 
-The Quotes module allows generating quotations for clients before finalizing a sale. Quotes don't affect stock until they are converted into a sale or order.
+The Quotes module allows generating quotations for clients before finalizing a sale. Quotes don't affect stock until they are converted into a sale.
 
 ## What is a Quote?
 
-A quote is a sales proposal with a list of products and prices delivered to the client for evaluation. It has validity until a certain date. If the client accepts, it's converted into a sale or order.
+A quote is a sales proposal with a list of products and prices delivered to the client for evaluation. It has validity until a certain date. If the client accepts, it's converted into a sale.
 
 ## Quote Attributes
 
@@ -34,17 +34,6 @@ A quote is a sales proposal with a list of products and prices delivered to the 
 6. Add notes with quote conditions.
 7. Click **Save**.
 
-## Generating PDF
-
-From the quote detail, click **Download PDF** to generate a PDF file ready to send by email or print. The PDF includes:
-
-- Your company logo and data (configured in General Parameters).
-- Client data.
-- Product list with prices, discounts, and subtotals.
-- Quote total.
-- Validity dates.
-- Notes and conditions.
-
 ## Converting to Sale
 
 When the client accepts the quote:
@@ -56,16 +45,6 @@ When the client accepts the quote:
 5. Confirm the sale.
 
 The quote automatically changes to **Converted** status and remains linked to the created sale.
-
-## Converting to Order
-
-You can also convert a quote into a delivery order:
-
-1. Open the quote detail.
-2. Click **Convert to Order**.
-3. The system opens the new order form pre-loaded.
-4. Complete delivery details (address, courier, delivery date).
-5. Confirm the order.
 
 ## Creating a quote with the AI Assistant
 

@@ -53,10 +53,8 @@ Los permisos están agrupados por módulo:
 ### Usuarios y Roles
 | Permiso | Qué permite |
 |---|---|
-| `list_users` | Ver el listado de usuarios |
-| `create_edit_delete_users` | Crear, editar y eliminar usuarios |
-| `list_roles` | Ver el listado de roles |
-| `create_edit_delete_roles` | Crear, editar y eliminar roles y sus permisos |
+| `create_edit_delete_users` | Ver, crear, editar y eliminar usuarios (no existe un permiso separado de solo lectura para esta pantalla) |
+| `create_edit_delete_roles` | Ver, crear, editar y eliminar roles y sus permisos (no existe un permiso separado de solo lectura para esta pantalla) |
 
 ### Clientes y Proveedores
 | Permiso | Qué permite |
