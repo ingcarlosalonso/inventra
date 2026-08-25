@@ -91,9 +91,8 @@ En **Caja Diaria** verás el listado de todas las cajas con:
 
 ### Filtros
 
-- Por punto de venta
-- Por estado
-- Por rango de fechas
+- Por búsqueda (texto libre)
+- Por estado (abierta / cerrada)
 
 ## Reporte de Caja
 

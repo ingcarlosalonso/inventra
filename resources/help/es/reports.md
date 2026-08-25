@@ -41,7 +41,7 @@ Identifica los productos más vendidos y el rendimiento del catálogo.
 - Gráfico de barras: top productos por ingresos
 - Tabla detallada por producto/presentación
 
-**Filtros:** rango de fechas, tipo de producto.
+**Filtros:** rango de fechas.
 
 ---
 
@@ -59,7 +59,7 @@ Analiza cómo pagan los clientes y el flujo de cobros.
 - Gráfico de torta: distribución por método de pago
 - Tabla de movimientos con método, monto y fecha
 
-**Filtros:** rango de fechas, método de pago, punto de venta.
+**Filtros:** rango de fechas, método de pago.
 
 ---
 
@@ -78,7 +78,7 @@ Muestra el estado actual del stock de todos los productos.
 - Estado del stock: OK / Bajo / Sin stock (con colores)
 - Valor del stock (cantidad x precio)
 
-**Filtros:** tipo de producto, estado de stock, búsqueda por nombre.
+**Filtros:** tipo de producto, búsqueda por nombre.
 
 ---
 
@@ -95,7 +95,7 @@ Resumen financiero de todas las cajas del período.
 **Tabla:**
 - Detalle por caja: apertura, cierre, ingresos, egresos, diferencia.
 
-**Filtros:** rango de fechas, punto de venta, estado (abierta/cerrada).
+**Filtros:** rango de fechas, punto de venta.
 
 ---
 
@@ -113,7 +113,7 @@ Análisis del rendimiento de entregas y logística.
 - Distribución de pedidos por estado
 - Ranking de couriers por cantidad de entregas
 
-**Filtros:** rango de fechas, estado, courier, punto de venta.
+**Filtros:** rango de fechas, estado, courier.
 
 ---
 
@@ -129,7 +129,7 @@ Identifica los clientes más activos y su comportamiento de compra.
 **Visualizaciones:**
 - Gráfico de barras: top clientes por ingresos
 
-**Filtros:** rango de fechas, cliente.
+**Filtros:** rango de fechas.
 
 ---
 

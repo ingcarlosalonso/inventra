@@ -35,15 +35,6 @@ Below the charts you'll find:
 - **Recent sales**: the latest registered sales with client, amount, and state.
 - **Low-stock products**: table of products below the minimum stock threshold, with current quantity and minimum configured.
 
-## Quick Actions
-
-In the system's top bar you'll find quick access buttons for the most frequent operations:
-
-- **New Sale**: opens the sale creation form directly.
-- **New Order**: opens the order creation form.
-- **Quotes**: navigates to the quotes list.
-- **Reports**: navigates to the advanced reports module.
-
 ## Refreshing Data
 
 The Dashboard loads data on entry. You can refresh data using the **Refresh** button (reload icon) in the top right corner of the main panel.

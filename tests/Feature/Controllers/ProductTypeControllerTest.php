@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Controllers;
 
+use App\Models\Product;
 use App\Models\ProductType;
 use Tests\Feature\TenantFeatureTestCase;
 
@@ -116,6 +117,19 @@ class ProductTypeControllerTest extends TenantFeatureTestCase
         $this->actingAs($this->user, 'sanctum')
             ->deleteJson("/api/v1/products/types/{$parent->uuid}")
             ->assertStatus(422);
+    }
+
+    public function test_destroy_rejects_type_with_products(): void
+    {
+        $type = ProductType::factory()->create();
+        Product::factory()->create(['product_type_id' => $type->id]);
+
+        $this->actingAs($this->user, 'sanctum')
+            ->deleteJson("/api/v1/products/types/{$type->uuid}")
+            ->assertStatus(422)
+            ->assertJsonPath('message', __('product_types.has_products_error'));
+
+        $this->assertDatabaseHas('product_types', ['id' => $type->id, 'deleted_at' => null], 'tenant');
     }
 
     // ── toggle ────────────────────────────────────────────────────────────────

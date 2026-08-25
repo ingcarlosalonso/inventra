@@ -58,7 +58,7 @@ Una vez guardada la recepción, el stock de cada presentación se incrementa aut
 
 ## Efecto en la caja diaria
 
-Si vinculaste la recepción a una caja diaria abierta, el sistema registra automáticamente un **movimiento de egreso** en esa caja por el total de la compra. Esto refleja el pago al proveedor en el balance de caja del día.
+Si vinculaste la recepción a una caja diaria abierta, el total de la compra se **descuenta automáticamente del balance** de esa caja. Esto refleja el pago al proveedor en el balance de caja del día (no genera un movimiento de egreso individual en el listado de movimientos, pero sí impacta el cálculo del balance actual).
 
 ## Lista de recepciones
 
@@ -73,7 +73,7 @@ En la pantalla principal de Recepciones verás:
 
 ### Búsqueda y filtros
 
-Podés buscar por proveedor, número de factura o rango de fechas.
+Podés buscar por proveedor o número de factura.
 
 ## Consejos
 

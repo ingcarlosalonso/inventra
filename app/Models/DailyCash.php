@@ -47,4 +47,9 @@ class DailyCash extends Model
     {
         return $this->hasMany(Payment::class);
     }
+
+    public function receptions(): HasMany
+    {
+        return $this->hasMany(Reception::class);
+    }
 }

@@ -8,6 +8,7 @@ use App\Models\DailyCash;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
 use App\Models\PointOfSale;
+use App\Models\Reception;
 use Tests\Feature\TenantFeatureTestCase;
 
 class DailyCashControllerTest extends TenantFeatureTestCase
@@ -138,6 +139,45 @@ class DailyCashControllerTest extends TenantFeatureTestCase
             ->assertOk();
 
         $this->assertEquals(300.00, (float) $response->json('data.current_balance'));
+    }
+
+    public function test_it_shows_current_balance_subtracts_linked_receptions(): void
+    {
+        $dailyCash = DailyCash::factory()->create(['opening_balance' => 500.00]);
+
+        Reception::factory()->create([
+            'daily_cash_id' => $dailyCash->id,
+            'total' => 120.00,
+        ]);
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->getJson("/api/v1/daily-cashes/{$dailyCash->uuid}")
+            ->assertOk();
+
+        $this->assertEquals(380.00, (float) $response->json('data.current_balance'));
+    }
+
+    public function test_it_lists_daily_cashes_with_current_balance_subtracting_receptions(): void
+    {
+        $pos = PointOfSale::factory()->create();
+        $dailyCash = DailyCash::factory()->create([
+            'point_of_sale_id' => $pos->id,
+            'opening_balance' => 200.00,
+        ]);
+
+        Reception::factory()->create([
+            'daily_cash_id' => $dailyCash->id,
+            'total' => 80.00,
+        ]);
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->getJson('/api/v1/daily-cashes')
+            ->assertOk();
+
+        $item = collect($response->json('data'))->firstWhere('id', $dailyCash->uuid);
+
+        $this->assertNotNull($item);
+        $this->assertEquals(120.00, (float) $item['current_balance']);
     }
 
     // ─── STORE ───────────────────────────────────────────────────────────────

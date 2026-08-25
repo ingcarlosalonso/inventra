@@ -12,4 +12,5 @@ return [
     'no_items' => 'Add at least one component.',
     'product' => 'Product',
     'quantity' => 'Quantity',
+    'has_sales_error' => 'Cannot delete a composite product that has already been used in sales, orders, or quotes.',
 ];

@@ -53,7 +53,21 @@
             <div class="flex-1 min-w-0">
               <div class="flex items-center justify-between gap-2">
                 <p class="truncate text-sm font-medium text-gray-900">{{ item.name }}</p>
-                <StatusBadge :active="item.is_active" />
+                <div class="flex items-center gap-1.5 shrink-0">
+                  <span
+                    v-if="stockStatus(item)"
+                    class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1"
+                    :class="{
+                      'bg-red-50 text-red-700 ring-red-200': stockStatus(item) === 'out',
+                      'bg-amber-50 text-amber-700 ring-amber-200': stockStatus(item) === 'low',
+                      'bg-gray-50 text-gray-600 ring-gray-200': stockStatus(item) === 'ok',
+                    }"
+                    :title="$t('products.stock')"
+                  >
+                    {{ $t('products.stock') }}: {{ totalStock(item) }}
+                  </span>
+                  <StatusBadge :active="item.is_active" />
+                </div>
               </div>
               <div class="mt-0.5 flex items-center justify-between gap-2">
                 <p class="truncate text-xs text-gray-400 min-w-0">
@@ -299,6 +313,18 @@ async function fetchOptions() {
   if (brandRes.data) brands.value = (brandRes.data.data ?? brandRes.data).filter(b => b.is_active)
   if (pRes.data) presentations.value = pRes.data.data ?? pRes.data
   if (cRes.data) currencies.value = cRes.data.data ?? cRes.data
+}
+
+function totalStock(item) {
+  return (item.presentations ?? []).reduce((sum, pp) => sum + Number(pp.stock ?? 0), 0)
+}
+
+function stockStatus(item) {
+  const list = item.presentations ?? []
+  if (!list.length) return null
+  if (list.some(pp => Number(pp.stock) <= 0)) return 'out'
+  if (list.some(pp => Number(pp.stock) <= Number(pp.min_stock))) return 'low'
+  return 'ok'
 }
 
 function addPresentation() { form.value.presentations.push(emptyPresentation()) }

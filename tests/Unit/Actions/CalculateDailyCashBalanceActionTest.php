@@ -8,6 +8,7 @@ use App\Models\CashMovementType;
 use App\Models\DailyCash;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
+use App\Models\Reception;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -154,6 +155,35 @@ class CalculateDailyCashBalanceActionTest extends TestCase
         $result = $this->action()->execute($dailyCash);
 
         $this->assertEquals(1550.00, $result);
+    }
+
+    public function test_it_subtracts_receptions_linked_to_the_daily_cash(): void
+    {
+        $dailyCash = DailyCash::factory()->create(['opening_balance' => 1000.00]);
+
+        Reception::factory()->create([
+            'daily_cash_id' => $dailyCash->id,
+            'total' => 250.00,
+        ]);
+
+        $result = $this->action()->execute($dailyCash);
+
+        $this->assertEquals(750.00, $result);
+    }
+
+    public function test_it_ignores_receptions_from_other_daily_cashes(): void
+    {
+        $dailyCash = DailyCash::factory()->create(['opening_balance' => 100.00]);
+        $otherDailyCash = DailyCash::factory()->create(['opening_balance' => 0.00]);
+
+        Reception::factory()->create([
+            'daily_cash_id' => $otherDailyCash->id,
+            'total' => 9999.00,
+        ]);
+
+        $result = $this->action()->execute($dailyCash);
+
+        $this->assertEquals(100.00, $result);
     }
 
     public function test_it_ignores_payments_from_other_daily_cashes(): void

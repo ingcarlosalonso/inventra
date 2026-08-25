@@ -29,6 +29,8 @@ Al editar un usuario podés modificar todos sus datos. **El campo contraseña es
 
 Usando el botón de toggle en la lista podés activar o desactivar una cuenta sin eliminarla. Los usuarios inactivos no pueden iniciar sesión.
 
+> Un usuario **tampoco puede desactivar su propia cuenta**.
+
 ---
 
 ## Cambiar contraseña de otro usuario (Admin)

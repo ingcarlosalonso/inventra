@@ -51,17 +51,17 @@ Al crear o editar un producto, en la sección de presentaciones:
 
 1. Seleccioná una presentación del listado global (ej: "1 kg").
 2. Definí el **precio de venta** para esa presentación de ese producto.
-3. Definí el **stock actual** y el **stock mínimo**.
+3. Definí el **stock mínimo**. La presentación arranca con stock 0 — el stock real ingresa después a través de Recepciones o movimientos manuales de stock.
 
-Un mismo producto puede tener múltiples presentaciones con diferentes precios y stocks. Por ejemplo, "Arroz" puede tener:
-- Presentación "500 g" → precio $150, stock 80
-- Presentación "1 kg" → precio $280, stock 120
-- Presentación "5 kg" → precio $1.200, stock 30
+Un mismo producto puede tener múltiples presentaciones con diferentes precios y stocks mínimos. Por ejemplo, "Arroz" puede tener:
+- Presentación "500 g" → precio $150, stock mínimo 20
+- Presentación "1 kg" → precio $280, stock mínimo 30
+- Presentación "5 kg" → precio $1.200, stock mínimo 10
 
 ## Editar y eliminar
 
 - **Editar**: podés cambiar el nombre del tipo o la cantidad de la presentación en cualquier momento.
-- **Eliminar**: solo si no está asignada a ningún producto activo.
+- **Eliminar**: solo si no está asignada a ningún producto.
 
 ## Consejos
 

@@ -9,7 +9,7 @@ Accedé desde **Productos → [Config] Marcas**.
 - **Crear**: hacé clic en "Nueva Marca" e ingresá el nombre.
 - **Editar**: usá el botón de lápiz en cada fila.
 - **Activar / desactivar**: el botón de ojo activa o desactiva la marca. Solo las marcas activas aparecen en los formularios de productos.
-- **Eliminar**: eliminá marcas que no tengan productos asociados.
+- **Eliminar**: al eliminar una marca, se elimina de todos los productos que la tenían asignada (esos productos quedan sin marca) — no es necesario desvincular productos antes.
 
 ## Asignación a productos
 

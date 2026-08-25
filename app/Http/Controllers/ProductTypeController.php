@@ -6,6 +6,8 @@ use App\Http\Requests\ProductType\IndexProductTypeRequest;
 use App\Http\Requests\ProductType\StoreProductTypeRequest;
 use App\Http\Requests\ProductType\UpdateProductTypeRequest;
 use App\Http\Resources\ProductType\ProductTypeResource;
+use App\Models\Product;
+use App\Models\Product\Scopes\ByProductType;
 use App\Models\ProductType;
 use App\Models\ProductType\Scopes\BySearch;
 use Illuminate\Http\JsonResponse;
@@ -51,6 +53,10 @@ class ProductTypeController extends Controller
     {
         if ($productType->children()->exists()) {
             return response()->json(['message' => __('product_types.has_children_error')], 422);
+        }
+
+        if (Product::query()->withScopes(new ByProductType($productType->id))->exists()) {
+            return response()->json(['message' => __('product_types.has_products_error')], 422);
         }
 
         $productType->delete();
