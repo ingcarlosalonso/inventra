@@ -39,15 +39,11 @@ When you enter **Products** you'll see a table with:
 - Product type
 - Status (active/inactive) with color badge
 - Total stock (sum of presentations)
-- Actions: edit, view detail, activate/deactivate, delete
+- Actions: edit, delete (the "Active" status is changed from within the edit panel, not from the row)
 
 ### Search
 
 You can search products by **name**, **code**, or **barcode**. The search filters in real time.
-
-### Filter by Status
-
-Use the status selector to view only active, inactive, or all products.
 
 ## Creating a Product
 
@@ -61,7 +57,7 @@ Use the status selector to view only active, inactive, or all products.
 
 ## Editing a Product
 
-Click the pencil icon in the product row or the Edit button in the detail view. You can modify all fields including existing presentations or add new ones.
+Click the pencil icon in the product row to open the edit panel. You can modify all fields including existing presentations or add new ones.
 
 > **Important**: Changing a presentation's price does not affect previously registered sales.
 
@@ -86,7 +82,7 @@ Each presentation's stock is automatically updated when:
 - **You confirm an order as delivered** (decreases stock).
 - **You register an extra adjustment movement** (loss, correction).
 
-You can check the current stock in the product detail or in the Inventory Report.
+You can check the current stock in the products list or in the Inventory Report.
 
 ## Bulk Import
 

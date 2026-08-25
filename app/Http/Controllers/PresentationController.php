@@ -46,6 +46,10 @@ class PresentationController extends Controller
 
     public function destroy(Presentation $presentation): JsonResponse
     {
+        if ($presentation->productPresentations()->exists()) {
+            return response()->json(['message' => __('presentations.has_products_error')], 422);
+        }
+
         $presentation->delete();
 
         return response()->json([], 204);

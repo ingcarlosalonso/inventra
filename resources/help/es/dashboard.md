@@ -35,15 +35,6 @@ Debajo de los gráficos encontrarás:
 - **Ventas recientes**: las últimas ventas registradas con cliente, monto y estado.
 - **Productos con stock bajo**: tabla de productos que están por debajo del umbral mínimo de stock, con cantidad actual y mínimo configurado.
 
-## Acciones rápidas
-
-En la barra superior del sistema encontrarás botones de acceso rápido a las operaciones más frecuentes:
-
-- **Nueva Venta**: abre directamente el formulario de creación de venta.
-- **Nuevo Pedido**: abre el formulario de creación de pedido.
-- **Presupuestos**: navega al listado de presupuestos.
-- **Reportes**: navega al módulo de reportes avanzados.
-
 ## Actualizar datos
 
 El Dashboard carga datos al ingresar. Podés refrescar los datos con el botón **Actualizar** (ícono de recarga) en la esquina superior derecha del panel principal.

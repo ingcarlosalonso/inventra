@@ -12,4 +12,5 @@ return [
     'no_items' => 'Agregá al menos un componente.',
     'product' => 'Producto',
     'quantity' => 'Cantidad',
+    'has_sales_error' => 'No se puede eliminar un producto compuesto que ya fue usado en ventas, pedidos o presupuestos.',
 ];

@@ -70,14 +70,12 @@ Navegá a **Ventas** en la barra lateral. Verás el listado con:
 - Cliente
 - Estado (con badge de color)
 - Total y total cobrado
-- Acciones: ver detalle, editar (si no está en estado final), anular
+- Acciones: ver detalle, anular
 
 ### Filtros disponibles
 
-- Por rango de fechas
-- Por cliente
+- Por búsqueda (texto libre)
 - Por estado
-- Por punto de venta
 
 ## Estados de venta
 

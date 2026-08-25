@@ -13,4 +13,5 @@ return [
     'roles' => 'Roles',
     'no_role' => 'Sin rol asignado',
     'cannot_delete_self' => 'No podés eliminar tu propio usuario.',
+    'cannot_deactivate_self' => 'No podés desactivar tu propio usuario.',
 ];

@@ -4,7 +4,10 @@ namespace Tests\Feature\Controllers;
 
 use App\Models\CompositeProduct;
 use App\Models\CompositeProductItem;
+use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\QuoteItem;
+use App\Models\SaleItem;
 use Tests\Feature\TenantFeatureTestCase;
 
 class CompositeProductControllerTest extends TenantFeatureTestCase
@@ -200,5 +203,54 @@ class CompositeProductControllerTest extends TenantFeatureTestCase
         $this->actingAs($this->user, 'sanctum')
             ->deleteJson('/api/v1/products/composite/non-existent-uuid')
             ->assertNotFound();
+    }
+
+    public function test_destroy_rejects_composite_product_used_in_a_sale(): void
+    {
+        $compositeProduct = CompositeProduct::factory()->create();
+
+        SaleItem::factory()->create([
+            'product_presentation_id' => null,
+            'saleable_type' => 'composite_product',
+            'saleable_id' => $compositeProduct->id,
+        ]);
+
+        $this->actingAs($this->user, 'sanctum')
+            ->deleteJson("/api/v1/products/composite/{$compositeProduct->uuid}")
+            ->assertStatus(422)
+            ->assertJsonPath('message', __('composite_products.has_sales_error'));
+
+        $this->assertDatabaseHas('composite_products', ['id' => $compositeProduct->id, 'deleted_at' => null], 'tenant');
+    }
+
+    public function test_destroy_rejects_composite_product_used_in_an_order(): void
+    {
+        $compositeProduct = CompositeProduct::factory()->create();
+
+        OrderItem::factory()->create([
+            'saleable_type' => 'composite_product',
+            'saleable_id' => $compositeProduct->id,
+        ]);
+
+        $this->actingAs($this->user, 'sanctum')
+            ->deleteJson("/api/v1/products/composite/{$compositeProduct->uuid}")
+            ->assertStatus(422)
+            ->assertJsonPath('message', __('composite_products.has_sales_error'));
+    }
+
+    public function test_destroy_rejects_composite_product_used_in_a_quote(): void
+    {
+        $compositeProduct = CompositeProduct::factory()->create();
+
+        QuoteItem::factory()->create([
+            'product_presentation_id' => null,
+            'saleable_type' => 'composite_product',
+            'saleable_id' => $compositeProduct->id,
+        ]);
+
+        $this->actingAs($this->user, 'sanctum')
+            ->deleteJson("/api/v1/products/composite/{$compositeProduct->uuid}")
+            ->assertStatus(422)
+            ->assertJsonPath('message', __('composite_products.has_sales_error'));
     }
 }

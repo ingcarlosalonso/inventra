@@ -51,12 +51,12 @@ When creating or editing a product, in the presentations section:
 
 1. Select a presentation from the global list (e.g. "1 kg").
 2. Define the **sale price** for that presentation of that product.
-3. Define the **current stock** and **minimum stock**.
+3. Define the **minimum stock**. The presentation starts at stock 0 — actual stock arrives later through Receptions or manual stock movements.
 
-A single product can have multiple presentations with different prices and stocks. For example, "Rice" can have:
-- Presentation "500 g" → price $150, stock 80
-- Presentation "1 kg" → price $280, stock 120
-- Presentation "5 kg" → price $1,200, stock 30
+A single product can have multiple presentations with different prices and minimum stocks. For example, "Rice" can have:
+- Presentation "500 g" → price $150, minimum stock 20
+- Presentation "1 kg" → price $280, minimum stock 30
+- Presentation "5 kg" → price $1,200, minimum stock 10
 
 ## Tips
 

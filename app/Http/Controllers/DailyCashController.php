@@ -27,7 +27,8 @@ class DailyCashController extends Controller
         $query = DailyCash::with('pointOfSale')
             ->withSum('payments', 'amount')
             ->withSum(['cashMovements as income_movements_sum' => fn ($q) => $q->whereRelation('cashMovementType', 'is_income', true)], 'amount')
-            ->withSum(['cashMovements as expense_movements_sum' => fn ($q) => $q->whereRelation('cashMovementType', 'is_income', false)], 'amount');
+            ->withSum(['cashMovements as expense_movements_sum' => fn ($q) => $q->whereRelation('cashMovementType', 'is_income', false)], 'amount')
+            ->withSum('receptions as receptions_sum_total', 'total');
 
         if ($request->filled('search')) {
             $query->withScopes(new BySearch($request->string('search')));

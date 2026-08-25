@@ -231,7 +231,8 @@ function confirmDelete(item) {
 
 async function doDelete() {
     confirmOpen.value = false
-    await del(`/api/v1/products/types/${deleteTarget.value.id}`)
+    const { error } = await del(`/api/v1/products/types/${deleteTarget.value.id}`)
+    if (error) { window.alert(error); return }
     await fetchItems()
 }
 

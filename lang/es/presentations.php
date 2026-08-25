@@ -7,4 +7,5 @@ return [
     'delete_confirm' => '¿Eliminar la presentación ":display"?',
     'quantity' => 'Cantidad',
     'presentation_type' => 'Tipo de presentación',
+    'has_products_error' => 'No se puede eliminar una presentación que está asignada a productos.',
 ];

@@ -64,8 +64,12 @@ class UserController extends Controller
         return response()->json([], 204);
     }
 
-    public function toggle(User $user): UserResource
+    public function toggle(Request $request, User $user): UserResource|JsonResponse
     {
+        if ($request->user()->id === $user->id) {
+            return response()->json(['message' => __('users.cannot_deactivate_self')], 422);
+        }
+
         $user->update(['is_active' => ! $user->is_active]);
 
         return UserResource::make($user->fresh()->load('roles'));

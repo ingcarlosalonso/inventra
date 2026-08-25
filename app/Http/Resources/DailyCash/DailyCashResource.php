@@ -22,7 +22,8 @@ class DailyCashResource extends JsonResource
             (float) $this->opening_balance
             + (float) ($this->payments_sum_amount ?? 0)
             + (float) ($this->income_movements_sum ?? 0)
-            - (float) ($this->expense_movements_sum ?? 0),
+            - (float) ($this->expense_movements_sum ?? 0)
+            - (float) ($this->receptions_sum_total ?? 0),
             2
         );
     }
