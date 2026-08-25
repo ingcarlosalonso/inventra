@@ -2,7 +2,7 @@
 
 > **Nota**: Pedidos y Presupuestos es un módulo contratable por separado. Si no ves esta sección en tu menú, contactá al administrador de tu cuenta para activarlo.
 
-El módulo de Presupuestos permite generar cotizaciones para clientes antes de concretar una venta. Los presupuestos no afectan el stock hasta que se convierten en venta.
+El módulo de Presupuestos permite generar cotizaciones para clientes antes de concretar una venta. Los presupuestos no afectan el stock hasta que se convierten en venta u orden.
 
 ## ¿Qué es un presupuesto?
 
