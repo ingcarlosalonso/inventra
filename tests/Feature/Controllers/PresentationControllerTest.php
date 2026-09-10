@@ -4,6 +4,7 @@ namespace Tests\Feature\Controllers;
 
 use App\Models\Presentation;
 use App\Models\PresentationType;
+use App\Models\ProductPresentation;
 use Tests\Feature\TenantFeatureTestCase;
 
 class PresentationControllerTest extends TenantFeatureTestCase
@@ -127,6 +128,19 @@ class PresentationControllerTest extends TenantFeatureTestCase
             ->assertNoContent();
 
         $this->assertSoftDeleted('presentations', ['id' => $presentation->id], 'tenant');
+    }
+
+    public function test_destroy_rejects_presentation_assigned_to_product(): void
+    {
+        $presentation = Presentation::factory()->create();
+        ProductPresentation::factory()->create(['presentation_id' => $presentation->id]);
+
+        $this->actingAs($this->user, 'sanctum')
+            ->deleteJson("/api/v1/products/presentations/{$presentation->uuid}")
+            ->assertStatus(422)
+            ->assertJsonPath('message', __('presentations.has_products_error'));
+
+        $this->assertDatabaseHas('presentations', ['id' => $presentation->id, 'deleted_at' => null], 'tenant');
     }
 
     // ── toggle ────────────────────────────────────────────────────────────────

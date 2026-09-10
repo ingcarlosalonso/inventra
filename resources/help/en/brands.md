@@ -9,7 +9,7 @@ Go to **Products → [Config] Brands**.
 - **Create**: click "New Brand" and enter the name.
 - **Edit**: use the pencil button on each row.
 - **Activate / deactivate**: the eye button toggles the brand on or off. Only active brands appear in product forms.
-- **Delete**: delete brands that have no associated products.
+- **Delete**: deleting a brand removes it from any products it was assigned to (those products become brand-less) — you don't need to unassign products first.
 
 ## Assigning to products
 

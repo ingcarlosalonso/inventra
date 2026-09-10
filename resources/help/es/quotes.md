@@ -2,11 +2,11 @@
 
 > **Nota**: Pedidos y Presupuestos es un módulo contratable por separado. Si no ves esta sección en tu menú, contactá al administrador de tu cuenta para activarlo.
 
-El módulo de Presupuestos permite generar cotizaciones para clientes antes de concretar una venta. Los presupuestos no afectan el stock hasta que se convierten en venta u orden.
+El módulo de Presupuestos permite generar cotizaciones para clientes antes de concretar una venta. Los presupuestos no afectan el stock hasta que se convierten en venta.
 
 ## ¿Qué es un presupuesto?
 
-Un presupuesto es una propuesta de venta con un listado de productos y precios que se entrega al cliente para su evaluación. Tiene validez hasta una fecha determinada. Si el cliente acepta, se convierte en venta o en pedido.
+Un presupuesto es una propuesta de venta con un listado de productos y precios que se entrega al cliente para su evaluación. Tiene validez hasta una fecha determinada. Si el cliente acepta, se convierte en venta.
 
 ## Atributos de un presupuesto
 
@@ -34,22 +34,9 @@ Un presupuesto es una propuesta de venta con un listado de productos y precios q
 6. Agregá notas con condiciones del presupuesto.
 7. Hacé clic en **Guardar**.
 
-## Ver y editar un presupuesto
+## Ver un presupuesto
 
 Hacé clic en el número de presupuesto para ver el detalle completo con todos los ítems, totales y fechas de validez.
-
-Podés editar un presupuesto mientras esté en estado **Pendiente**. Una vez convertido, queda bloqueado.
-
-## Generar PDF
-
-Desde el detalle del presupuesto, hacé clic en **Descargar PDF** para generar un archivo PDF listo para enviar al cliente por email o imprimir. El PDF incluye:
-
-- Logo y datos de tu empresa (configurados en Parámetros Generales).
-- Datos del cliente.
-- Listado de productos con precios, descuentos y subtotales.
-- Total del presupuesto.
-- Fechas de validez.
-- Notas y condiciones.
 
 ## Convertir a venta
 
@@ -63,16 +50,6 @@ Cuando el cliente acepta el presupuesto:
 
 El presupuesto cambia automáticamente a estado **Convertido** y queda vinculado a la venta creada.
 
-## Convertir a pedido
-
-También podés convertir un presupuesto en un pedido de entrega:
-
-1. Abrí el detalle del presupuesto.
-2. Hacé clic en **Convertir a Pedido**.
-3. El sistema abre el formulario de nuevo pedido pre-cargado.
-4. Completá los datos de entrega (dirección, courier, fecha de entrega).
-5. Confirmá el pedido.
-
 ## Lista de presupuestos
 
 Navegá a **Presupuestos** para ver el listado:
@@ -82,17 +59,15 @@ Navegá a **Presupuestos** para ver el listado:
 - Cliente
 - Total
 - Estado: Pendiente / Convertido (con badge de color)
-- Acciones: ver, editar, descargar PDF, convertir, eliminar
+- Acciones: ver, convertir, eliminar
 
 ### Filtros
 
-- Por estado (pendiente / convertido)
-- Por cliente
-- Por rango de fechas
+- Por búsqueda (texto libre)
 
 ## Presupuestos vencidos
 
-Los presupuestos con fecha de vencimiento pasada se marcan visualmente como **vencidos** pero permanecen en la lista. Podés renovar la fecha de vencimiento editando el presupuesto.
+Los presupuestos con fecha de vencimiento pasada se marcan visualmente como **vencidos** pero permanecen en la lista.
 
 ## Crear un presupuesto con el Asistente de IA
 

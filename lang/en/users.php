@@ -13,4 +13,5 @@ return [
     'roles' => 'Roles',
     'no_role' => 'No role assigned',
     'cannot_delete_self' => 'You cannot delete your own account.',
+    'cannot_deactivate_self' => 'You cannot deactivate your own account.',
 ];

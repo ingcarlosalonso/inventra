@@ -234,7 +234,12 @@ async function save() {
 }
 
 function confirmDelete(item) { deleteTarget.value = item; confirmOpen.value = true }
-async function doDelete() { confirmOpen.value = false; await del(`/api/v1/products/composite/${deleteTarget.value.id}`); await fetchItems() }
+async function doDelete() {
+  confirmOpen.value = false
+  const { error } = await del(`/api/v1/products/composite/${deleteTarget.value.id}`)
+  if (error) { window.alert(error); return }
+  await fetchItems()
+}
 function navigateTo(url) { fetchItems(url) }
 
 let searchDebounce

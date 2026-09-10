@@ -52,15 +52,11 @@ Al ingresar a **Productos** verás una tabla con:
 - Tipo de producto
 - Estado (activo/inactivo) con badge de color
 - Stock total (suma de presentaciones)
-- Acciones: editar, ver detalle, activar/desactivar, eliminar
+- Acciones: editar, eliminar (el estado "Activo" se cambia desde dentro del panel de edición, no desde la fila)
 
 ### Búsqueda
 
 Podés buscar productos por **nombre**, **código** o **código de barra**. El buscador filtra en tiempo real.
-
-### Filtrar por estado
-
-Usá el selector de estado para ver solo productos activos, inactivos o todos.
 
 ## Crear un producto
 
@@ -74,7 +70,7 @@ Usá el selector de estado para ver solo productos activos, inactivos o todos.
 
 ## Editar un producto
 
-Hacé clic en el ícono de lápiz en la fila del producto o en el botón Editar del detalle. Podés modificar todos los campos incluyendo presentaciones existentes o agregar nuevas.
+Hacé clic en el ícono de lápiz en la fila del producto para abrir el panel de edición. Podés modificar todos los campos incluyendo presentaciones existentes o agregar nuevas.
 
 > **Importante**: Modificar el precio de una presentación no afecta ventas ya registradas.
 
@@ -99,7 +95,7 @@ El stock de cada presentación se actualiza automáticamente cuando:
 - **Confirmás un pedido como entregado** (disminuye el stock).
 - **Registrás un movimiento extra** de ajuste, pérdida o corrección.
 
-Podés consultar el stock actual en el detalle del producto o en el reporte de Inventario.
+Podés consultar el stock actual en la lista de productos o en el reporte de Inventario.
 
 ## Importación masiva
 

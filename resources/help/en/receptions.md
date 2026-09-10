@@ -49,7 +49,7 @@ Once saved, each presentation's stock increases automatically. You can verify th
 
 ## Effect on Daily Cash
 
-If you linked the reception to an open daily cash, the system automatically registers an **outgoing movement** in that cash for the purchase total. This reflects the supplier payment in the day's cash balance.
+If you linked the reception to an open daily cash, the purchase total is **automatically deducted from that cash register's balance**. This reflects the supplier payment in the day's cash balance (it does not create a separate outgoing movement entry in the movements list, but it does affect the current balance calculation).
 
 ## Tips
 

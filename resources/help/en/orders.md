@@ -57,7 +57,7 @@ When an order reaches a **final state** (e.g. "Delivered"), the system records s
 
 ## Courier Assignment
 
-You can assign or reassign the courier at any time before the order reaches final state. The Orders report shows metrics by courier.
+The courier is assigned when the order is created and currently cannot be changed afterward. The Orders report shows metrics by courier.
 
 ## Creating an order with the AI Assistant
 

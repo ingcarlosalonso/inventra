@@ -5,7 +5,6 @@ The Suppliers module manages data for the companies or individuals that supply p
 ## Supplier Attributes
 
 - **Company name**: legal name of the company or person (e.g. "Rodriguez Distribution Co.").
-- **Tax ID**: tax identification number.
 - **Contact name**: contact person within the supplier.
 - **Phone**: contact phone number.
 - **Email**: email for communication.
@@ -16,7 +15,7 @@ The Suppliers module manages data for the companies or individuals that supply p
 
 1. Click **New Supplier**.
 2. Fill in the company name (required).
-3. Enter the tax ID, contact name, phone, email, and address (all optional).
+3. Enter the contact name, phone, email, and address (all optional).
 4. Add internal notes if needed.
 5. Click **Save**.
 
