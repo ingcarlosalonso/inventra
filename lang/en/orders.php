@@ -46,6 +46,8 @@ return [
     'no_payments' => 'No payments',
     'save_order' => 'Register order',
     'stock' => 'Stock',
+    'out_of_stock' => 'Out of stock',
+    'insufficient_stock' => 'Insufficient stock for ":product": requested :requested, available :available.',
     'header_info' => 'General info',
     'shipping_and_payments' => 'Shipping & payments',
     'items_section' => 'Products',

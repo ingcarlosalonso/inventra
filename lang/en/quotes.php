@@ -31,6 +31,8 @@ return [
     'total' => 'Total',
     'save_quote' => 'Save quote',
     'stock' => 'Stock',
+    'out_of_stock' => 'Out of stock',
+    'insufficient_stock' => 'Insufficient stock for ":product": requested :requested, available :available.',
     'header_info' => 'General info',
     'items_section' => 'Products',
     'convert_to_sale' => 'Convert to sale',

@@ -71,6 +71,7 @@ class PermissionSeeder extends Seeder
             // Settings
             'create_edit_delete_currencies',
             'manage_customization',
+            'manage_mercadopago',
         ];
 
         foreach ($permissions as $permission) {

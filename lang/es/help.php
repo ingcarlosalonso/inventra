@@ -21,6 +21,7 @@ return [
         'daily-cashes' => 'Caja Diaria',
         'reports' => 'Reportes',
         'configuration' => 'Configuración',
+        'mercadopago' => 'Mercado Pago',
         'roles-permissions' => 'Roles y Permisos',
         'users' => 'Usuarios y Perfil',
         'release-notes' => 'Novedades del sistema',

@@ -128,7 +128,9 @@
                     </div>
                     <div class="ml-4 text-right shrink-0">
                       <p class="text-xs font-medium text-gray-900">${{ formatNumber(opt.price) }}</p>
-                      <p class="text-xs text-gray-400">{{ $t('quotes.stock') }}: {{ opt.stock }}</p>
+                      <p class="text-xs font-semibold" :class="opt.stock <= 0 ? 'text-red-600' : 'text-gray-400 font-normal'">
+                        {{ opt.stock <= 0 ? $t('quotes.out_of_stock') : `${$t('quotes.stock')}: ${opt.stock}` }}
+                      </p>
                     </div>
                   </li>
                 </ul>
@@ -165,7 +167,19 @@
                     <input v-model="item.description" type="text" class="block w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
                   </td>
                   <td class="px-3 py-2">
-                    <input v-model="item.quantity" type="number" step="0.001" min="0.001" class="block w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-right tabular-nums focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+                    <input
+                      v-model="item.quantity"
+                      type="number"
+                      step="0.001"
+                      min="0.001"
+                      :class="[
+                        'block w-full rounded-lg border px-3 py-1.5 text-sm text-right tabular-nums focus:outline-none focus:ring-1',
+                        isOverStock(item) ? 'border-amber-400 focus:border-amber-500 focus:ring-amber-500' : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500',
+                      ]"
+                    />
+                    <p v-if="isOverStock(item)" class="mt-1 text-xs text-amber-600">
+                      {{ $t('quotes.insufficient_stock', { product: item.productName, requested: item.quantity, available: item.stock }) }}
+                    </p>
                   </td>
                   <td class="px-3 py-2">
                     <div class="relative">
@@ -406,6 +420,7 @@ function addItem(opt) {
     description: opt.productName + (opt.presentationDisplay ? ' - ' + opt.presentationDisplay : ''),
     quantity: 1,
     unit_price: opt.price,
+    stock: opt.stock ?? 0,
     discount_type: '',
     discount_value: '',
   })
@@ -415,6 +430,10 @@ function addItem(opt) {
 }
 
 function removeItem(index) { form.value.items.splice(index, 1) }
+
+function isOverStock(item) {
+  return (parseFloat(item.quantity) || 0) > (item.stock ?? Infinity)
+}
 
 // ── Totals ─────────────────────────────────────────────────────────────────
 function computeItemTotal(item) {
@@ -451,7 +470,8 @@ async function save() {
     discount_type: form.value.discount_type || null,
     discount_value: form.value.discount_value || null,
     items: form.value.items.map(it => ({
-      product_presentation_id: it.product_presentation_id,
+      item_type: 'product',
+      saleable_id: it.product_presentation_id,
       description: it.description,
       quantity: it.quantity,
       unit_price: it.unit_price,
@@ -461,7 +481,7 @@ async function save() {
   }
   const result = await postForm('/api/v1/quotes', payload)
   if (result.error) {
-    if (!Object.keys(formErrors.value).length) formError.value = result.error
+    formError.value = result.error
     return
   }
   router.visit('/quotes')

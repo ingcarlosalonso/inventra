@@ -94,7 +94,7 @@
       <NavGroup
         :label="$t('common.settings')"
         :icon="icons.settings"
-        :matches="['/settings/product-movement-types', '/settings/cash-movement-types', '/settings/currencies', '/settings/customization', '/settings/users', '/settings/roles']"
+        :matches="['/settings/product-movement-types', '/settings/cash-movement-types', '/settings/currencies', '/settings/customization', '/settings/mercado-pago', '/settings/users', '/settings/roles']"
       >
         <NavItem href="/settings/users" :label="$t('users.title')" sub />
         <NavItem href="/settings/roles" :label="$t('roles.title')" sub />
@@ -102,6 +102,7 @@
         <NavItem href="/settings/cash-movement-types" :label="$t('cash_movement_types.title')" sub />
         <NavItem href="/settings/currencies" :label="$t('currencies.title')" sub />
         <NavItem href="/settings/customization" :label="$t('customization.title')" sub />
+        <NavItem v-if="hasModule('mercado_pago')" href="/settings/mercado-pago" :label="$t('mercadopago.title')" sub />
       </NavGroup>
 
       <NavItem href="/help" :label="$t('help.title')" :icon="icons.help" />

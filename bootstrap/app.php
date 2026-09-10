@@ -1,6 +1,7 @@
 <?php
 
 use App\Exceptions\InsufficientStockException;
+use App\Exceptions\MercadoPagoException;
 use App\Http\Middleware\EnsureActiveTenant;
 use App\Http\Middleware\EnsureModuleEnabled;
 use App\Http\Middleware\HandleInertiaRequests;
@@ -37,6 +38,10 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
         ]);
 
+        $middleware->validateCsrfTokens(except: [
+            'webhooks/mercadopago',
+        ]);
+
         $middleware->alias([
             'tenant' => NeedsTenant::class,
             'tenant.session' => EnsureValidTenantSession::class,
@@ -53,6 +58,10 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (InsufficientStockException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        });
+
+        $exceptions->render(function (MercadoPagoException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         });
     })->create();

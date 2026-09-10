@@ -38,6 +38,7 @@ return [
     'no_payments' => 'No payments',
     'save_sale' => 'Register sale',
     'stock' => 'Stock',
+    'out_of_stock' => 'Out of stock',
     'header_info' => 'General info',
     'items_section' => 'Products',
     'payments_section' => 'Payments',
