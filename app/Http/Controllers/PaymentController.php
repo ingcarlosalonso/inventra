@@ -47,6 +47,7 @@ class PaymentController extends Controller
                     'total' => (float) $sale->total,
                     'paid_amount' => $paidAmount,
                     'pending_amount' => round((float) $sale->total - $paidAmount, 2),
+                    'has_mercado_pago_terminal' => (bool) $sale->pointOfSale?->mercado_pago_terminal_id,
                     'created_at' => $sale->created_at->toISOString(),
                 ]);
             }
@@ -71,6 +72,7 @@ class PaymentController extends Controller
                     'total' => (float) $order->total,
                     'paid_amount' => $paidAmount,
                     'pending_amount' => round((float) $order->total - $paidAmount, 2),
+                    'has_mercado_pago_terminal' => (bool) $order->pointOfSale?->mercado_pago_terminal_id,
                     'created_at' => $order->created_at->toISOString(),
                 ]);
             }

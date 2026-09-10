@@ -25,6 +25,7 @@ class ModuleGatedRoutesTest extends TestCase
             'settings.order-states' => 'orders_quotes',
             'settings.couriers' => 'orders_quotes',
             'reports.orders' => 'orders_quotes',
+            'settings.mercado-pago' => 'mercado_pago',
         ];
     }
 
@@ -50,5 +51,35 @@ class ModuleGatedRoutesTest extends TestCase
 
         $this->assertNotNull($route);
         $this->assertContains('module:ai_assistant', $route->gatherMiddleware());
+    }
+
+    /**
+     * Mercado Pago v1 API routes aren't named, so match them by URI + method like the
+     * assistant chat route above. One representative route per `module:mercado_pago`
+     * middleware group is enough — the middleware is applied at the group level.
+     */
+    private function mercadoPagoGatedUris(): array
+    {
+        return [
+            ['uri' => 'api/v1/sales/mercado-pago-charges', 'method' => 'POST'],
+            ['uri' => 'api/v1/sales/points-of-sale/{pointOfSale}/mercado-pago-terminal', 'method' => 'PATCH'],
+            ['uri' => 'api/v1/settings/mercado-pago', 'method' => 'GET'],
+        ];
+    }
+
+    public function test_v1_mercado_pago_routes_require_their_module(): void
+    {
+        foreach ($this->mercadoPagoGatedUris() as $entry) {
+            $route = collect(Route::getRoutes())->first(
+                fn ($r) => $r->uri() === $entry['uri'] && in_array($entry['method'], $r->methods())
+            );
+
+            $this->assertNotNull($route, "Route [{$entry['method']} {$entry['uri']}] does not exist.");
+            $this->assertContains(
+                'module:mercado_pago',
+                $route->gatherMiddleware(),
+                "Route [{$entry['method']} {$entry['uri']}] is missing the [module:mercado_pago] middleware."
+            );
+        }
     }
 }

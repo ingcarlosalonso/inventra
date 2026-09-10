@@ -122,20 +122,27 @@
                   <li
                     v-for="(opt, i) in filteredOptions"
                     :key="opt.id"
-                    :class="['flex items-center justify-between px-4 py-2.5 cursor-pointer text-sm transition', i === highlighted ? 'bg-indigo-50 text-indigo-900' : 'text-gray-700 hover:bg-gray-50']"
-                    @mousedown.prevent="addItem(opt)"
+                    :class="[
+                      'flex items-center justify-between px-4 py-2.5 text-sm transition',
+                      opt.stock <= 0 ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
+                      i === highlighted && opt.stock > 0 ? 'bg-indigo-50 text-indigo-900' : 'text-gray-700',
+                      opt.stock > 0 ? 'hover:bg-gray-50' : '',
+                    ]"
+                    @mousedown.prevent="opt.stock > 0 && addItem(opt)"
                     @mouseover="highlighted = i"
                   >
                     <div>
                       <div class="flex items-center gap-2">
-                        <span class="font-medium">{{ opt.productName }}</span>
+                        <span class="font-medium" :class="opt.stock <= 0 ? 'line-through text-gray-400' : ''">{{ opt.productName }}</span>
                         <span v-if="opt.brandName" class="inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium bg-violet-100 text-violet-700">{{ opt.brandName }}</span>
                       </div>
                       <span class="text-xs text-gray-500">{{ opt.presentationDisplay }}</span>
                     </div>
                     <div class="ml-4 text-right shrink-0">
                       <p class="text-xs font-medium text-gray-900">${{ formatNumber(opt.price) }}</p>
-                      <p class="text-xs text-gray-400">{{ $t('orders.stock') }}: {{ opt.stock }}</p>
+                      <p class="text-xs font-semibold" :class="opt.stock <= 0 ? 'text-red-600' : 'text-gray-400 font-normal'">
+                        {{ opt.stock <= 0 ? $t('orders.out_of_stock') : `${$t('orders.stock')}: ${opt.stock}` }}
+                      </p>
                     </div>
                   </li>
                 </ul>
@@ -172,7 +179,19 @@
                     <input v-model="item.description" type="text" class="block w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
                   </td>
                   <td class="px-3 py-2">
-                    <input v-model="item.quantity" type="number" step="0.001" min="0.001" class="block w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-right tabular-nums focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+                    <input
+                      v-model="item.quantity"
+                      type="number"
+                      step="0.001"
+                      min="0.001"
+                      :class="[
+                        'block w-full rounded-lg border px-3 py-1.5 text-sm text-right tabular-nums focus:outline-none focus:ring-1',
+                        isOverStock(item) ? 'border-red-400 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500',
+                      ]"
+                    />
+                    <p v-if="isOverStock(item)" class="mt-1 text-xs text-red-600">
+                      {{ $t('orders.insufficient_stock', { product: item.productName, requested: item.quantity, available: item.stock }) }}
+                    </p>
                   </td>
                   <td class="px-3 py-2">
                     <div class="relative">
@@ -416,7 +435,7 @@
         <button
           v-else
           type="button"
-          :disabled="saving || form.items.length === 0"
+          :disabled="saving || form.items.length === 0 || hasStockIssues"
           class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
           @click="save"
         >
@@ -553,7 +572,10 @@ const filteredOptions = computed(() => {
 
 function highlightNext() { highlighted.value = Math.min(highlighted.value + 1, filteredOptions.value.length - 1) }
 function highlightPrev() { highlighted.value = Math.max(highlighted.value - 1, 0) }
-function selectHighlighted() { if (filteredOptions.value[highlighted.value]) addItem(filteredOptions.value[highlighted.value]) }
+function selectHighlighted() {
+  const opt = filteredOptions.value[highlighted.value]
+  if (opt && opt.stock > 0) addItem(opt)
+}
 
 function addItem(opt) {
   form.value.items.push({
@@ -565,6 +587,7 @@ function addItem(opt) {
     description: opt.productName + (opt.presentationDisplay ? ' - ' + opt.presentationDisplay : ''),
     quantity: 1,
     unit_price: opt.price,
+    stock: opt.stock ?? 0,
     discount_type: '',
     discount_value: '',
   })
@@ -592,6 +615,12 @@ function computeItemTotal(item) {
   return lineTotal
 }
 
+function isOverStock(item) {
+  return (parseFloat(item.quantity) || 0) > (item.stock ?? Infinity)
+}
+
+const hasStockIssues = computed(() => form.value.items.some(isOverStock))
+
 const subtotal = computed(() => form.value.items.reduce((sum, it) => sum + computeItemTotal(it), 0))
 const orderDiscountAmount = computed(() => {
   const discVal = parseFloat(form.value.discount_value) || 0
@@ -618,7 +647,8 @@ async function save() {
     discount_type: form.value.discount_type || null,
     discount_value: form.value.discount_value || null,
     items: form.value.items.map(it => ({
-      product_presentation_id: it.product_presentation_id,
+      item_type: 'product',
+      saleable_id: it.product_presentation_id,
       description: it.description,
       quantity: it.quantity,
       unit_price: it.unit_price,
@@ -631,7 +661,7 @@ async function save() {
   }
   const result = await postForm('/api/v1/orders', payload)
   if (result.error) {
-    if (!Object.keys(formErrors.value).length) formError.value = result.error
+    formError.value = result.error
     return
   }
   router.visit('/orders')

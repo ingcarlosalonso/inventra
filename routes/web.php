@@ -33,6 +33,11 @@ Route::middleware(['tenant', 'tenant.active'])->group(function () {
         Route::get('/settings/sale-states', fn () => Inertia::render('Settings/SaleStates/Index'))->name('settings.sale-states');
         Route::get('/settings/payment-methods', fn () => Inertia::render('Settings/PaymentMethods/Index'))->name('settings.payment-methods');
 
+        // Settings / Mercado Pago (module: mercado_pago)
+        Route::middleware('module:mercado_pago')->group(function () {
+            Route::get('/settings/mercado-pago', fn () => Inertia::render('Settings/MercadoPago/Index'))->name('settings.mercado-pago');
+        });
+
         // Main modules
         Route::get('/suppliers', fn () => Inertia::render('Suppliers/Index'))->name('suppliers');
         Route::get('/clients', fn () => Inertia::render('Clients/Index'))->name('clients');
