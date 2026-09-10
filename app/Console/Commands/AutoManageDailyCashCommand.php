@@ -25,7 +25,7 @@ class AutoManageDailyCashCommand extends Command
         $now = Carbon::now()->format('H:i');
 
         Tenant::all()->each(function (Tenant $tenant) use ($now) {
-            $tenant->run(function () use ($now) {
+            $tenant->execute(function () use ($now) {
                 $this->processOpenings($now);
                 $this->processClosings($now);
             });
