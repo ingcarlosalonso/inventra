@@ -126,4 +126,25 @@ class PointOfSaleControllerTest extends TenantFeatureTestCase
             ->assertOk()
             ->assertJsonPath('data.is_active', true);
     }
+
+    public function test_assign_mercado_pago_terminal(): void
+    {
+        $pos = PointOfSale::factory()->create(['mercado_pago_terminal_id' => null]);
+
+        $this->actingAs($this->userWithPermissions('manage_mercadopago'), 'sanctum')
+            ->patchJson("/api/v1/sales/points-of-sale/{$pos->uuid}/mercado-pago-terminal", ['terminal_id' => 'TERM123'])
+            ->assertOk()
+            ->assertJsonPath('data.mercado_pago_terminal_id', 'TERM123');
+
+        $this->assertDatabaseHas('points_of_sale', ['id' => $pos->id, 'mercado_pago_terminal_id' => 'TERM123'], 'tenant');
+    }
+
+    public function test_assign_mercado_pago_terminal_requires_permission(): void
+    {
+        $pos = PointOfSale::factory()->create();
+
+        $this->actingAs($this->userWithoutPermissions(), 'sanctum')
+            ->patchJson("/api/v1/sales/points-of-sale/{$pos->uuid}/mercado-pago-terminal", ['terminal_id' => 'TERM123'])
+            ->assertForbidden();
+    }
 }

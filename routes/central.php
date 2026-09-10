@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Central\AuthController;
+use App\Http\Controllers\Central\MercadoPagoOAuthCallbackController;
+use App\Http\Controllers\Central\MercadoPagoWebhookController;
 use App\Http\Controllers\Central\ReleaseController;
 use App\Http\Controllers\Central\TenantController;
 use App\Http\Controllers\Central\TenantModuleController;
@@ -9,6 +11,17 @@ use Illuminate\Support\Facades\Route;
 Route::domain(config('app.central_domain'))->name('central.')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+
+    // Mercado Pago notifies this single URL (configured once in the developer panel)
+    // for events across every tenant's connected account; the tenant is resolved
+    // from the webhook body's user_id, not from the domain.
+    Route::post('/webhooks/mercadopago', [MercadoPagoWebhookController::class, 'handle'])->name('webhooks.mercadopago');
+
+    // Mercado Pago OAuth apps only accept one static redirect_uri, so it can't vary per
+    // tenant subdomain — this single central callback resolves the tenant from the
+    // cached `state` (set when the tenant started the "Conectar" flow) and redirects
+    // back to that tenant's own settings page once the token exchange succeeds.
+    Route::get('/oauth/mercadopago/callback', [MercadoPagoOAuthCallbackController::class, 'handle'])->name('oauth.mercadopago.callback');
 
     Route::middleware('auth:central')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

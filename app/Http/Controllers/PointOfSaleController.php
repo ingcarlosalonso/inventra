@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PointOfSale\AssignMercadoPagoTerminalRequest;
 use App\Http\Requests\PointOfSale\IndexPointOfSaleRequest;
 use App\Http\Requests\PointOfSale\StorePointOfSaleRequest;
 use App\Http\Requests\PointOfSale\UpdatePointOfSaleRequest;
@@ -50,6 +51,13 @@ class PointOfSaleController extends Controller
     public function toggle(PointOfSale $pointOfSale): PointOfSaleResource
     {
         $pointOfSale->update(['is_active' => ! $pointOfSale->is_active]);
+
+        return PointOfSaleResource::make($pointOfSale->fresh());
+    }
+
+    public function assignMercadoPagoTerminal(AssignMercadoPagoTerminalRequest $request, PointOfSale $pointOfSale): PointOfSaleResource
+    {
+        $pointOfSale->update(['mercado_pago_terminal_id' => $request->validated('terminal_id')]);
 
         return PointOfSaleResource::make($pointOfSale->fresh());
     }

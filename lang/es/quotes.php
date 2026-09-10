@@ -31,6 +31,8 @@ return [
     'total' => 'Total',
     'save_quote' => 'Guardar presupuesto',
     'stock' => 'Stock',
+    'out_of_stock' => 'Sin stock',
+    'insufficient_stock' => 'Stock insuficiente para ":product": solicitado :requested, disponible :available.',
     'header_info' => 'Información general',
     'items_section' => 'Productos',
     'convert_to_sale' => 'Transformar en venta',

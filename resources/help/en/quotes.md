@@ -2,7 +2,7 @@
 
 > **Note**: Orders & Quotes is a separately contracted module. If you don't see this section in your menu, contact your account administrator to enable it.
 
-The Quotes module allows generating quotations for clients before finalizing a sale. Quotes don't affect stock until they are converted into a sale or order.
+The Quotes module allows generating quotations for clients before finalizing a sale. Quotes don't affect stock until they are converted into a sale.
 
 ## What is a Quote?
 

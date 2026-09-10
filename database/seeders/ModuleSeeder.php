@@ -25,6 +25,12 @@ class ModuleSeeder extends Seeder
                 'description' => 'Asistente conversacional para consultar datos del negocio y crear ventas, pedidos y presupuestos por chat.',
                 'sort_order' => 2,
             ],
+            [
+                'key' => 'mercado_pago',
+                'name' => 'Mercado Pago',
+                'description' => 'Cobro con tarjeta a través del posnet (Point) de Mercado Pago, vinculado a los puntos de venta.',
+                'sort_order' => 3,
+            ],
         ];
 
         foreach ($modules as $module) {

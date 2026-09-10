@@ -168,6 +168,43 @@
             </div>
           </div>
 
+          <!-- Mercado Pago posnet charge -->
+          <div v-if="canChargeWithMercadoPago" class="border-b border-gray-200 px-5 py-4 space-y-3">
+            <div v-if="!mercadoPagoCharge" class="flex items-center justify-between gap-3">
+              <div>
+                <p class="text-sm font-medium text-gray-900">{{ $t('mercadopago.charge_title') }}</p>
+                <p class="text-xs text-gray-500">{{ $t('mercadopago.charge_hint') }}</p>
+              </div>
+              <button
+                type="button"
+                :disabled="chargingPosnet || !form.amount"
+                class="shrink-0 rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-700 transition disabled:opacity-50"
+                @click="startPosnetCharge"
+              >
+                {{ chargingPosnet ? $t('mercadopago.charging') : $t('mercadopago.charge_button') }}
+              </button>
+            </div>
+
+            <div v-if="chargeError" class="flex items-start gap-2 rounded-lg bg-red-50 px-3 py-2.5 text-xs text-red-700 ring-1 ring-red-200">
+              <svg class="mt-0.5 h-4 w-4 shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+              </svg>
+              {{ chargeError }}
+            </div>
+
+            <div v-else class="flex items-center gap-3 rounded-lg bg-sky-50 px-4 py-3 text-sm text-sky-800 ring-1 ring-sky-200">
+              <svg v-if="!mercadoPagoCharge.is_final" class="h-4 w-4 animate-spin shrink-0" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              <span>
+                <template v-if="!mercadoPagoCharge.is_final">{{ $t('mercadopago.waiting_terminal') }}</template>
+                <template v-else-if="mercadoPagoCharge.is_successful">{{ $t('mercadopago.charge_approved') }}</template>
+                <template v-else>{{ $t('mercadopago.charge_failed') }}</template>
+              </span>
+            </div>
+          </div>
+
           <!-- Fields -->
           <form class="px-5 py-5 space-y-4" @submit.prevent="submitPayment">
             <SelectField
@@ -229,7 +266,8 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { usePage } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import SearchInput from '@/Components/SearchInput.vue'
 import EmptyState from '@/Components/EmptyState.vue'
@@ -242,9 +280,13 @@ import { useTranslation } from '@/composables/useTranslation'
 defineOptions({ layout: AppLayout })
 
 const { t } = useTranslation()
+const page = usePage()
+const enabledModules = computed(() => page.props.enabledModules ?? [])
 
 const { loading: loadingList, get: getList } = useApi()
 const { loading: submitting, errors: formErrors, post } = useApi()
+const { loading: chargingPosnet, post: postCharge } = useApi()
+const { get: getCharge } = useApi()
 
 const pendingItems = ref([])
 const paymentMethods = ref([])
@@ -271,8 +313,47 @@ const paymentMethodOptions = computed(() =>
     .map((m) => ({ value: m.id, label: m.name }))
 )
 
+const mercadoPagoCharge = ref(null)
+const chargeError = ref('')
+let pollTimer = null
+
+const canChargeWithMercadoPago = computed(
+  () => enabledModules.value.includes('mercado_pago') && selected.value?.has_mercado_pago_terminal
+)
+
 function isSelected(item) {
   return selected.value?.id === item.id && selected.value?.type === item.type
+}
+
+function stopPolling() {
+  if (pollTimer) clearInterval(pollTimer)
+  pollTimer = null
+}
+
+async function startPosnetCharge() {
+  chargeError.value = ''
+  const { data, error } = await postCharge('/api/v1/sales/mercado-pago-charges', {
+    payable_type: selected.value.type,
+    payable_id: selected.value.id,
+    amount: parseFloat(form.value.amount),
+  })
+  if (error) { chargeError.value = error; return }
+  if (!data) return
+
+  mercadoPagoCharge.value = data.data
+  pollTimer = setInterval(async () => {
+    const { data: polled } = await getCharge(`/api/v1/sales/mercado-pago-charges/${data.data.id}`)
+    if (!polled) return
+    mercadoPagoCharge.value = polled.data
+    if (polled.data.is_final) {
+      stopPolling()
+      if (polled.data.is_successful) {
+        successMessage.value = t('payments.success')
+        selected.value = null
+        await fetchPending()
+      }
+    }
+  }, 3000)
 }
 
 async function fetchPending() {
@@ -288,6 +369,9 @@ async function fetchPaymentMethods() {
 }
 
 function selectItem(item) {
+  stopPolling()
+  mercadoPagoCharge.value = null
+  chargeError.value = ''
   selected.value = item
   successMessage.value = ''
   form.value = {
@@ -335,4 +419,6 @@ onMounted(() => {
   fetchPending()
   fetchPaymentMethods()
 })
+
+onUnmounted(stopPolling)
 </script>

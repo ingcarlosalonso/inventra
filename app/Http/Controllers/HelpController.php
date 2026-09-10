@@ -28,6 +28,7 @@ class HelpController extends Controller
         'daily-cashes',
         'reports',
         'configuration',
+        'mercadopago',
         'roles-permissions',
         'users',
         'release-notes',
@@ -37,7 +38,7 @@ class HelpController extends Controller
         'main' => ['dashboard', 'ai-assistant'],
         'inventory' => ['products', 'composite-products', 'promotions', 'brands', 'product-types', 'presentations', 'suppliers', 'receptions'],
         'commercial' => ['clients', 'sales', 'quotes', 'orders', 'daily-cashes', 'reports'],
-        'configuration' => ['configuration', 'roles-permissions', 'users', 'release-notes'],
+        'configuration' => ['configuration', 'mercadopago', 'roles-permissions', 'users', 'release-notes'],
     ];
 
     public function show(string $topic = 'dashboard'): Response

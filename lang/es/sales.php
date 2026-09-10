@@ -38,6 +38,7 @@ return [
     'no_payments' => 'Sin pagos',
     'save_sale' => 'Registrar venta',
     'stock' => 'Stock',
+    'out_of_stock' => 'Sin stock',
     'header_info' => 'Información general',
     'items_section' => 'Productos',
     'payments_section' => 'Pagos',

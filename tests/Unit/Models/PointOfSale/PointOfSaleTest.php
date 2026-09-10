@@ -11,7 +11,7 @@ class PointOfSaleTest extends ModelTestCase
     public function test_it_has_expected_columns(): void
     {
         $this->assertHasExpectedColumns(PointOfSale::tableName(), [
-            'id', 'uuid', 'number', 'name', 'address', 'is_active',
+            'id', 'uuid', 'number', 'name', 'address', 'is_active', 'mercado_pago_terminal_id',
             'auto_open_time', 'auto_close_time',
             'created_at', 'updated_at', 'deleted_at',
         ]);

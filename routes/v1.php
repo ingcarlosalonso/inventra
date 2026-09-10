@@ -13,6 +13,9 @@ use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\CustomizationController;
 use App\Http\Controllers\DailyCashController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MercadoPagoChargeController;
+use App\Http\Controllers\MercadoPagoConnectionController;
+use App\Http\Controllers\MercadoPagoTerminalController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderStateController;
@@ -272,6 +275,11 @@ Route::middleware(['api', 'tenant', 'tenant.active'])->prefix('v1')->group(funct
                 Route::post('payments', [PaymentController::class, 'store']);
             });
 
+            Route::middleware(['module:mercado_pago', 'permission:create_edit_delete_sales'])->group(function () {
+                Route::post('mercado-pago-charges', [MercadoPagoChargeController::class, 'store']);
+                Route::get('mercado-pago-charges/{mercadoPagoOrder}', [MercadoPagoChargeController::class, 'show']);
+            });
+
             // Payment methods GET open to all authenticated users (needed for sale creation form)
             Route::get('payment-methods', [PaymentMethodController::class, 'index']);
             Route::middleware('permission:create_edit_delete_payment_methods')->group(function () {
@@ -288,6 +296,10 @@ Route::middleware(['api', 'tenant', 'tenant.active'])->prefix('v1')->group(funct
                 Route::put('points-of-sale/{pointOfSale}', [PointOfSaleController::class, 'update']);
                 Route::delete('points-of-sale/{pointOfSale}', [PointOfSaleController::class, 'destroy']);
                 Route::patch('points-of-sale/{pointOfSale}/toggle', [PointOfSaleController::class, 'toggle']);
+            });
+
+            Route::middleware(['module:mercado_pago', 'permission:manage_mercadopago'])->group(function () {
+                Route::patch('points-of-sale/{pointOfSale}/mercado-pago-terminal', [PointOfSaleController::class, 'assignMercadoPagoTerminal']);
             });
 
             // Sale states GET open to all authenticated users (needed for sale form dropdowns)
@@ -366,6 +378,14 @@ Route::middleware(['api', 'tenant', 'tenant.active'])->prefix('v1')->group(funct
             Route::middleware('permission:manage_customization')->group(function () {
                 Route::get('customization', [CustomizationController::class, 'show']);
                 Route::post('customization', [CustomizationController::class, 'update']);
+            });
+
+            Route::middleware(['module:mercado_pago', 'permission:manage_mercadopago'])->prefix('mercado-pago')->group(function () {
+                Route::get('/', [MercadoPagoConnectionController::class, 'show']);
+                Route::get('connect', [MercadoPagoConnectionController::class, 'redirectUrl']);
+                Route::patch('/', [MercadoPagoConnectionController::class, 'update']);
+                Route::delete('/', [MercadoPagoConnectionController::class, 'destroy']);
+                Route::get('terminals', [MercadoPagoTerminalController::class, 'index']);
             });
 
             Route::middleware('permission:create_edit_delete_roles')->group(function () {
