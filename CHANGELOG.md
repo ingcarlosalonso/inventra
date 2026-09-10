@@ -42,6 +42,7 @@ All notable changes to In-ventra are documented here.
 ## [1.4.0] - xxxx-xx-xx
 
 ### Added
+- Sellable module system: features can now be contracted per tenant independently of the base package. Two modules launch with this release — "Pedidos y Presupuestos" (Orders, Couriers, Order States, Quotes) and "Asistente IA" — toggled per client from the central admin panel. Disabled modules are hidden from the sidebar/AI assistant icon and their API routes return 403
 - AI Assistant can now create sales, orders and quotes from a chat description (client, products, discount, payment method/credit). It always resolves client/products/payment method server-side and shows a priced draft first — it only creates the record once the user explicitly confirms, and only if the user has the same permission the manual screen requires
 
 ### Fixed
